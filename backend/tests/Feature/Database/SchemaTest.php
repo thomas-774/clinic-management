@@ -162,3 +162,51 @@ describe('appointments (T1-04)', function () {
             ->and(Schema::hasIndex('appointments', ['patient_id']))->toBeTrue();
     });
 });
+
+describe('visits and payments (T1-05)', function () {
+    it('stores every money column as DECIMAL(10,2)', function () {
+        $columns = collect(Schema::getColumns('visits'))->merge(Schema::getColumns('payments'))
+            ->whereIn('name', ['total_amount', 'amount']);
+
+        expect($columns)->toHaveCount(2);
+        $columns->each(fn ($column) => expect($column['type'])->toBe('decimal(10,2)'));
+    });
+
+    it('never stores a remaining balance', function () {
+        expect(Schema::hasColumn('visits', 'remaining'))->toBeFalse()
+            ->and(Schema::hasColumn('payments', 'remaining'))->toBeFalse();
+    });
+
+    it('allows one visit per appointment and walk-in visits without one', function () {
+        $patientId = insertPatient();
+        $appointmentId = insertAppointment(insertUser(['role' => 'doctor', 'phone' => '01099999999']), $patientId);
+        $visit = fn (?int $appointmentId) => DB::table('visits')->insertGetId([
+            'patient_id' => $patientId,
+            'appointment_id' => $appointmentId,
+            'visit_date' => '2026-10-06',
+            'work_done' => 'Cleaning',
+            'total_amount' => '1500.00',
+        ]);
+
+        $visit($appointmentId);
+        $visit(null);
+        $visit(null);
+
+        expect(fn () => $visit($appointmentId))->toThrow(QueryException::class);
+    });
+
+    it('defaults the payment method to cash and keeps exact amounts', function () {
+        $visitId = DB::table('visits')->insertGetId([
+            'patient_id' => insertPatient(),
+            'visit_date' => '2026-10-06',
+            'work_done' => 'Cleaning',
+            'total_amount' => '1500.00',
+        ]);
+        DB::table('payments')->insert(['visit_id' => $visitId, 'amount' => '0.10', 'paid_at' => now()]);
+        DB::table('payments')->insert(['visit_id' => $visitId, 'amount' => '0.20', 'paid_at' => now()]);
+
+        expect(DB::table('payments')->first()->method)->toBe('cash')
+            ->and((string) DB::table('payments')->sum('amount'))->toBe('0.30')
+            ->and(Schema::hasIndex('payments', ['paid_at']))->toBeTrue();
+    });
+});

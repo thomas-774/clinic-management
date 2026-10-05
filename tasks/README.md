@@ -43,7 +43,7 @@ Backend
 - [x] [T1-02](phase-1-database-auth/T1-02-migration-medical-history.md) Migration: medical_history_entries · S
 - [x] [T1-03](phase-1-database-auth/T1-03-migration-availability.md) Migrations: doctor_settings, working_hours, blocked_times · S
 - [x] [T1-04](phase-1-database-auth/T1-04-migration-appointments.md) Migration: appointments (with active_slot) · M
-- [ ] [T1-05](phase-1-database-auth/T1-05-migration-visits-payments.md) Migrations: visits and payments · S
+- [x] [T1-05](phase-1-database-auth/T1-05-migration-visits-payments.md) Migrations: visits and payments · S
 - [ ] [T1-06](phase-1-database-auth/T1-06-enums-and-models.md) Enums and Eloquent models · M
 - [ ] [T1-07](phase-1-database-auth/T1-07-factories-and-seeders.md) Factories and seeders · M
 - [ ] [T1-08](phase-1-database-auth/T1-08-api-response-conventions.md) API response and error conventions · S
