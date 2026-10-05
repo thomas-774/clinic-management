@@ -100,7 +100,7 @@ Frontend
 - [x] [T4-07](phase-4-booking-schedule/T4-07-fe-book-appointment.md) BookAppointment page · M
 - [x] [T4-08](phase-4-booking-schedule/T4-08-fe-my-appointments.md) MyAppointments page · S
 - [x] [T4-09](phase-4-booking-schedule/T4-09-fe-schedule-day-view.md) Schedule day view with status actions · M
-- [ ] [T4-10](phase-4-booking-schedule/T4-10-fe-schedule-week-view.md) Schedule week view · S
+- [x] [T4-10](phase-4-booking-schedule/T4-10-fe-schedule-week-view.md) Schedule week view · S
 - [ ] [T4-11](phase-4-booking-schedule/T4-11-next-appointment-on-profile.md) Next appointment on the patient profile · S
 
 ## Phase 5 — Visits and payments (Module D)

@@ -305,6 +305,20 @@
     "noPatientMatch": "لا يوجد مريض مطابق.",
     "changePatient": "تغيير",
     "book": "حجز",
-    "bookedFor": "تم حجز موعد لـ {{name}}."
+    "bookedFor": "تم حجز موعد لـ {{name}}.",
+    "view": "طريقة العرض",
+    "day": "يوم",
+    "week": "أسبوع",
+    "weekOf": "{{from}} – {{to}}",
+    "previousWeek": "الأسبوع السابق",
+    "nextWeek": "الأسبوع التالي",
+    "thisWeek": "هذا الأسبوع",
+    "openDay": "فتح يوم {{day}}",
+    "count_zero": "لا مواعيد",
+    "count_one": "موعد واحد",
+    "count_two": "موعدان",
+    "count_few": "{{count}} مواعيد",
+    "count_many": "{{count}} موعدًا",
+    "count_other": "{{count}} موعد"
   }
 }

@@ -194,6 +194,78 @@ describe('Schedule: day view', () => {
   })
 })
 
+describe('Schedule: week view', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-10-05T05:00:00Z')) // Monday 08:00 in Cairo
+  })
+
+  afterEach(() => vi.useRealTimers())
+
+  it('shows seven columns from Saturday with each day’s appointments', async () => {
+    const server = fakeServer([
+      appt(1, '2026-10-05', '17:00', '17:45', MONA),
+      appt(2, '2026-10-07', '18:30', '19:15', AHMED, 'cancelled'),
+      appt(3, '2026-10-07', '17:00', '17:45', MONA, 'checked_in'),
+      appt(4, '2026-10-12', '17:00', '17:45', AHMED), // next week
+    ])
+    renderSchedule()
+
+    await screen.findByRole('list', { name: 'Appointments' })
+    await userEvent.click(screen.getByRole('button', { name: 'Week' }))
+
+    expect(await screen.findByRole('heading', { name: '3 Oct 2026 – 9 Oct 2026' })).toBeInTheDocument()
+    expect(server.getSchedule).toHaveBeenLastCalledWith({ from: '2026-10-03', to: '2026-10-09' })
+    const columns = screen.getAllByRole('region')
+    expect(columns.map((c) => c.getAttribute('aria-label'))).toEqual([
+      'Saturday 3 Oct 2026',
+      'Sunday 4 Oct 2026',
+      'Monday 5 Oct 2026',
+      'Tuesday 6 Oct 2026',
+      'Wednesday 7 Oct 2026',
+      'Thursday 8 Oct 2026',
+      'Friday 9 Oct 2026',
+    ])
+    expect(columns[2]).toHaveTextContent('17:00 Mona Ali')
+    expect(columns[2]).toHaveTextContent('1 appointment')
+    expect(within(columns[4]).getAllByRole('listitem').map((li) => li.textContent)).toEqual([
+      expect.stringContaining('17:00 Mona Ali'),
+      expect.stringContaining('18:30 Ahmed Hassan'),
+    ])
+    expect(columns[4]).toHaveTextContent('1 appointment') // the cancelled one is not counted
+    expect(columns[0]).toHaveTextContent('No appointments')
+    expect(screen.queryByText('Arrived')).not.toBeInTheDocument()
+  })
+
+  it('jumps into a day from the week', async () => {
+    fakeServer([appt(3, '2026-10-07', '17:00', '17:45', MONA)])
+    renderSchedule('/doctor/schedule?view=week')
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Open Wednesday 7 Oct 2026' }))
+
+    expect(await screen.findByRole('heading', { name: 'Wednesday · 7 Oct 2026' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Day' })).toHaveAttribute('aria-pressed', 'true')
+    expect(within(await screen.findByRole('list', { name: 'Appointments' })).getByRole('button', { name: 'Arrived' })).toBeInTheDocument()
+  })
+
+  it('moves a week at a time', async () => {
+    const server = fakeServer([appt(4, '2026-10-12', '17:00', '17:45', AHMED)])
+    renderSchedule('/doctor/schedule?view=week')
+
+    await screen.findByRole('heading', { name: '3 Oct 2026 – 9 Oct 2026' })
+    await userEvent.click(screen.getByRole('button', { name: 'Next week' }))
+
+    expect(await screen.findByRole('heading', { name: '10 Oct 2026 – 16 Oct 2026' })).toBeInTheDocument()
+    expect(server.getSchedule).toHaveBeenLastCalledWith({ from: '2026-10-10', to: '2026-10-16' })
+    expect(await screen.findByText('Ahmed Hassan')).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'This week' }))
+    expect(await screen.findByRole('heading', { name: '3 Oct 2026 – 9 Oct 2026' })).toBeInTheDocument()
+  })
+})
+
 describe('Schedule: auto-refresh', () => {
   beforeEach(() => {
     localStorage.clear()

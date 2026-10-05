@@ -305,6 +305,20 @@
     "noPatientMatch": "No matching patient.",
     "changePatient": "Change",
     "book": "Book",
-    "bookedFor": "Appointment booked for {{name}}."
+    "bookedFor": "Appointment booked for {{name}}.",
+    "view": "View",
+    "day": "Day",
+    "week": "Week",
+    "weekOf": "{{from}} – {{to}}",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "thisWeek": "This week",
+    "openDay": "Open {{day}}",
+    "count_zero": "No appointments",
+    "count_one": "{{count}} appointment",
+    "count_two": "{{count}} appointments",
+    "count_few": "{{count}} appointments",
+    "count_many": "{{count}} appointments",
+    "count_other": "{{count}} appointments"
   }
 }
