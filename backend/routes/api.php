@@ -18,4 +18,14 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
+
+    // Patient area: /api/v1/patient/* (profile, own appointments).
+    Route::prefix('patient')->middleware('role:patient')->name('patient.')->group(function () {
+        //
+    });
+
+    // Doctor area: /api/v1/doctor/* (patients, schedule, visits, settings, reports).
+    Route::prefix('doctor')->middleware('role:doctor')->name('doctor.')->group(function () {
+        //
+    });
 });

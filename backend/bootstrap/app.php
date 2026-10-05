@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
@@ -24,6 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // Global (not only the api group) so it runs before auth / throttle and
         // also for unknown URLs: every error message comes back translated.
         $middleware->append(SetLocale::class);
+
+        $middleware->alias(['role' => EnsureRole::class]);
 
         // There is no web login page; API guests get a JSON 401 instead of a redirect.
         $middleware->redirectGuestsTo(fn (Request $request) => $isApi($request) ? null : '/');

@@ -48,7 +48,7 @@ Backend
 - [x] [T1-07](phase-1-database-auth/T1-07-factories-and-seeders.md) Factories and seeders · M
 - [x] [T1-08](phase-1-database-auth/T1-08-api-response-conventions.md) API response and error conventions · S
 - [x] [T1-09](phase-1-database-auth/T1-09-auth-endpoints.md) Auth endpoints (register, login, logout, me) · M
-- [ ] [T1-10](phase-1-database-auth/T1-10-role-middleware.md) EnsureRole middleware and route groups · S
+- [x] [T1-10](phase-1-database-auth/T1-10-role-middleware.md) EnsureRole middleware and route groups · S
 
 Frontend
 - [ ] [T1-11](phase-1-database-auth/T1-11-frontend-api-client.md) API client with token interceptor · S
