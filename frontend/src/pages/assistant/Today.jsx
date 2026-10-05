@@ -23,25 +23,27 @@ function WaitingToPay() {
     <>
       <ul aria-label={t('desk.waitingList')} className="divide-y divide-slate-100">
         {data.map((visit) => (
-          <li key={visit.id} className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center">
-            <div className="min-w-0 flex-1">
+          <li key={visit.id} className="space-y-2 py-3">
+            <div className="flex flex-wrap items-center gap-2">
               <Link to={`/assistant/patients/${visit.patient.id}`} className="font-semibold text-sky-800 hover:underline">
                 {visit.patient.name}
               </Link>
-              <p className="text-sm text-slate-500">
-                {t('desk.total', { amount: formatMoney(visit.total_amount) })} · {t('desk.paid', { amount: formatMoney(visit.paid) })}
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
               <PaymentStatusBadge status={visit.payment_status} />
-              <span className="text-end">
-                <span className="block text-xs text-slate-500">{t('desk.remaining')}</span>
-                <span className="font-bold text-slate-900">{formatMoney(visit.remaining)}</span>
+              <span className="ms-auto text-end">
+                <span className="me-1 text-xs text-slate-500">{t('desk.remaining')}</span>
+                <span className="whitespace-nowrap font-bold text-slate-900">{formatMoney(visit.remaining)}</span>
               </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-sm text-slate-500">
+                <span className="whitespace-nowrap">{t('desk.total', { amount: formatMoney(visit.total_amount) })}</span>
+                {' · '}
+                <span className="whitespace-nowrap">{t('desk.paid', { amount: formatMoney(visit.paid) })}</span>
+              </p>
               <button
                 type="button"
                 onClick={() => setPaying(visit)}
-                className="rounded-lg bg-sky-700 px-3 py-1.5 text-sm font-semibold text-white hover:bg-sky-800"
+                className="ms-auto rounded-lg bg-sky-700 px-3 py-1.5 text-sm font-semibold text-white hover:bg-sky-800"
               >
                 {t('desk.recordPayment')}
               </button>

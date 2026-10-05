@@ -4,6 +4,7 @@ use App\Enums\UserRole;
 use App\Models\MedicalHistoryEntry;
 use App\Models\Patient;
 use App\Models\User;
+use Database\Seeders\AssistantSeeder;
 use Database\Seeders\DoctorSeeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -48,6 +49,17 @@ it('gives every patient both visible and private history entries', function () {
             ->and($patient->medicalHistoryEntries->contains('patient_visible', false))->toBeTrue();
     });
     expect(MedicalHistoryEntry::count())->toBe(30);
+});
+
+it('seeds one active demo assistant, once', function () {
+    $this->seed();
+    $this->seed(AssistantSeeder::class);
+
+    $assistant = User::where('role', UserRole::Assistant)->sole();
+
+    expect($assistant->phone)->toBe(AssistantSeeder::PHONE)
+        ->and($assistant->is_active)->toBeTrue()
+        ->and(Hash::check('password', $assistant->password))->toBeTrue();
 });
 
 it('does not duplicate the doctor when run twice', function () {
