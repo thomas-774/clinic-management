@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import Card from '../../components/Card'
@@ -5,6 +6,7 @@ import { LoadError } from '../../components/QueryState'
 import StatCard from '../../components/StatCard'
 import { useReportSummary } from '../../hooks/useReports'
 import { formatDate, formatMoney, todayInClinic } from '../../utils/format'
+import OutstandingModal from './OutstandingModal'
 import DayView from './schedule/DayView'
 
 const PERIODS = [
@@ -41,6 +43,7 @@ export default function Dashboard() {
   const { t } = useTranslation()
   // Outstanding does not depend on the period; the "day" summary is already loaded.
   const today = useReportSummary('day')
+  const [showOwing, setShowOwing] = useState(false)
 
   return (
     <div className="space-y-6">
@@ -59,8 +62,9 @@ export default function Dashboard() {
           <StatCard
             label={t('dashboard.outstanding')}
             value={today.isPending ? '…' : formatMoney(today.data.outstanding)}
-            sub={t('dashboard.outstandingHint')}
+            sub={`${t('dashboard.outstandingHint')} ${t('dashboard.viewDetails')}`}
             tone="warning"
+            onClick={() => setShowOwing(true)}
           />
         )}
       </Card>
@@ -74,6 +78,8 @@ export default function Dashboard() {
         </div>
         <DayView date={todayInClinic()} compact />
       </section>
+
+      <OutstandingModal open={showOwing} onClose={() => setShowOwing(false)} />
     </div>
   )
 }

@@ -395,7 +395,15 @@
     "outstanding": "Still owed by patients",
     "outstandingHint": "Not included in revenue.",
     "queue": "Today's queue",
-    "openSchedule": "Open schedule"
+    "openSchedule": "Open schedule",
+    "viewDetails": "Click to see who owes",
+    "whoOwes": "Who owes money",
+    "patient": "Patient",
+    "phone": "Phone",
+    "unpaidVisits": "Unpaid visits",
+    "since": "Since",
+    "amountDue": "Amount due",
+    "nobodyOwes": "Nobody owes anything."
   },
   "reports": {
     "period": "Period",

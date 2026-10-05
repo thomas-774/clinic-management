@@ -395,7 +395,15 @@
     "outstanding": "المتبقي على المرضى",
     "outstandingHint": "غير محسوب ضمن الإيرادات.",
     "queue": "مواعيد اليوم",
-    "openSchedule": "فتح الجدول"
+    "openSchedule": "فتح الجدول",
+    "viewDetails": "اضغط لعرض المرضى المدينين",
+    "whoOwes": "المرضى المدينون",
+    "patient": "المريض",
+    "phone": "الهاتف",
+    "unpaidVisits": "زيارات غير مدفوعة",
+    "since": "منذ",
+    "amountDue": "المبلغ المستحق",
+    "nobodyOwes": "لا يوجد أي مبالغ مستحقة."
   },
   "reports": {
     "period": "الفترة",

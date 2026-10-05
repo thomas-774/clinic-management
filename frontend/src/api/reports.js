@@ -14,3 +14,6 @@ export const getReportPayments = ({ from, to, page = 1 }) =>
 
 /** month = "YYYY-MM" → [{ date, revenue }] for every day of the month. */
 export const getDailyRevenue = (month) => client.get('/doctor/reports/daily-revenue', { params: { month } }).then(data)
+
+/** { data: [{ patient_id, patient_name, phone, outstanding, unpaid_visits, oldest_visit_date }], meta: { total } }, largest balance first. */
+export const getOutstanding = () => client.get('/doctor/reports/outstanding').then((res) => res.data)

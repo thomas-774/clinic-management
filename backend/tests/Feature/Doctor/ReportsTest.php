@@ -158,6 +158,40 @@ describe('GET /doctor/reports/payments', function () {
     ]);
 });
 
+describe('GET /doctor/reports/outstanding', function () {
+    it('lists each patient who owes money, largest balance first, with the total', function () {
+        $b = $this->v2->patient;
+
+        $this->actingAs($this->doctor)->getJson('/api/v1/doctor/reports/outstanding')
+            ->assertOk()
+            ->assertExactJson([
+                'data' => [
+                    ['patient_id' => $this->a->id, 'patient_name' => 'Ahmed Hassan', 'phone' => $this->a->user->phone, 'outstanding' => '900.00', 'unpaid_visits' => 2, 'oldest_visit_date' => '2026-09-15'],
+                    ['patient_id' => $b->id, 'patient_name' => $b->user->name, 'phone' => $b->user->phone, 'outstanding' => '300.00', 'unpaid_visits' => 1, 'oldest_visit_date' => '2026-10-03'],
+                ],
+                'meta' => ['total' => '1200.00'],
+                'message' => null,
+            ]);
+    });
+
+    it('drops a patient once they have paid everything', function () {
+        $this->actingAs($this->doctor)->postJson("/api/v1/doctor/visits/{$this->v2->id}/payments", ['amount' => 300])->assertCreated();
+
+        $this->getJson('/api/v1/doctor/reports/outstanding')
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.patient_name', 'Ahmed Hassan')
+            ->assertJsonPath('meta.total', '900.00');
+    });
+
+    it('is empty when nobody owes anything', function () {
+        Payment::query()->delete();
+        Visit::query()->delete();
+
+        $this->actingAs($this->doctor)->getJson('/api/v1/doctor/reports/outstanding')
+            ->assertExactJson(['data' => [], 'meta' => ['total' => '0.00'], 'message' => null]);
+    });
+});
+
 describe('GET /doctor/reports/daily-revenue', function () {
     it('gives every day of the month with 0.00 on quiet days', function () {
         $res = $this->actingAs($this->doctor)->getJson('/api/v1/doctor/reports/daily-revenue?month=2026-10')
@@ -200,6 +234,7 @@ describe('permissions', function () {
         '/api/v1/doctor/reports/summary?period=day',
         '/api/v1/doctor/reports/payments',
         '/api/v1/doctor/reports/daily-revenue',
+        '/api/v1/doctor/reports/outstanding',
     ]);
 
     it('needs a token', function () {

@@ -57,6 +57,35 @@ class ReportService
     }
 
     /**
+     * Who owes what: one row per patient with an unpaid balance, largest
+     * first. outstanding = sum of remaining over the patient's unpaid visits.
+     *
+     * @return list<array{patient_id: int, patient_name: string, phone: string, outstanding: string, unpaid_visits: int, oldest_visit_date: string}>
+     */
+    public function outstandingByPatient(): array
+    {
+        $unpaid = Visit::query()
+            ->withPaid()
+            ->with('patient.user:id,name,phone')
+            ->havingRaw('total_amount > COALESCE(payments_sum_amount, 0)')
+            ->orderBy('visit_date')
+            ->get();
+
+        $rows = $unpaid->groupBy('patient_id')->map(fn ($visits) => [
+            'patient_id' => $visits->first()->patient_id,
+            'patient_name' => $visits->first()->patient->user->name,
+            'phone' => $visits->first()->patient->user->phone,
+            'outstanding' => $this->payments->sumRemaining($visits),
+            'unpaid_visits' => $visits->count(),
+            'oldest_visit_date' => $visits->first()->visit_date->format('Y-m-d'),
+        ]);
+
+        return $rows->sort(fn ($a, $b) => bccomp($b['outstanding'], $a['outstanding'], 2) ?: strcmp($a['patient_name'], $b['patient_name']))
+            ->values()
+            ->all();
+    }
+
+    /**
      * FR-H.3: the payments of the visits dated in the period, newest visit
      * first, with what the table needs loaded. Returned as a query so the
      * caller can paginate; turn each model into a row with paymentRow().

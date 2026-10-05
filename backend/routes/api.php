@@ -71,6 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/reports/summary', [ReportController::class, 'summary'])->name('reports.summary');
         Route::get('/reports/payments', [ReportController::class, 'payments'])->name('reports.payments');
+        Route::get('/reports/outstanding', [ReportController::class, 'outstanding'])->name('reports.outstanding');
         Route::get('/reports/daily-revenue', [ReportController::class, 'dailyRevenue'])->name('reports.daily-revenue');
     });
 });

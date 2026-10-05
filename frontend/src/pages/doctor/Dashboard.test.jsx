@@ -6,7 +6,8 @@ import * as appointmentsApi from '../../api/appointments'
 import * as authApi from '../../api/auth'
 import { tokenStorage } from '../../api/client'
 import * as reportsApi from '../../api/reports'
-import { renderAppAt } from '../../test/renderApp'
+import * as patientsApi from '../../api/doctorPatients'
+import { expectPath, renderAppAt } from '../../test/renderApp'
 
 const MONA = { id: 1, name: 'Mona Ali', phone: '01011112222' }
 const AHMED = { id: 2, name: 'Ahmed Hassan', phone: '01233334444' }
@@ -90,6 +91,43 @@ describe('Dashboard', () => {
     for (const name of ['Today', 'This week', 'This month']) {
       expect(within(group(name)).queryByText(/still owed/i)).not.toBeInTheDocument()
     }
+  })
+
+  it('opens the list of who owes what when the outstanding card is clicked', async () => {
+    fakeReports()
+    const owing = vi.spyOn(reportsApi, 'getOutstanding').mockResolvedValue({
+      data: [
+        { patient_id: 1, patient_name: 'Mona Ali', phone: '01011112222', outstanding: '900.00', unpaid_visits: 2, oldest_visit_date: '2026-09-15' },
+        { patient_id: 2, patient_name: 'Ahmed Hassan', phone: '01233334444', outstanding: '300.00', unpaid_visits: 1, oldest_visit_date: '2026-10-03' },
+      ],
+      meta: { total: '1200.00' },
+    })
+    vi.spyOn(patientsApi, 'getPatient').mockReturnValue(new Promise(() => {}))
+    renderDashboard()
+
+    expect(owing).not.toHaveBeenCalled() // only loaded on demand
+    await userEvent.click(await screen.findByRole('button', { name: /Still owed by patients/ }))
+
+    const dialog = await screen.findByRole('dialog', { name: 'Who owes money' })
+    const rows = await within(dialog).findAllByRole('row')
+    const text = (row) => row.textContent.replace(/\s/g, ' ')
+    expect(text(rows[1])).toBe('Mona Ali01011112222215 Sept 2026EGP 900.00')
+    expect(text(rows[2])).toBe('Ahmed Hassan0123333444413 Oct 2026EGP 300.00')
+    expect(text(rows[3])).toBe('TotalEGP 1,200.00')
+
+    await userEvent.click(within(dialog).getByRole('link', { name: 'Mona Ali' }))
+    await expectPath('/doctor/patients/1')
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('says so when nobody owes anything', async () => {
+    fakeReports()
+    vi.spyOn(reportsApi, 'getOutstanding').mockResolvedValue({ data: [], meta: { total: '0.00' } })
+    renderDashboard()
+
+    await userEvent.click(await screen.findByRole('button', { name: /Still owed by patients/ }))
+
+    expect(await screen.findByText('Nobody owes anything.')).toBeInTheDocument()
   })
 
   it("lists today's queue with status and quick actions, without phone numbers", async () => {

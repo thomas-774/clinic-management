@@ -76,6 +76,19 @@ class ReportController extends Controller
     }
 
     /**
+     * GET /doctor/reports/outstanding — every patient who still owes money,
+     * largest balance first, with the grand total in meta (FR-H.2 details).
+     */
+    public function outstanding(): JsonResponse
+    {
+        return response()->json([
+            'data' => $this->reports->outstandingByPatient(),
+            'meta' => ['total' => $this->reports->outstanding()],
+            'message' => null,
+        ]);
+    }
+
+    /**
      * GET /doctor/reports/daily-revenue?month=YYYY-MM — one row per day,
      * 0.00 on days without payments (FR-H.4). The default is this month.
      */

@@ -17,3 +17,4 @@
 ## Change after review (2026-10-05)
 - [x] Client decision, replacing PR-4 / PR-5: a visit's money counts on the visit's date (all its payments, including installments paid later), and the cards count visits instead of distinct patients. A visit for an appointment takes the appointment's date; a walk-in takes today.
   - The cards show "Visits"; the Reports table's first column is the visit date, with "paid on …" under an amount paid on another day.
+- [x] Client request: clicking the outstanding balances card opens "Who owes money" — each patient with an unpaid balance (phone, unpaid visits, oldest unpaid visit, amount due), largest first, with a total; names link to the patient. Backed by `GET /doctor/reports/outstanding`.
