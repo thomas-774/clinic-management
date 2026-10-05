@@ -48,4 +48,40 @@ class Drug extends Model
     {
         $query->where('is_active', true);
     }
+
+    /**
+     * Trade name or an active ingredient name contains $search, case-insensitive.
+     * The ingredient names are read as one JSON array string, lower-cased, so
+     * no extra column is needed (MySQL 8).
+     */
+    public function scopeMatching(Builder $query, string $search): void
+    {
+        $like = '%'.mb_strtolower(addcslashes($search, '\\%_')).'%';
+
+        $query->where(fn ($q) => $q
+            ->where('trade_name', 'like', $like)
+            ->orWhereRaw("LOWER(CAST(JSON_EXTRACT(active_ingredients, '$[*].name') AS CHAR)) LIKE ?", [$like]));
+    }
+
+    /**
+     * Typeahead order (FR-J.2): trade name starts with $search, then trade name
+     * contains it, then only an ingredient matches; ties by trade name.
+     */
+    public function scopeRankedFor(Builder $query, string $search): void
+    {
+        $escaped = addcslashes($search, '\\%_');
+
+        $query
+            ->orderByRaw('CASE WHEN trade_name LIKE ? THEN 0 WHEN trade_name LIKE ? THEN 1 ELSE 2 END', [$escaped.'%', '%'.$escaped.'%'])
+            ->orderBy('trade_name')
+            ->orderBy('id');
+    }
+
+    /**
+     * The first line of `uses`, shown under each search suggestion.
+     */
+    public function shortUse(): string
+    {
+        return trim(strtok((string) $this->uses, "\r\n") ?: '');
+    }
 }

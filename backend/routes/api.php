@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\Assistant\ScheduleController as AssistantSchedul
 use App\Http\Controllers\Api\V1\Assistant\VisitController as AssistantVisitController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\Doctor\BlockedTimeController;
+use App\Http\Controllers\Api\V1\Doctor\DrugController;
 use App\Http\Controllers\Api\V1\Doctor\MedicalHistoryController;
 use App\Http\Controllers\Api\V1\Doctor\PatientController;
 use App\Http\Controllers\Api\V1\Doctor\ReportController;
@@ -44,7 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/appointments/{appointment}/cancel', [PatientAppointmentController::class, 'cancel'])->name('appointments.cancel');
     });
 
-    // Doctor area: /api/v1/doctor/* (patients, schedule, visits, settings, reports).
+    // Doctor area: /api/v1/doctor/* (patients, schedule, visits, settings, reports, drugs).
     Route::prefix('doctor')->middleware('role:doctor')->name('doctor.')->group(function () {
         Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
         Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
@@ -75,6 +76,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/blocked-times', [BlockedTimeController::class, 'index'])->name('blocked-times.index');
         Route::post('/blocked-times', [BlockedTimeController::class, 'store'])->name('blocked-times.store');
         Route::delete('/blocked-times/{blockedTime}', [BlockedTimeController::class, 'destroy'])->name('blocked-times.destroy');
+
+        Route::get('/drugs/search', [DrugController::class, 'search'])->name('drugs.search');
+        Route::get('/drugs', [DrugController::class, 'index'])->name('drugs.index');
+        Route::post('/drugs', [DrugController::class, 'store'])->name('drugs.store');
+        Route::get('/drugs/{drug}', [DrugController::class, 'show'])->name('drugs.show');
+        Route::put('/drugs/{drug}', [DrugController::class, 'update'])->name('drugs.update');
 
         Route::get('/reports/summary', [ReportController::class, 'summary'])->name('reports.summary');
         Route::get('/reports/payments', [ReportController::class, 'payments'])->name('reports.payments');

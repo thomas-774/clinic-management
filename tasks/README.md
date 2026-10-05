@@ -162,7 +162,7 @@ Built before Phase 7. The drug catalogue comes from `Drugs-for-Dentistry.pdf` (n
 Backend and data
 - [x] [T9-01](phase-9-prescriptions/T9-01-drugs-table.md) Drugs table and model · S
 - [x] [T9-02](phase-9-prescriptions/T9-02-transcribe-pdf-catalogue.md) Transcribe the PDF into the drug seed file · L
-- [ ] [T9-03](phase-9-prescriptions/T9-03-drug-search-api.md) Drug search and catalogue API · M
+- [x] [T9-03](phase-9-prescriptions/T9-03-drug-search-api.md) Drug search and catalogue API · M
 - [ ] [T9-04](phase-9-prescriptions/T9-04-prescriptions-tables.md) Prescriptions tables and models · S
 - [ ] [T9-06](phase-9-prescriptions/T9-06-print-header-settings.md) Prescription print header in doctor settings · S
 - [ ] [T9-05](phase-9-prescriptions/T9-05-prescriptions-api.md) Prescriptions API · M
