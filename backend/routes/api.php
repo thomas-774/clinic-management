@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\Doctor\PatientController;
 use App\Http\Controllers\Api\V1\Doctor\ReportController;
 use App\Http\Controllers\Api\V1\Doctor\ScheduleController;
 use App\Http\Controllers\Api\V1\Doctor\SettingsController;
+use App\Http\Controllers\Api\V1\Doctor\StaffController;
 use App\Http\Controllers\Api\V1\Doctor\VisitController;
 use App\Http\Controllers\Api\V1\Doctor\WorkingHoursController;
 use App\Http\Controllers\Api\V1\Patient\AppointmentController as PatientAppointmentController;
@@ -65,6 +66,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
         Route::get('/working-hours', [WorkingHoursController::class, 'index'])->name('working-hours.index');
         Route::put('/working-hours', [WorkingHoursController::class, 'update'])->name('working-hours.update');
+        Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
+        Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
+        Route::put('/staff/{staff}', [StaffController::class, 'update'])->name('staff.update');
         Route::get('/blocked-times', [BlockedTimeController::class, 'index'])->name('blocked-times.index');
         Route::post('/blocked-times', [BlockedTimeController::class, 'store'])->name('blocked-times.store');
         Route::delete('/blocked-times/{blockedTime}', [BlockedTimeController::class, 'destroy'])->name('blocked-times.destroy');

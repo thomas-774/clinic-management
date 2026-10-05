@@ -139,7 +139,7 @@ Built before Phase 7. The doctor sets the visit total; the assistant registers p
 
 Backend
 - [x] [T8-01](phase-8-assistant/T8-01-role-and-account-status.md) Assistant role and account status · S
-- [ ] [T8-02](phase-8-assistant/T8-02-staff-endpoints.md) Doctor: staff (assistant) endpoints · M
+- [x] [T8-02](phase-8-assistant/T8-02-staff-endpoints.md) Doctor: staff (assistant) endpoints · M
 - [ ] [T8-03](phase-8-assistant/T8-03-payment-recorded-by.md) Who recorded each payment · S
 - [ ] [T8-04](phase-8-assistant/T8-04-assistant-patients-api.md) Assistant: patients API (contact + money only) · M
 - [ ] [T8-05](phase-8-assistant/T8-05-assistant-payments-api.md) Assistant: waiting-to-pay list and record payment · S

@@ -12,6 +12,7 @@ use App\Http\Resources\PatientListItemResource;
 use App\Http\Resources\PatientResource;
 use App\Models\Patient;
 use App\Models\User;
+use App\Support\InitialPassword;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,11 +21,6 @@ use Illuminate\Support\Facades\Gate;
 class PatientController extends Controller
 {
     public const PER_PAGE = 20;
-
-    /**
-     * Letters and digits that cannot be confused when read out over the phone.
-     */
-    private const PASSWORD_ALPHABET = 'abcdefghjkmnpqrstuvwxyz23456789';
 
     /**
      * GET /doctor/patients?search= — search by name or phone, sorted by name (FR-C.1).
@@ -62,7 +58,7 @@ class PatientController extends Controller
     {
         Gate::authorize('create', Patient::class);
 
-        $password = $this->initialPassword();
+        $password = InitialPassword::generate();
 
         $patient = DB::transaction(function () use ($request, $password) {
             $user = User::create([
@@ -107,14 +103,5 @@ class PatientController extends Controller
 
         return PatientDetailResource::make($patient->refresh()->load('user'))
             ->withMessage(__('Patient updated.'));
-    }
-
-    private function initialPassword(int $length = 8): string
-    {
-        $alphabet = self::PASSWORD_ALPHABET;
-
-        return collect(range(1, $length))
-            ->map(fn () => $alphabet[random_int(0, strlen($alphabet) - 1)])
-            ->implode('');
     }
 }
