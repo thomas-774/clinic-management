@@ -4,9 +4,9 @@
 **Plan refs:** §8 Phase 6 (week starts Saturday)
 
 ## Steps
-- [ ] Add `config/clinic.php` with `week_start => Carbon::SATURDAY`, `currency => 'EGP'`.
-- [ ] `Period::for('day'|'week'|'month', ?Carbon $ref): [from, to]` in Africa/Cairo time.
-- [ ] Unit tests: a Friday belongs to the week that started the previous Saturday; month boundaries (31st → 1st).
+- [x] Add `config/clinic.php` with `week_start => Carbon::SATURDAY`, `currency => 'EGP'`.
+- [x] `Period::for('day'|'week'|'month', ?Carbon $ref): [from, to]` in Africa/Cairo time.
+- [x] Unit tests: a Friday belongs to the week that started the previous Saturday; month boundaries (31st → 1st).
 
 ## Done when
-- [ ] Period tests pass.
+- [x] Period tests pass.

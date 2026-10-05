@@ -123,7 +123,7 @@ Frontend
 ## Phase 6 — Dashboard and reports (Module H)
 
 Backend
-- [ ] [T6-01](phase-6-dashboard-reports/T6-01-period-helper.md) Period helper and week-start config · S
+- [x] [T6-01](phase-6-dashboard-reports/T6-01-period-helper.md) Period helper and week-start config · S
 - [ ] [T6-02](phase-6-dashboard-reports/T6-02-report-service.md) ReportService aggregates and tests · M
 - [ ] [T6-03](phase-6-dashboard-reports/T6-03-report-endpoints.md) Report endpoints · M
 

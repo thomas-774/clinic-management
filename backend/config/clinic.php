@@ -1,6 +1,22 @@
 <?php
 
+use Carbon\CarbonInterface;
+
 return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Calendar and money
+    |--------------------------------------------------------------------------
+    |
+    | The week starts on Saturday in Egypt (§8 Phase 6); reports and the
+    | dashboard read this one value. Amounts are in EGP (PR-6).
+    |
+    */
+
+    'week_start' => CarbonInterface::SATURDAY,
+
+    'currency' => 'EGP',
 
     /*
     |--------------------------------------------------------------------------
