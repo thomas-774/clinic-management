@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api\V1\Doctor;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Doctor\StorePatientRequest;
+use App\Http\Requests\Doctor\UpdatePatientRequest;
 use App\Http\Resources\ApiResourceCollection;
+use App\Http\Resources\PatientDetailResource;
 use App\Http\Resources\PatientListItemResource;
 use App\Http\Resources\PatientResource;
 use App\Models\Patient;
@@ -79,6 +81,32 @@ class PatientController extends Controller
             ->withMessage(__('Patient account created.'))
             ->response()
             ->setStatusCode(201);
+    }
+
+    /**
+     * GET /doctor/patients/{patient} — full profile with detailed history (FR-C.2, C.3).
+     */
+    public function show(Patient $patient): PatientDetailResource
+    {
+        Gate::authorize('view', $patient);
+
+        return PatientDetailResource::make($patient->load('user'));
+    }
+
+    /**
+     * PUT /doctor/patients/{patient} — info and current illness (FR-C.2).
+     */
+    public function update(UpdatePatientRequest $request, Patient $patient): PatientDetailResource
+    {
+        Gate::authorize('update', $patient);
+
+        DB::transaction(function () use ($request, $patient) {
+            $patient->user->update($request->safe()->only(['name', 'phone']));
+            $patient->update($request->safe()->only(['address', 'date_of_birth', 'gender', 'current_illness']));
+        });
+
+        return PatientDetailResource::make($patient->refresh()->load('user'))
+            ->withMessage(__('Patient updated.'));
     }
 
     private function initialPassword(int $length = 8): string

@@ -31,5 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('doctor')->middleware('role:doctor')->name('doctor.')->group(function () {
         Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
         Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
+        Route::get('/patients/{patient}', [PatientController::class, 'show'])->name('patients.show');
+        Route::put('/patients/{patient}', [PatientController::class, 'update'])->name('patients.update');
     });
 });
