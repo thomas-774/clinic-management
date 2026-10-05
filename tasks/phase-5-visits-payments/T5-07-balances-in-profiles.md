@@ -4,9 +4,10 @@
 **Plan refs:** FR-C.5, FR-D.5, FR-D.7, FR-B.4
 
 ## Steps
-- [ ] `GET /doctor/patients/{id}`: fill `visits` (newest first, each with payments, paid, remaining, status) + `outstanding_balance`.
-- [ ] `GET /patient/profile`: fill `outstanding_balance` and a list of visits with an unpaid balance (date, remaining). Do **not** expose `work_done` unless the client wants it (confirm).
-- [ ] Avoid N+1 queries (eager load + `withSum`).
+- [x] `GET /doctor/patients/{id}`: fill `visits` (newest first, each with payments, paid, remaining, status) + `outstanding_balance`.
+- [x] `GET /patient/profile`: fill `outstanding_balance` and a list of visits with an unpaid balance (date, remaining). Do **not** expose `work_done` unless the client wants it (confirm).
+  - Note: `work_done` is not exposed to the patient (only `unpaid_visits: [{ id, visit_date, remaining }]`). Still to confirm with the client whether patients should see it.
+- [x] Avoid N+1 queries (eager load + `withSum`).
 
 ## Done when
-- [ ] Both endpoints show the same outstanding balance for a patient.
+- [x] Both endpoints show the same outstanding balance for a patient.

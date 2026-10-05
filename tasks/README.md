@@ -112,7 +112,7 @@ Backend
 - [x] [T5-04](phase-5-visits-payments/T5-04-update-visit-endpoint.md) PUT /doctor/visits/{id} · S
 - [x] [T5-05](phase-5-visits-payments/T5-05-add-payment-endpoint.md) Add payment (installments) · S
 - [x] [T5-06](phase-5-visits-payments/T5-06-visit-payment-feature-tests.md) Feature tests: visits and payments · M
-- [ ] [T5-07](phase-5-visits-payments/T5-07-balances-in-profiles.md) Visits and balances in the profile endpoints · S
+- [x] [T5-07](phase-5-visits-payments/T5-07-balances-in-profiles.md) Visits and balances in the profile endpoints · S
 
 Frontend
 - [ ] [T5-08](phase-5-visits-payments/T5-08-fe-visit-form.md) MoneyField and VisitForm · M

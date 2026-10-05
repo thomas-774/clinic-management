@@ -61,8 +61,22 @@ class PaymentService
      */
     public function outstandingFor(Patient $patient): string
     {
-        return $patient->visits()->withPaid()->get()
-            ->reduce(fn (string $sum, Visit $visit) => bcadd($sum, $this->remaining($visit), self::SCALE), '0.00');
+        return $this->sumRemaining($patient->visits()->withPaid()->get());
+    }
+
+    /**
+     * Sum of remaining over visits already loaded (ideally with withPaid()).
+     *
+     * @param  iterable<Visit>  $visits
+     */
+    public function sumRemaining(iterable $visits): string
+    {
+        $sum = '0.00';
+        foreach ($visits as $visit) {
+            $sum = bcadd($sum, $this->remaining($visit), self::SCALE);
+        }
+
+        return $sum;
     }
 
     /**
