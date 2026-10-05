@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\Doctor\PatientController;
 use App\Http\Controllers\Api\V1\Doctor\SettingsController;
 use App\Http\Controllers\Api\V1\Doctor\WorkingHoursController;
 use App\Http\Controllers\Api\V1\Patient\ProfileController;
+use App\Http\Controllers\Api\V1\SlotController;
 use Illuminate\Support\Facades\Route;
 
 // All routes are prefixed with /api/v1 (bootstrap/app.php).
@@ -24,6 +25,7 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
+    Route::get('/slots', [SlotController::class, 'index'])->middleware('role:patient,doctor')->name('slots.index');
 
     // Patient area: /api/v1/patient/* (profile, own appointments).
     Route::prefix('patient')->middleware('role:patient')->name('patient.')->group(function () {

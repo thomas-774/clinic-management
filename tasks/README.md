@@ -79,7 +79,7 @@ Backend
 - [x] [T3-03](phase-3-availability-slots/T3-03-blocked-times-endpoints.md) Blocked times endpoints · S
 - [x] [T3-04](phase-3-availability-slots/T3-04-slot-service.md) SlotService::generate() · M
 - [x] [T3-05](phase-3-availability-slots/T3-05-slot-service-tests.md) Unit tests for SlotService · M
-- [ ] [T3-06](phase-3-availability-slots/T3-06-slots-endpoint.md) GET /slots endpoint · S
+- [x] [T3-06](phase-3-availability-slots/T3-06-slots-endpoint.md) GET /slots endpoint · S
 
 Frontend
 - [ ] [T3-07](phase-3-availability-slots/T3-07-fe-settings-hours-duration.md) Settings: weekly hours and duration · M
