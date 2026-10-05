@@ -396,5 +396,25 @@
     "outstandingHint": "Not included in revenue.",
     "queue": "Today's queue",
     "openSchedule": "Open schedule"
+  },
+  "reports": {
+    "period": "Period",
+    "periods": {
+      "day": "Today",
+      "week": "This week",
+      "month": "This month",
+      "custom": "Custom range"
+    },
+    "from": "From",
+    "to": "To",
+    "invalidRange": "The end date cannot be before the start date.",
+    "payments": "Payments",
+    "date": "Date",
+    "patient": "Patient",
+    "visitTotal": "Visit total",
+    "paid": "Paid",
+    "remaining": "Remaining",
+    "totals": "Total",
+    "empty": "No payments in this period."
   }
 }

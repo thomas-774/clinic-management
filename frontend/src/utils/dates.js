@@ -20,6 +20,12 @@ export function weekStart(date) {
   return addDays(date, -((dayOfWeek(date) + 1) % 7))
 }
 
+/** First and last date of the month that contains `date`. */
+export function monthRange(date) {
+  const day = dayjs(date)
+  return { from: day.startOf('month').format(FORMAT), to: day.endOf('month').format(FORMAT) }
+}
+
 /** `count` consecutive dates starting at `date`. */
 export function dateRange(date, count) {
   return Array.from({ length: count }, (_, i) => addDays(date, i))

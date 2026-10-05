@@ -6,8 +6,9 @@ import { Link, useNavigate } from 'react-router-dom'
  * - columns: [{ key, header, render?(row), className? }]
  * - rowHref(row): makes the first cell a link and the whole row clickable
  * - pagination: { page, lastPage, onPageChange } (hidden for a single page)
+ * - footer: { [column key]: content } for a totals row under the body
  */
-export default function DataTable({ columns, rows, rowHref, emptyMessage, pagination, onRowClick }) {
+export default function DataTable({ columns, rows, rowHref, emptyMessage, pagination, onRowClick, footer }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
@@ -55,6 +56,17 @@ export default function DataTable({ columns, rows, rowHref, emptyMessage, pagina
               </tr>
             ))}
           </tbody>
+          {footer && (
+            <tfoot className="border-t-2 border-slate-200 bg-slate-50 font-semibold text-slate-900">
+              <tr>
+                {columns.map((column) => (
+                  <td key={column.key} className={`px-4 py-3 ${column.className ?? ''}`}>
+                    {footer[column.key]}
+                  </td>
+                ))}
+              </tr>
+            </tfoot>
+          )}
         </table>
       </div>
 

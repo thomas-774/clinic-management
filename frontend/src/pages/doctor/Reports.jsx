@@ -1,7 +1,130 @@
 import { useTranslation } from 'react-i18next'
-import PagePlaceholder from '../../components/PagePlaceholder'
+import { Link, useSearchParams } from 'react-router-dom'
+import DataTable from '../../components/DataTable'
+import { LoadError, Loading } from '../../components/QueryState'
+import { useReportPayments } from '../../hooks/useReports'
+import { addDays, monthRange, weekStart } from '../../utils/dates'
+import { formatDate, formatMoney, todayInClinic } from '../../utils/format'
 
+const PERIODS = ['day', 'week', 'month', 'custom']
+const DATE = /^\d{4}-\d{2}-\d{2}$/
+
+/** [from, to] for a period, as inclusive "YYYY-MM-DD" dates in clinic time. */
+function rangeOf(period, today, params) {
+  if (period === 'day') return { from: today, to: today }
+  if (period === 'week') return { from: weekStart(today), to: addDays(weekStart(today), 6) }
+  const month = monthRange(today)
+  if (period === 'month') return month
+  return { from: params.get('from') ?? month.from, to: params.get('to') ?? month.to }
+}
+
+const dateInput =
+  'rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-200'
+
+/**
+ * Reports (FR-H.3): a period filter kept in the URL (?period=day|week|custom,
+ * this month by default; ?from=&to= for a custom range; ?page=) and the
+ * payments table with a totals row for the whole range.
+ */
 export default function Reports() {
   const { t } = useTranslation()
-  return <PagePlaceholder title={t('pages.reports')} />
+  const [params, setParams] = useSearchParams()
+  const period = PERIODS.includes(params.get('period')) ? params.get('period') : 'month'
+  const { from, to } = rangeOf(period, todayInClinic(), params)
+  const page = Math.max(1, Number(params.get('page')) || 1)
+  const validRange = DATE.test(from) && DATE.test(to) && from <= to
+
+  const choosePeriod = (next) => {
+    if (next === 'month') setParams({})
+    else if (next === 'custom') setParams({ period: 'custom', from, to })
+    else setParams({ period: next })
+  }
+  const setCustom = (field, value) => setParams({ period: 'custom', from, to, [field]: value })
+  const goToPage = (next) => {
+    const nextParams = new URLSearchParams(params)
+    nextParams.set('page', String(next))
+    setParams(nextParams)
+  }
+
+  const payments = useReportPayments({ from, to, page }, { enabled: validRange })
+
+  const columns = [
+    { key: 'paid_at', header: t('reports.date'), render: (row) => formatDate(row.paid_at), className: 'whitespace-nowrap' },
+    {
+      key: 'patient',
+      header: t('reports.patient'),
+      render: (row) => (
+        <Link to={`/doctor/patients/${row.patient_id}`} className="font-medium text-sky-800 hover:underline">
+          {row.patient_name}
+        </Link>
+      ),
+    },
+    { key: 'visit_total', header: t('reports.visitTotal'), render: (row) => formatMoney(row.visit_total), className: 'whitespace-nowrap' },
+    { key: 'paid', header: t('reports.paid'), render: (row) => formatMoney(row.paid), className: 'whitespace-nowrap' },
+    { key: 'remaining', header: t('reports.remaining'), render: (row) => formatMoney(row.remaining), className: 'whitespace-nowrap' },
+  ]
+
+  const totals = payments.data?.meta.totals
+
+  return (
+    <div className="space-y-4">
+      <h1 className="text-2xl font-bold text-slate-900">{t('pages.reports')}</h1>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <div role="group" aria-label={t('reports.period')} className="flex flex-wrap rounded-lg bg-slate-100 p-0.5">
+          {PERIODS.map((option) => (
+            <button
+              key={option}
+              type="button"
+              aria-pressed={period === option}
+              onClick={() => choosePeriod(option)}
+              className={`rounded-md px-3 py-1 text-sm font-semibold ${period === option ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'}`}
+            >
+              {t(`reports.periods.${option}`)}
+            </button>
+          ))}
+        </div>
+
+        {period === 'custom' ? (
+          <div className="flex flex-wrap items-center gap-2 text-sm text-slate-700">
+            <label className="flex items-center gap-2">
+              {t('reports.from')}
+              <input type="date" value={from} max={to} onChange={(e) => setCustom('from', e.target.value)} className={dateInput} />
+            </label>
+            <label className="flex items-center gap-2">
+              {t('reports.to')}
+              <input type="date" value={to} min={from} onChange={(e) => setCustom('to', e.target.value)} className={dateInput} />
+            </label>
+          </div>
+        ) : (
+          <p className="text-sm text-slate-600">{from === to ? formatDate(from) : t('dashboard.range', { from: formatDate(from), to: formatDate(to) })}</p>
+        )}
+      </div>
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold text-slate-900">{t('reports.payments')}</h2>
+        {!validRange ? (
+          <p role="alert" className="rounded-xl bg-amber-50 p-4 text-amber-800">
+            {t('reports.invalidRange')}
+          </p>
+        ) : payments.isPending ? (
+          <Loading />
+        ) : payments.isError ? (
+          <LoadError onRetry={payments.refetch} />
+        ) : (
+          <DataTable
+            columns={columns}
+            rows={payments.data.data}
+            emptyMessage={t('reports.empty')}
+            pagination={{ page: payments.data.meta.current_page, lastPage: payments.data.meta.last_page, onPageChange: goToPage }}
+            footer={{
+              paid_at: t('reports.totals'),
+              paid: formatMoney(totals.paid),
+              remaining: formatMoney(totals.remaining),
+            }}
+          />
+        )}
+      </section>
+    </div>
+  )
 }
