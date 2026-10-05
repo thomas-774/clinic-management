@@ -71,6 +71,27 @@ class ReportService
     }
 
     /**
+     * The table's totals row over the whole period (not one page): paid = the
+     * period's revenue; remaining counts each visit once, however many of its
+     * payments fall in the period.
+     *
+     * @return array{count: int, paid: string, remaining: string}
+     */
+    public function paymentTotals(CarbonInterface $from, CarbonInterface $to): array
+    {
+        $visits = Visit::query()
+            ->withPaid()
+            ->whereIn('id', $this->paymentsBetween($from, $to)->select('visit_id'))
+            ->get();
+
+        return [
+            'count' => $this->paymentsBetween($from, $to)->count(),
+            'paid' => $this->revenue($from, $to),
+            'remaining' => $this->payments->sumRemaining($visits),
+        ];
+    }
+
+    /**
      * One table row: paid = this payment, remaining = what the visit still owes now.
      *
      * @return array{id: int, paid_at: Carbon, patient_id: int, patient_name: string, visit_id: int, visit_date: string, visit_total: string, paid: string, remaining: string}

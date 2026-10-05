@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\Doctor\BlockedTimeController;
 use App\Http\Controllers\Api\V1\Doctor\MedicalHistoryController;
 use App\Http\Controllers\Api\V1\Doctor\PatientController;
+use App\Http\Controllers\Api\V1\Doctor\ReportController;
 use App\Http\Controllers\Api\V1\Doctor\ScheduleController;
 use App\Http\Controllers\Api\V1\Doctor\SettingsController;
 use App\Http\Controllers\Api\V1\Doctor\VisitController;
@@ -67,5 +68,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/blocked-times', [BlockedTimeController::class, 'index'])->name('blocked-times.index');
         Route::post('/blocked-times', [BlockedTimeController::class, 'store'])->name('blocked-times.store');
         Route::delete('/blocked-times/{blockedTime}', [BlockedTimeController::class, 'destroy'])->name('blocked-times.destroy');
+
+        Route::get('/reports/summary', [ReportController::class, 'summary'])->name('reports.summary');
+        Route::get('/reports/payments', [ReportController::class, 'payments'])->name('reports.payments');
+        Route::get('/reports/daily-revenue', [ReportController::class, 'dailyRevenue'])->name('reports.daily-revenue');
     });
 });
