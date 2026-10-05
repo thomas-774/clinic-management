@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Assistant\PatientController as AssistantPatientController;
+use App\Http\Controllers\Api\V1\Assistant\ScheduleController as AssistantScheduleController;
 use App\Http\Controllers\Api\V1\Assistant\VisitController as AssistantVisitController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\Doctor\BlockedTimeController;
@@ -32,7 +33,7 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
-    Route::get('/slots', [SlotController::class, 'index'])->middleware('role:patient,doctor')->name('slots.index');
+    Route::get('/slots', [SlotController::class, 'index'])->middleware('role:patient,doctor,assistant')->name('slots.index');
 
     // Patient area: /api/v1/patient/* (profile, own appointments).
     Route::prefix('patient')->middleware('role:patient')->name('patient.')->group(function () {
@@ -90,5 +91,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/visits/unpaid', [AssistantVisitController::class, 'unpaid'])->name('visits.unpaid');
         Route::post('/visits/{visit}/payments', [AssistantVisitController::class, 'storePayment'])->name('visits.payments.store');
+
+        Route::get('/appointments', [AssistantScheduleController::class, 'index'])->name('appointments.index');
+        Route::post('/appointments', [AssistantScheduleController::class, 'store'])->name('appointments.store');
+        Route::patch('/appointments/{appointment}/status', [AssistantScheduleController::class, 'updateStatus'])->name('appointments.status');
     });
 });
