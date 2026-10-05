@@ -24,9 +24,10 @@ Each task is one file: what to build, which plan section it comes from, the step
 | 6 | [phase-6-dashboard-reports](phase-6-dashboard-reports/) | 6 | Daily / weekly / monthly numbers |
 | 7 | [phase-7-testing-deploy](phase-7-testing-deploy/) | 9 | Live v1 |
 | 8 | [phase-8-assistant](phase-8-assistant/) | 13 | Assistant registers patients, records payments, runs the queue |
-| | **Total** | **88** | |
+| 9 | [phase-9-prescriptions](phase-9-prescriptions/) | 14 | Doctor writes a prescription with drug search and side notes and prints it |
+| | **Total** | **102** | |
 
-Phase order: 0 → 1 → (2 and 3 in parallel) → 4 → 5 → 6 → 8 → 7. Phase 5 needs both 2 and 4. Phase 8 was added after Phase 6 and is built before Phase 7, so the assistant is tested and deployed with v1.
+Phase order: 0 → 1 → (2 and 3 in parallel) → 4 → 5 → 6 → 8 → 9 → 7. Phase 5 needs both 2 and 4. Phases 8 and 9 were added after Phase 6 and are built before Phase 7, so the assistant and prescriptions are tested and deployed with v1.
 
 ## Phase 0 — Setup
 
@@ -154,6 +155,28 @@ Frontend
 - [x] [T8-12](phase-8-assistant/T8-12-fe-staff-settings.md) Settings → Staff (doctor) · S
 - [x] [T8-13](phase-8-assistant/T8-13-walkthrough.md) Demo data and front-desk walkthrough · S
 
+## Phase 9 — Prescriptions (Module J)
+
+Built before Phase 7. The drug catalogue comes from `Drugs-for-Dentistry.pdf` (no prices); the doctor searches drugs while typing, reads a side note per drug, and prints the prescription. Doctor only.
+
+Backend and data
+- [ ] [T9-01](phase-9-prescriptions/T9-01-drugs-table.md) Drugs table and model · S
+- [ ] [T9-02](phase-9-prescriptions/T9-02-transcribe-pdf-catalogue.md) Transcribe the PDF into the drug seed file · L
+- [ ] [T9-03](phase-9-prescriptions/T9-03-drug-search-api.md) Drug search and catalogue API · M
+- [ ] [T9-04](phase-9-prescriptions/T9-04-prescriptions-tables.md) Prescriptions tables and models · S
+- [ ] [T9-06](phase-9-prescriptions/T9-06-print-header-settings.md) Prescription print header in doctor settings · S
+- [ ] [T9-05](phase-9-prescriptions/T9-05-prescriptions-api.md) Prescriptions API · M
+- [ ] [T9-07](phase-9-prescriptions/T9-07-prescription-permission-tests.md) Tests: prescription permissions and privacy · M
+
+Frontend
+- [ ] [T9-08](phase-9-prescriptions/T9-08-fe-drug-search.md) DrugSearch combobox · M
+- [ ] [T9-09](phase-9-prescriptions/T9-09-fe-drug-info-panel.md) DrugInfoPanel (side note) · S
+- [ ] [T9-10](phase-9-prescriptions/T9-10-fe-prescription-form.md) PrescriptionForm page · L
+- [ ] [T9-11](phase-9-prescriptions/T9-11-fe-print-page.md) Prescription print page · M
+- [ ] [T9-12](phase-9-prescriptions/T9-12-fe-prescriptions-on-patient.md) Prescriptions on PatientDetails and visits · S
+- [ ] [T9-13](phase-9-prescriptions/T9-13-fe-settings-drugs-and-header.md) Settings → Drugs and Prescription · M
+- [ ] [T9-14](phase-9-prescriptions/T9-14-printer-setup-and-walkthrough.md) Clinic printer setup and walkthrough · S
+
 ## Phase 7 — Testing, polish and deployment
 
 - [ ] [T7-01](phase-7-testing-deploy/T7-01-permission-feature-tests.md) Feature tests: permissions on every endpoint · M
@@ -179,3 +202,4 @@ Frontend
 | G — Availability | FR-G.1 – G.4 | T3-01 … T3-09 |
 | H — Dashboard and reports | FR-H.1 – H.4 | T6-01 … T6-06 |
 | I — Assistant (front desk) | FR-I.1 – I.6 | T8-01 … T8-13 |
+| J — Prescriptions | FR-J.1 – J.7 | T9-01 … T9-14 |

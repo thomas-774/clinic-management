@@ -26,8 +26,9 @@ Version 1 is a single-clinic web app with three roles (patient, doctor and front
 - Interface in Arabic (default, right-to-left) and English, with a language switcher.
 
 - Assistant (front desk): registers new patients, records what the patient pays, runs today's queue and books appointments (Module I, added in Phase 8).
+- Prescriptions: the doctor writes a prescription with live search over a drug catalogue taken from the *Drugs for Dentistry* PDF, sees a side note for each drug (uses, who must not take it, ingredients, suggested dose) and prints it on the clinic printer (Module J, added in Phase 9).
 
-**Out of scope for v1** (can be added later): multiple doctors or clinics, SMS/WhatsApp reminders, online payment, prescriptions printing, file uploads (X-rays, lab results).
+**Out of scope for v1** (can be added later): multiple doctors or clinics, SMS/WhatsApp reminders, online payment, file uploads (X-rays, lab results), drug prices, automatic drug–drug interaction checking.
 
 ## 2. User Roles and Permissions
 
@@ -49,12 +50,13 @@ There are three roles; every API route checks the role, and a patient can only e
 | Set working hours and slot duration | No | Yes | No |
 | Revenue and patient-count dashboard | No | Yes | No |
 | Manage assistant accounts | No | Yes | No |
+| Write, print and reprint prescriptions; manage the drug catalogue | No | Yes | No |
 
 **Simple vs detailed history.** Each history entry has a `visibility` flag: `patient_visible` entries appear on the patient page as the simple history; all entries (including private clinical notes) appear for the doctor.
 
 ## 3. Functional Requirements by Module
 
-The system is split into nine modules (A–I); each requirement has an ID (FR-x.y) so it can be traced to tasks and tests.
+The system is split into ten modules (A–J); each requirement has an ID (FR-x.y) so it can be traced to tasks and tests.
 
 ### Module A — Authentication
 
@@ -129,6 +131,18 @@ Added in Phase 8. The doctor sets the visit's work done and total cost; the assi
 - **FR-I.5** Every payment stores who recorded it (`recorded_by`); the doctor's payments report shows it.
 - **FR-I.6** The assistant sees the schedule (today's queue, day/week), marks patients Arrived, No-show or Cancelled, and books appointments on a patient's behalf (same booking rules; the patient cancellation cut-off BR-5 does not apply to the assistant). Completed is set only by the doctor's visit.
 
+### Module J — Prescriptions (doctor view)
+
+Added in Phase 9. The source is `Drugs-for-Dentistry.pdf` (repo root): 11 sections (mouth cleaning, sensitive-teeth toothpaste, vitamin C, anti-inflammatory, antibiotics, sedatives/analgesics, antifungal, calcium, cod liver oil, local anaesthesia, other), about 100 products. Each row has trade name, form, price, use, suggested dose and composition.
+
+- **FR-J.1** A drug catalogue is seeded from the PDF with, per product: trade name, form (tablets, syrup, gel, spray…), strength/pack, section, active ingredients (each with its short note), uses ("what it is for"), warnings ("who or what it must not be taken with", e.g. not for children, the elderly, pregnancy) and suggested dose. **The price is not imported.** Texts are kept as written in the PDF (Arabic with English drug names) and are not translated.
+- **FR-J.2** While the doctor types a medication name, a search box suggests matching drugs from the 2nd character: trade-name prefix first, then trade name or active ingredient containing the text, case-insensitive, up to 15 results, fully usable with the keyboard (↑ ↓ Enter Esc). A name that is not in the catalogue can still be written as free text.
+- **FR-J.3** A side note next to the prescription shows the highlighted or selected drug's uses, warnings (in red), active ingredients with notes, form and suggested dose; one click copies the suggested dose into the line's instructions.
+- **FR-J.4** The doctor writes a prescription for a patient (optionally linked to a visit): 1–15 lines, each a drug plus instructions (dose, how often, how long), and optional general notes. The drug's name and form are copied onto the line, so later catalogue edits never change an issued prescription. The patient's allergies and conditions from the medical history are shown on the form as a reminder.
+- **FR-J.5** **Print** sends the prescription to the clinic printer as one page: clinic header (clinic name, doctor name and title, address, phone), patient name and age, date, the numbered lines (Rx), notes and a signature line — never the side notes, the price or the app's menus. Any past prescription can be reprinted.
+- **FR-J.6** The doctor manages the catalogue in Settings → Drugs: search, add a drug, edit any field, and hide a drug (hidden drugs are not suggested but stay on old prescriptions). The doctor also edits the print header and paper size (A5 default, or A4) in Settings → Prescription.
+- **FR-J.7** The patient's prescriptions are listed on the doctor's patient page (date, drugs, open, reprint). Patients and the assistant never see the drug catalogue or prescriptions in v1.
+
 ## 4. Business Rules
 
 Slots are never stored in advance; they are calculated on request from the doctor's working hours and duration, minus anything already booked or blocked.
@@ -195,9 +209,17 @@ return array_filter($slots, fn($s) => !$this->isTaken($s) && !$this->isBlocked($
 - **PR-5** Patients counted in a period = distinct patients with a Completed visit in that period.
 - **PR-6** Amounts are stored as `DECIMAL(10,2)` in EGP; never as float.
 
+### 4.5 Prescription rules (Phase 9)
+
+- **RX-1** A prescription has 1–15 lines; each line has either a catalogue `drug_id` or a free-text `drug_name`, plus non-empty `instructions`.
+- **RX-2** A line stores a snapshot of the drug's name and form when it is saved; editing or hiding the drug later never changes issued prescriptions.
+- **RX-3** Hidden drugs (`is_active = false`) are never suggested by the search, but stay readable on old prescriptions.
+- **RX-4** The printed page contains only what the patient needs (header, patient, date, lines, notes, signature); side notes, warnings, ingredients and prices are never printed.
+- **RX-5** If a prescription is linked to a visit, the visit must belong to the same patient.
+
 ## 5. Database Design (MySQL)
 
-Nine tables cover the whole v1; every table also has `id` (BIGINT PK) and `created_at` / `updated_at`.
+Twelve tables cover the whole v1 (nine core tables, plus `drugs`, `prescriptions` and `prescription_items` from Phase 9); every table also has `id` (BIGINT PK) and `created_at` / `updated_at`.
 
 ### 5.1 Tables
 
@@ -241,6 +263,9 @@ Nine tables cover the whole v1; every table also has `id` (BIGINT PK) and `creat
 | slot_duration_minutes | SMALLINT | default 45 |
 | booking_window_days | SMALLINT | default 30 |
 | cancel_cutoff_hours | SMALLINT | default 2; patients cannot cancel later than this before start |
+| clinic_name / doctor_title / clinic_address / clinic_phone | VARCHAR | nullable; prescription print header (Phase 9, FR-J.6) |
+| prescription_footer | VARCHAR(255) | nullable; e.g. working hours, printed at the bottom |
+| prescription_paper | ENUM('A5','A4') | default A5 |
 
 **working_hours** — one row per working time range; a weekday can have several rows (a break is the gap between them), and a weekday with no rows is a day off
 
@@ -292,11 +317,49 @@ Nine tables cover the whole v1; every table also has `id` (BIGINT PK) and `creat
 | paid_at | DATETIME | used for revenue reports |
 | recorded_by | FK → users.id | nullable; doctor or assistant who took the money (FR-I.5) |
 
+**drugs** — the prescription drug catalogue, seeded from `Drugs-for-Dentistry.pdf` (Phase 9, FR-J.1); no price column
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| trade_name | VARCHAR(150) | e.g. "Augmentin 625 mg" |
+| form | VARCHAR(60) | tablets, capsules, syrup, gel, spray, mouthwash, ampoule … |
+| pack | VARCHAR(60) | nullable; e.g. "14 tabs", "100 ml" |
+| category | VARCHAR(40) | PDF section key: `mouth_cleaning`, `sensitive_toothpaste`, `vitamin_c`, `anti_inflammatory`, `antibiotic`, `analgesic_sedative`, `antifungal`, `calcium`, `cod_liver_oil`, `local_anesthetic`, `other` |
+| active_ingredients | JSON | list of `{ name, note }`, e.g. `{ "name": "benzocaine", "note": "مخدر موضعي" }` |
+| uses | TEXT | what it is used for |
+| warnings | TEXT | nullable; who must not take it / what not to take it with |
+| suggested_dose | TEXT | nullable |
+| seed_key | VARCHAR(80) | nullable, UNIQUE; stable id from the seed file (e.g. `flumox-1g-vial`) so re-seeding updates instead of duplicating; NULL for drugs the doctor adds |
+| source_page | SMALLINT | nullable; PDF page, for checking; NULL for drugs the doctor adds |
+| is_active | BOOLEAN | default true; false = hidden from search (RX-3) |
+
+**prescriptions**
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| patient_id | FK → patients.id | |
+| doctor_id | FK → users.id | |
+| visit_id | FK → visits.id | nullable (RX-5) |
+| issued_on | DATE | default today |
+| notes | TEXT | nullable; general advice printed under the lines |
+
+**prescription_items**
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| prescription_id | FK → prescriptions.id | cascade on delete |
+| drug_id | FK → drugs.id | nullable (free-text line); null on delete |
+| drug_name | VARCHAR(150) | snapshot (RX-2) |
+| drug_form | VARCHAR(60) | nullable; snapshot |
+| instructions | VARCHAR(255) | e.g. "1 tablet every 12 hours after meals for 5 days" |
+| position | TINYINT | print order, 1-based |
+
 ### 5.2 Relationships
 
 - users 1—1 patients · patients 1—N medical_history_entries · patients 1—N appointments
 - appointments 1—0..1 visits · visits 1—N payments
 - doctor (users) 1—1 doctor_settings · 1—N working_hours · 1—N blocked_times · 1—N appointments
+- patients 1—N prescriptions · visits 1—N prescriptions · prescriptions 1—N prescription_items · drugs 1—N prescription_items
 
 ### 5.3 Indexes and constraints
 
@@ -304,6 +367,7 @@ Nine tables cover the whole v1; every table also has `id` (BIGINT PK) and `creat
 - INDEX `(doctor_id, day_of_week)` on working_hours (no unique constraint, because a day can have several ranges).
 - INDEX `(doctor_id, start_at)` for the schedule; INDEX `(paid_at)` on payments for reports; INDEX `(patient_id)` on every child table.
 - Remaining balance is **not stored**; it is computed (`total_amount − SUM(payments)`) in a query or Eloquent accessor to avoid stale data.
+- INDEX `(is_active, trade_name)` on drugs for the prefix search; UNIQUE `seed_key` so the seeder can upsert (the PDF repeats some trade names with different forms); INDEX `(patient_id, issued_on)` on prescriptions.
 
 ## 6. Backend (Laravel) Architecture
 
@@ -324,11 +388,13 @@ backend/app/
 │   │   ├── Doctor/PaymentController.php
 │   │   ├── Doctor/ScheduleController.php
 │   │   ├── Doctor/SettingsController.php
-│   │   └── Doctor/ReportController.php
+│   │   ├── Doctor/ReportController.php
+│   │   ├── Doctor/DrugController.php           (Phase 9)
+│   │   └── Doctor/PrescriptionController.php   (Phase 9)
 │   ├── Middleware/EnsureRole.php
 │   ├── Requests/        (one Form Request per write endpoint)
 │   └── Resources/       (PatientResource, AppointmentResource, VisitResource …)
-├── Models/              (User, Patient, MedicalHistoryEntry, Appointment, Visit, Payment, WorkingHour, BlockedTime, DoctorSetting)
+├── Models/              (User, Patient, MedicalHistoryEntry, Appointment, Visit, Payment, WorkingHour, BlockedTime, DoctorSetting, Drug, Prescription, PrescriptionItem)
 ├── Services/
 │   ├── SlotService.php        (generate + validate slots)
 │   ├── BookingService.php     (transactional booking)
@@ -388,6 +454,12 @@ backend/app/
 | POST | /assistant/visits/{id}/payments | assistant | Record a payment `{ amount, method, paid_at? }` | I.4–I.5 |
 | GET / POST | /assistant/appointments | assistant | Schedule / book on behalf of a patient | I.6 |
 | PATCH | /assistant/appointments/{id}/status | assistant | checked_in / no_show / cancelled | I.6 |
+| GET | /doctor/drugs/search?q= | doctor | Typeahead: up to 15 active drugs (id, trade_name, form, pack, short use) | J.2 |
+| GET | /doctor/drugs[?search=&category=&include_hidden=] | doctor | Catalogue list for Settings → Drugs (paginated) | J.6 |
+| GET | /doctor/drugs/{id} | doctor | Full drug for the side note | J.3 |
+| POST / PUT | /doctor/drugs[/{id}] | doctor | Add / edit a drug, hide with `is_active: false` | J.6 |
+| GET / POST | /doctor/patients/{id}/prescriptions | doctor | Patient's prescriptions / write one `{ visit_id?, issued_on?, notes?, items: [{ drug_id?, drug_name?, instructions }] }` | J.4, J.7 |
+| GET / PUT / DELETE | /doctor/prescriptions/{id} | doctor | Open (with patient name, age and print header) / edit / delete | J.4, J.5 |
 
 ### 6.4 Key request example — create visit with payment
 
@@ -444,6 +516,10 @@ frontend/src/
 | /assistant/patients | PatientsList | Search, "New patient" form without illness | GET / POST /assistant/patients |
 | /assistant/patients/:id | PatientPage | Contact info (edit), balance, visits money table, record payment, book appointment | /assistant/patients/{id}, /slots |
 | /assistant/schedule | Schedule | Day/week list with Arrived / No-show / Cancel, no Start visit | /assistant/appointments |
+| /doctor/patients/:id/prescriptions/new[?visit=:id] | PrescriptionForm | Lines with DrugSearch, instructions, notes, DrugInfoPanel side note, allergy reminder, Save & Print | /doctor/drugs/search, /doctor/drugs/{id}, POST prescriptions |
+| /doctor/prescriptions/:id/edit | PrescriptionForm | Same form, editing a saved prescription | GET / PUT /doctor/prescriptions/{id} |
+| /doctor/prescriptions/:id/print | PrescriptionPrint | Print-only page; opens the print dialog on load | GET /doctor/prescriptions/{id} |
+| /doctor/settings (Drugs, Prescription tabs) | Settings | Catalogue search / add / edit / hide; print header and paper size with preview | /doctor/drugs, /doctor/settings |
 
 ### 7.3 Key UI behaviour
 
@@ -452,6 +528,8 @@ frontend/src/
 - **Settings:** a preview shows the slots that the chosen hours + duration will produce, before saving.
 - **Schedule:** status badges by colour (Booked grey, Checked In blue, Completed green, No-show red); auto-refresh every 60 s.
 - **Language:** Arabic (RTL) is the default and English is the second language, switchable from both layouts and remembered in localStorage. All text goes through react-i18next; `<html dir>` and `lang` follow the active language; layouts use Tailwind logical classes (`ms-`, `me-`, `ps-`, `pe-`) so they flip correctly.
+- **DrugSearch (Phase 9):** a combobox that queries `/doctor/drugs/search` 250 ms after the last keystroke (from 2 characters), highlights the matching part, moves with ↑ ↓, picks with Enter, closes with Esc, and offers "use '…' as written" when nothing matches. The highlighted result already fills the side note, so the doctor can read it before choosing.
+- **Printing (Phase 9):** the print page uses a `@media print` stylesheet with `@page { size: A5 }` (or A4 from settings), hides all app chrome and prints in the page's language direction (Arabic RTL; drug names and instructions stay LTR inside). Print calls `window.print()`, which sends the page to the printer chosen in the browser. For true one-click printing on the clinic PC, the browser is started with `--kiosk-printing`, which prints straight to the Windows default printer with no dialog (documented in T9-14).
 
 ## 8. Development Phases (in build order)
 
@@ -468,6 +546,7 @@ Build in eight phases of roughly one week each; every phase ends with something 
 | 6 | Dashboard + reports | 5 | Daily/weekly/monthly numbers |
 | 7 | Testing, polish, deploy | all | Live v1 |
 | 8 | Assistant (front desk) | 5, 6 | Assistant registers patients, records payments, runs the queue — build before the deploy tasks of Phase 7 (T7-05 onwards) |
+| 9 | Prescriptions | 2, 5, 8 | Doctor writes a prescription with drug search and side notes and prints it — build before Phase 7 |
 
 ### Phase 0 — Project setup
 
@@ -535,6 +614,13 @@ Build in eight phases of roughly one week each; every phase ends with something 
 - [x] Assistant area in the frontend: Today (queue + waiting to pay), Patients, Schedule.
 - [x] **Test:** assistant gets 403 on every doctor route; assistant responses never contain medical fields; payment rules hold; walkthrough register → book → arrive → doctor visit → assistant collects payment.
 
+### Phase 9 — Prescriptions (Module J)
+
+- [ ] `drugs` table and the catalogue transcribed from `Drugs-for-Dentistry.pdf` into a seed file (no prices), checked against the PDF.
+- [ ] Drug search / catalogue API and the prescriptions API (snapshotted lines, RX-1 – RX-5); print header fields in doctor settings.
+- [ ] Frontend: DrugSearch, DrugInfoPanel side note, PrescriptionForm, print page (A5/A4), prescriptions on PatientDetails, Settings → Drugs and Prescription.
+- [ ] **Test:** search ranking and hidden drugs; patient and assistant get 403 on every drug and prescription route; editing a drug never changes an issued prescription; the printed page holds only header, patient, lines, notes and signature; walkthrough visit → prescription → print on the clinic printer.
+
 ## 9. Testing, Security and Deployment
 
 The three areas that must be tested hardest are slot generation, double booking and balance calculation, because errors there directly cost the clinic time or money.
@@ -586,3 +672,13 @@ The plan assumes one doctor in one clinic; the questions below should be confirm
 | Receptionist login in v1? | **No**, doctor only. Can be added later. **Changed Oct 5, 2026:** an assistant role is added in Phase 8 — the doctor sets the total, the assistant records payments, registers patients, runs the queue and books; contact info and money only, no medical data; accounts made by the doctor in Settings. | §2, Module I · T8-01 … T8-13 |
 | Interface language? | **Arabic and English, Arabic is the default** (RTL). API messages are localized via `Accept-Language`. | §6.2, §7.3 · T1-08, T1-11, T1-14, T7-03 |
 | SMS/WhatsApp reminders? | **Not in v1.** | §1 out of scope (unchanged) |
+
+**Prescriptions (Phase 9) — defaults used until the client says otherwise (raised Oct 5, 2026)**
+
+| Question | Default in the plan | Affects |
+| --- | --- | --- |
+| Can patients see their prescriptions on their page? Can the assistant reprint them? | **No to both** in v1; doctor only. Easy to add later (read-only list). | FR-J.7 · T9-05, T9-07 |
+| Paper size of the clinic's prescription pad? | **A5**, switchable to A4 in Settings → Prescription. | FR-J.6 · T9-06, T9-11 |
+| Print with the dialog or straight to the printer? | Print button opens the browser print dialog; the clinic PC can be set up for **one-click silent printing** with `--kiosk-printing`. | §7.3 · T9-11, T9-14 |
+| Translate the PDF's Arabic drug notes into English? | **No**; shown as written in both interface languages. | FR-J.1 · T9-02 |
+| The PDF is from 2014 — are any products discontinued? | Everything is imported; the doctor hides what is no longer sold (FR-J.6). | T9-02, T9-13 |
