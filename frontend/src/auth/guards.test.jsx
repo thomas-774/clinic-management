@@ -1,0 +1,106 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
+import { MemoryRouter, useLocation } from 'react-router-dom'
+import { vi } from 'vitest'
+import * as authApi from '../api/auth'
+import { tokenStorage } from '../api/client'
+import AppRoutes from '../AppRoutes'
+import { AuthProvider } from './AuthContext'
+
+function CurrentPath() {
+  return <span data-testid="path">{useLocation().pathname}</span>
+}
+
+function renderAt(path) {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[path]}>
+        <AuthProvider>
+          <AppRoutes />
+          <CurrentPath />
+        </AuthProvider>
+      </MemoryRouter>
+    </QueryClientProvider>,
+  )
+}
+
+const patient = { id: 2, name: 'Mona', role: 'patient', patient_id: 1 }
+const doctor = { id: 1, name: 'Dr. Doctor', role: 'doctor' }
+
+async function expectPath(path) {
+  await waitFor(() => expect(screen.getByTestId('path')).toHaveTextContent(new RegExp(`^${path}$`)))
+}
+
+describe('route guards', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+  })
+
+  it('sends a logged-out visitor to /login', async () => {
+    renderAt('/doctor/patients')
+    await expectPath('/login')
+  })
+
+  it('sends a patient who opens /doctor to /patient', async () => {
+    tokenStorage.set('patient-token')
+    vi.spyOn(authApi, 'me').mockResolvedValue(patient)
+
+    renderAt('/doctor')
+
+    expect(await screen.findByRole('heading', { name: 'My profile' })).toBeInTheDocument()
+    await expectPath('/patient')
+  })
+
+  it('sends a doctor who opens /patient/book to /doctor', async () => {
+    tokenStorage.set('doctor-token')
+    vi.spyOn(authApi, 'me').mockResolvedValue(doctor)
+
+    renderAt('/patient/book')
+
+    expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument()
+    await expectPath('/doctor')
+  })
+
+  it('lets each role open its own pages', async () => {
+    tokenStorage.set('doctor-token')
+    vi.spyOn(authApi, 'me').mockResolvedValue(doctor)
+
+    renderAt('/doctor/patients/12')
+
+    expect(await screen.findByRole('heading', { name: 'Patient' })).toBeInTheDocument()
+    await expectPath('/doctor/patients/12')
+  })
+
+  it('sends a logged-in user away from /login to their home', async () => {
+    tokenStorage.set('doctor-token')
+    vi.spyOn(authApi, 'me').mockResolvedValue(doctor)
+
+    renderAt('/login')
+
+    await screen.findByRole('heading', { name: 'Dashboard' })
+    await expectPath('/doctor')
+  })
+
+  it('shows a loader while checking the stored token', async () => {
+    tokenStorage.set('slow-token')
+    let resolve
+    vi.spyOn(authApi, 'me').mockReturnValue(new Promise((r) => (resolve = r)))
+
+    renderAt('/patient')
+
+    expect(screen.getByRole('status')).toBeInTheDocument()
+    resolve(patient)
+    expect(await screen.findByRole('heading', { name: 'My profile' })).toBeInTheDocument()
+  })
+
+  it('treats a rejected stored token as logged out', async () => {
+    tokenStorage.set('bad-token')
+    vi.spyOn(authApi, 'me').mockRejectedValue(new Error('401'))
+
+    renderAt('/patient')
+
+    await expectPath('/login')
+  })
+})

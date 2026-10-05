@@ -52,7 +52,7 @@ Backend
 
 Frontend
 - [x] [T1-11](phase-1-database-auth/T1-11-frontend-api-client.md) API client with token interceptor · S
-- [ ] [T1-12](phase-1-database-auth/T1-12-auth-context-and-guards.md) AuthContext, ProtectedRoute, RoleRoute · M
+- [x] [T1-12](phase-1-database-auth/T1-12-auth-context-and-guards.md) AuthContext, ProtectedRoute, RoleRoute · M
 - [ ] [T1-13](phase-1-database-auth/T1-13-login-register-pages.md) Login and Register pages · M
 - [ ] [T1-14](phase-1-database-auth/T1-14-layouts-and-i18n.md) Patient/Doctor layouts and i18n setup · M
 

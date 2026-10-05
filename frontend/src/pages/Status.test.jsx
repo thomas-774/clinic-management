@@ -1,19 +1,19 @@
 import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { vi } from 'vitest'
-import App from './App'
-import * as health from './api/health'
+import Status from './Status'
+import * as health from '../api/health'
 
 function renderApp() {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   return render(
     <QueryClientProvider client={queryClient}>
-      <App />
+      <Status />
     </QueryClientProvider>,
   )
 }
 
-describe('App', () => {
+describe('Status page', () => {
   it('shows the API status and server time from the health endpoint', async () => {
     vi.spyOn(health, 'getHealth').mockResolvedValue({ status: 'ok', time: '2026-10-05T12:00:00+03:00' })
     renderApp()
