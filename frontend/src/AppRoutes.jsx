@@ -4,8 +4,13 @@ import GuestRoute from './auth/GuestRoute'
 import ProtectedRoute from './auth/ProtectedRoute'
 import RoleRoute from './auth/RoleRoute'
 import FullPageLoader from './components/FullPageLoader'
+import AssistantLayout from './layouts/AssistantLayout'
 import DoctorLayout from './layouts/DoctorLayout'
 import PatientLayout from './layouts/PatientLayout'
+import AssistantPatientPage from './pages/assistant/PatientPage'
+import AssistantPatientsList from './pages/assistant/PatientsList'
+import AssistantSchedule from './pages/assistant/Schedule'
+import AssistantToday from './pages/assistant/Today'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import Dashboard from './pages/doctor/Dashboard'
@@ -57,6 +62,15 @@ export default function AppRoutes() {
             <Route path="visits/new" element={<VisitForm />} />
             <Route path="settings" element={<Settings />} />
             <Route path="reports" element={<Reports />} />
+          </Route>
+        </Route>
+
+        <Route path="/assistant" element={<RoleRoute role="assistant" />}>
+          <Route element={<AssistantLayout />}>
+            <Route index element={<AssistantToday />} />
+            <Route path="patients" element={<AssistantPatientsList />} />
+            <Route path="patients/:id" element={<AssistantPatientPage />} />
+            <Route path="schedule" element={<AssistantSchedule />} />
           </Route>
         </Route>
       </Route>

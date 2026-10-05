@@ -25,7 +25,8 @@
     "schedule": "جدول المواعيد",
     "patients": "المرضى",
     "reports": "التقارير",
-    "settings": "الإعدادات"
+    "settings": "الإعدادات",
+    "today": "اليوم"
   },
   "pages": {
     "patientHome": "ملفي الشخصي",
@@ -37,7 +38,8 @@
     "patientDetails": "بيانات المريض",
     "visitForm": "زيارة جديدة",
     "settings": "الإعدادات",
-    "reports": "التقارير"
+    "reports": "التقارير",
+    "today": "اليوم في الاستقبال"
   },
   "auth": {
     "login": {

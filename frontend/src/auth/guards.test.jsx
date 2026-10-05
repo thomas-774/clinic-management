@@ -7,6 +7,7 @@ import { expectPath, renderAppAt as renderAt } from '../test/renderApp'
 
 const patient = { id: 2, name: 'Mona', role: 'patient', patient_id: 1 }
 const doctor = { id: 1, name: 'Dr. Doctor', role: 'doctor' }
+const assistant = { id: 3, name: 'Amal Saad', role: 'assistant' }
 
 describe('route guards', () => {
   beforeEach(() => {
@@ -34,6 +35,30 @@ describe('route guards', () => {
     vi.spyOn(authApi, 'me').mockResolvedValue(doctor)
 
     renderAt('/patient/book')
+
+    expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument()
+    await expectPath('/doctor')
+  })
+
+  it('sends an assistant to /assistant, away from the doctor and patient areas', async () => {
+    tokenStorage.set('assistant-token')
+    vi.spyOn(authApi, 'me').mockResolvedValue(assistant)
+
+    renderAt('/doctor/reports')
+
+    expect(await screen.findByRole('heading', { name: 'Today at the desk' })).toBeInTheDocument()
+    await expectPath('/assistant')
+    expect(screen.getByRole('link', { name: 'Today' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Patients' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Reports' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Settings' })).not.toBeInTheDocument()
+  })
+
+  it('sends a patient or a doctor who opens /assistant to their own home', async () => {
+    tokenStorage.set('doctor-token')
+    vi.spyOn(authApi, 'me').mockResolvedValue(doctor)
+
+    renderAt('/assistant/patients')
 
     expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument()
     await expectPath('/doctor')

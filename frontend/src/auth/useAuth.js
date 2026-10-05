@@ -2,9 +2,11 @@ import { createContext, useContext } from 'react'
 
 export const AuthContext = createContext(null)
 
+const HOMES = { doctor: '/doctor', assistant: '/assistant' }
+
 /** Where each role lands after login (§7.2). */
 export function homePathFor(role) {
-  return role === 'doctor' ? '/doctor' : '/patient'
+  return HOMES[role] ?? '/patient'
 }
 
 /**

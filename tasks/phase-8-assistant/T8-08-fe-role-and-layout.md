@@ -4,10 +4,11 @@
 **Plan refs:** §7.2 · FR-I.1
 
 ## Steps
-- [ ] `homePathFor('assistant')` → `/assistant` in `src/auth/useAuth.js`.
-- [ ] `AppRoutes.jsx`: `/assistant` under `<RoleRoute role="assistant">` with `layouts/AssistantLayout.jsx` (same structure as DoctorLayout; links Today, Patients, Schedule).
-- [ ] `src/api/assistant.js` with the `/assistant/*` calls.
-- [ ] i18n keys in ar.json and en.json (identical keys).
+- [x] `homePathFor('assistant')` → `/assistant` in `src/auth/useAuth.js`.
+- [x] `AppRoutes.jsx`: `/assistant` under `<RoleRoute role="assistant">` with `layouts/AssistantLayout.jsx` (same structure as DoctorLayout; links Today, Patients, Schedule).
+  Note: the sidebar moved into `layouts/SidebarLayout.jsx`; DoctorLayout and AssistantLayout only pass their links. The four assistant pages are placeholders until T8-09 – T8-11.
+- [x] `src/api/assistant.js` with the `/assistant/*` calls.
+- [x] i18n keys in ar.json and en.json (identical keys).
 
 ## Done when
-- [ ] Guard tests: an assistant lands on `/assistant`; an assistant opening `/doctor` is redirected; a doctor opening `/assistant` is redirected.
+- [x] Guard tests: an assistant lands on `/assistant`; an assistant opening `/doctor` is redirected; a doctor opening `/assistant` is redirected.

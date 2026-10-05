@@ -25,7 +25,8 @@
     "schedule": "Schedule",
     "patients": "Patients",
     "reports": "Reports",
-    "settings": "Settings"
+    "settings": "Settings",
+    "today": "Today"
   },
   "pages": {
     "patientHome": "My profile",
@@ -37,7 +38,8 @@
     "patientDetails": "Patient",
     "visitForm": "New visit",
     "settings": "Settings",
-    "reports": "Reports"
+    "reports": "Reports",
+    "today": "Today at the desk"
   },
   "auth": {
     "login": {
