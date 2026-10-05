@@ -28,6 +28,11 @@ class SlotService
         return new self(User::clinicDoctor());
     }
 
+    public function doctor(): User
+    {
+        return $this->doctor;
+    }
+
     public function settings(): DoctorSetting
     {
         return $this->doctor->doctorSetting ?? new DoctorSetting;

@@ -89,7 +89,7 @@ Frontend
 ## Phase 4 — Booking, schedule and check-in (Modules E, F)
 
 Backend
-- [ ] [T4-01](phase-4-booking-schedule/T4-01-booking-service.md) BookingService (transactional booking) · L
+- [x] [T4-01](phase-4-booking-schedule/T4-01-booking-service.md) BookingService (transactional booking) · L
 - [ ] [T4-02](phase-4-booking-schedule/T4-02-patient-appointment-endpoints.md) Patient appointment endpoints · M
 - [ ] [T4-03](phase-4-booking-schedule/T4-03-doctor-appointment-endpoints.md) Doctor appointment endpoints · S
 - [ ] [T4-04](phase-4-booking-schedule/T4-04-appointment-status-transitions.md) Appointment status transitions · M
