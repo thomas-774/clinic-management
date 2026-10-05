@@ -60,7 +60,7 @@ Frontend
 
 Backend
 - [x] [T2-01](phase-2-profiles-history/T2-01-resources-and-policy.md) Patient resources and PatientPolicy · M
-- [ ] [T2-02](phase-2-profiles-history/T2-02-patient-profile-endpoints.md) Patient profile endpoints · M
+- [x] [T2-02](phase-2-profiles-history/T2-02-patient-profile-endpoints.md) Patient profile endpoints · M
 - [ ] [T2-03](phase-2-profiles-history/T2-03-doctor-patient-list.md) Doctor: patient list with search and create patient · M
 - [ ] [T2-04](phase-2-profiles-history/T2-04-doctor-patient-details.md) Doctor: patient details and update · M
 - [ ] [T2-05](phase-2-profiles-history/T2-05-history-crud.md) Medical history CRUD · M

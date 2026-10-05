@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Http\Requests\Concerns\ValidatesPhone;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
@@ -10,6 +11,8 @@ use Illuminate\Validation\Rules\Password;
  */
 class RegisterRequest extends FormRequest
 {
+    use ValidatesPhone;
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -19,7 +22,7 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:120'],
-            'phone' => ['required', 'string', 'max:20', 'regex:/^\+?\d{8,15}$/', 'unique:users,phone'],
+            'phone' => ['required', ...$this->phoneRules()],
             'email' => ['nullable', 'string', 'email', 'max:150', 'unique:users,email'],
             'password' => ['required', 'string', 'confirmed', Password::min(8)],
             'address' => ['required', 'string', 'max:255'],
@@ -31,9 +34,7 @@ class RegisterRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        $this->merge([
-            'phone' => is_string($this->phone) ? preg_replace('/[\s-]/', '', $this->phone) : $this->phone,
-            'email' => filled($this->email) ? $this->email : null,
-        ]);
+        $this->normalizePhone();
+        $this->merge(['email' => filled($this->email) ? $this->email : null]);
     }
 }
