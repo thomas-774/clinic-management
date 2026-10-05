@@ -166,7 +166,7 @@ Backend and data
 - [x] [T9-04](phase-9-prescriptions/T9-04-prescriptions-tables.md) Prescriptions tables and models · S
 - [x] [T9-06](phase-9-prescriptions/T9-06-print-header-settings.md) Prescription print header in doctor settings · S
 - [x] [T9-05](phase-9-prescriptions/T9-05-prescriptions-api.md) Prescriptions API · M
-- [ ] [T9-07](phase-9-prescriptions/T9-07-prescription-permission-tests.md) Tests: prescription permissions and privacy · M
+- [x] [T9-07](phase-9-prescriptions/T9-07-prescription-permission-tests.md) Tests: prescription permissions and privacy · M
 
 Frontend
 - [ ] [T9-08](phase-9-prescriptions/T9-08-fe-drug-search.md) DrugSearch combobox · M
