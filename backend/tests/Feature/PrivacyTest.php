@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\AppointmentStatus;
+use App\Models\Appointment;
 use App\Models\MedicalHistoryEntry;
 use App\Models\Patient;
 use App\Models\User;
@@ -69,11 +71,23 @@ describe('private history entries', function () {
 });
 
 describe('one patient cannot reach another patient\'s data', function () {
-    it('has no patient route that takes an id', function () {
+    it('has no patient route that takes an id, except cancelling an own appointment', function () {
         $routes = apiRoutesUnder('patient');
+        // §6.3 PATCH /patient/appointments/{id}/cancel; AppointmentPolicy checks ownership.
+        $withId = ['api/v1/patient/appointments/{appointment}/cancel'];
 
         expect($routes)->not->toBeEmpty();
-        $routes->each(fn (RouteDefinition $route) => expect($route->parameterNames())->toBe([], $route->uri()));
+        $routes->reject(fn (RouteDefinition $route) => in_array($route->uri(), $withId, true))
+            ->each(fn (RouteDefinition $route) => expect($route->parameterNames())->toBe([], $route->uri()));
+    });
+
+    it("cannot cancel another patient's appointment", function () {
+        $theirs = Appointment::factory()->for($this->doctor, 'doctor')->for($this->patientB)->create();
+
+        $this->actingAs($this->patientA->user)->patchJson("/api/v1/patient/appointments/{$theirs->id}/cancel")
+            ->assertForbidden();
+
+        expect($theirs->fresh()->status)->toBe(AppointmentStatus::Booked);
     });
 
     it('shows each patient only their own profile', function () {
