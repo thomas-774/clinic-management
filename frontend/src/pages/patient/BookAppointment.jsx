@@ -1,5 +1,7 @@
+import { useTranslation } from 'react-i18next'
 import PagePlaceholder from '../../components/PagePlaceholder'
 
 export default function BookAppointment() {
-  return <PagePlaceholder title="Book an appointment" />
+  const { t } = useTranslation()
+  return <PagePlaceholder title={t('pages.bookAppointment')} />
 }

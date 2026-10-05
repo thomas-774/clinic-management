@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../auth/useAuth'
 import TextField from '../../components/form/TextField'
@@ -6,6 +7,7 @@ import AuthLayout from '../../layouts/AuthLayout'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
 
 export default function Login() {
+  const { t } = useTranslation()
   const { login } = useAuth()
   const [form, setForm] = useState({ login: '', password: '' })
   const [errors, setErrors] = useState({})
@@ -26,7 +28,7 @@ export default function Login() {
       const fields = fieldErrors(error)
       setErrors(fields)
       if (!Object.keys(fields).length) {
-        setFormError(errorMessage(error, 'Could not reach the server. Please try again.'))
+        setFormError(errorMessage(error, t('common.networkError')))
       }
       setSubmitting(false)
     }
@@ -34,12 +36,12 @@ export default function Login() {
 
   return (
     <AuthLayout
-      title="Log in"
+      title={t('auth.login.title')}
       footer={
         <>
-          New patient?{' '}
+          {t('auth.login.newPatient')}{' '}
           <Link to="/register" className="font-medium text-sky-700 hover:underline">
-            Create an account
+            {t('auth.login.createAccount')}
           </Link>
         </>
       }
@@ -51,7 +53,7 @@ export default function Login() {
           </p>
         )}
         <TextField
-          label="Phone or email"
+          label={t('auth.login.loginField')}
           name="login"
           autoComplete="username"
           dir="ltr"
@@ -61,7 +63,7 @@ export default function Login() {
           required
         />
         <TextField
-          label="Password"
+          label={t('auth.login.password')}
           name="password"
           type="password"
           autoComplete="current-password"
@@ -75,7 +77,7 @@ export default function Login() {
           disabled={submitting}
           className="w-full rounded-lg bg-sky-700 px-4 py-2.5 font-semibold text-white hover:bg-sky-800 disabled:opacity-60"
         >
-          {submitting ? 'Logging in…' : 'Log in'}
+          {submitting ? t('auth.login.submitting') : t('auth.login.submit')}
         </button>
       </form>
     </AuthLayout>

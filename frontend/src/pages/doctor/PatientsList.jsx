@@ -1,5 +1,7 @@
+import { useTranslation } from 'react-i18next'
 import PagePlaceholder from '../../components/PagePlaceholder'
 
 export default function PatientsList() {
-  return <PagePlaceholder title="Patients" />
+  const { t } = useTranslation()
+  return <PagePlaceholder title={t('pages.patients')} />
 }

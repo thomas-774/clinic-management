@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+@theme {
+  /* Cairo covers Arabic and Latin, so both languages share one font. */
+  --font-sans: "Cairo", ui-sans-serif, system-ui, sans-serif;
+}

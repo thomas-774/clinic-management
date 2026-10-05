@@ -1,0 +1,69 @@
+{
+  "common": {
+    "appName": "العيادة",
+    "loading": "جارٍ التحميل…",
+    "logout": "تسجيل الخروج",
+    "networkError": "تعذّر الاتصال بالخادم. يرجى المحاولة مرة أخرى."
+  },
+  "language": {
+    "other": "English",
+    "change": "التبديل إلى الإنجليزية"
+  },
+  "nav": {
+    "menu": "القائمة",
+    "main": "القائمة الرئيسية",
+    "home": "الرئيسية",
+    "book": "حجز موعد",
+    "myAppointments": "مواعيدي",
+    "dashboard": "لوحة التحكم",
+    "schedule": "جدول المواعيد",
+    "patients": "المرضى",
+    "reports": "التقارير",
+    "settings": "الإعدادات"
+  },
+  "pages": {
+    "patientHome": "ملفي الشخصي",
+    "bookAppointment": "حجز موعد",
+    "myAppointments": "مواعيدي",
+    "dashboard": "لوحة التحكم",
+    "schedule": "جدول المواعيد",
+    "patients": "المرضى",
+    "patientDetails": "بيانات المريض",
+    "visitForm": "زيارة جديدة",
+    "settings": "الإعدادات",
+    "reports": "التقارير"
+  },
+  "auth": {
+    "login": {
+      "title": "تسجيل الدخول",
+      "submit": "دخول",
+      "submitting": "جارٍ تسجيل الدخول…",
+      "loginField": "رقم الهاتف أو البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "newPatient": "مريض جديد؟",
+      "createAccount": "أنشئ حسابًا"
+    },
+    "register": {
+      "title": "إنشاء حساب",
+      "submit": "إنشاء الحساب",
+      "submitting": "جارٍ إنشاء الحساب…",
+      "name": "الاسم بالكامل",
+      "phone": "رقم الهاتف",
+      "email": "البريد الإلكتروني (اختياري)",
+      "address": "العنوان",
+      "password": "كلمة المرور",
+      "passwordHint": "8 أحرف على الأقل",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "haveAccount": "لديك حساب بالفعل؟",
+      "logIn": "سجّل الدخول"
+    }
+  },
+  "status": {
+    "title": "إدارة العيادة",
+    "apiStatus": "حالة الخادم",
+    "checking": "جارٍ الفحص…",
+    "unreachable": "تعذّر الوصول إلى الخادم",
+    "retry": "إعادة المحاولة",
+    "serverTime": "وقت الخادم: {{time}}"
+  }
+}

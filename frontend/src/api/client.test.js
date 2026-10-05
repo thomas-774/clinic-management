@@ -45,11 +45,12 @@ describe('api client', () => {
     expect(requests[0].headers.Authorization).toBeUndefined()
   })
 
-  it('sends the current language, Arabic by default', async () => {
+  it('sends the current language', async () => {
     const requests = fakeServer(() => ({}))
 
+    await i18next.changeLanguage('ar')
     await client.get('/health')
-    await i18next.init({ lng: 'en', resources: {} })
+    await i18next.changeLanguage('en')
     await client.get('/health')
 
     expect(requests[0].headers['Accept-Language']).toBe('ar')

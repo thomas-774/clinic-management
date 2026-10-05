@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../auth/useAuth'
 import TextField from '../../components/form/TextField'
@@ -8,6 +9,7 @@ import { errorMessage, fieldErrors } from '../../utils/apiErrors'
 const EMPTY_FORM = { name: '', phone: '', email: '', password: '', password_confirmation: '', address: '' }
 
 export default function Register() {
+  const { t } = useTranslation()
   const { register } = useAuth()
   const [form, setForm] = useState(EMPTY_FORM)
   const [errors, setErrors] = useState({})
@@ -28,7 +30,7 @@ export default function Register() {
       const fields = fieldErrors(error)
       setErrors(fields)
       if (!Object.keys(fields).length) {
-        setFormError(errorMessage(error, 'Could not reach the server. Please try again.'))
+        setFormError(errorMessage(error, t('common.networkError')))
       }
       setSubmitting(false)
     }
@@ -36,12 +38,12 @@ export default function Register() {
 
   return (
     <AuthLayout
-      title="Create account"
+      title={t('auth.register.title')}
       footer={
         <>
-          Already have an account?{' '}
+          {t('auth.register.haveAccount')}{' '}
           <Link to="/login" className="font-medium text-sky-700 hover:underline">
-            Log in
+            {t('auth.register.logIn')}
           </Link>
         </>
       }
@@ -52,9 +54,9 @@ export default function Register() {
             {formError}
           </p>
         )}
-        <TextField label="Full name" name="name" autoComplete="name" value={form.name} onChange={update('name')} error={errors.name} required />
+        <TextField label={t('auth.register.name')} name="name" autoComplete="name" value={form.name} onChange={update('name')} error={errors.name} required />
         <TextField
-          label="Phone"
+          label={t('auth.register.phone')}
           name="phone"
           type="tel"
           autoComplete="tel"
@@ -65,7 +67,7 @@ export default function Register() {
           required
         />
         <TextField
-          label="Email (optional)"
+          label={t('auth.register.email')}
           name="email"
           type="email"
           autoComplete="email"
@@ -75,7 +77,7 @@ export default function Register() {
           error={errors.email}
         />
         <TextField
-          label="Address"
+          label={t('auth.register.address')}
           name="address"
           autoComplete="street-address"
           value={form.address}
@@ -84,18 +86,18 @@ export default function Register() {
           required
         />
         <TextField
-          label="Password"
+          label={t('auth.register.password')}
           name="password"
           type="password"
           autoComplete="new-password"
-          hint="At least 8 characters"
+          hint={t('auth.register.passwordHint')}
           value={form.password}
           onChange={update('password')}
           error={errors.password}
           required
         />
         <TextField
-          label="Confirm password"
+          label={t('auth.register.confirmPassword')}
           name="password_confirmation"
           type="password"
           autoComplete="new-password"
@@ -109,7 +111,7 @@ export default function Register() {
           disabled={submitting}
           className="w-full rounded-lg bg-sky-700 px-4 py-2.5 font-semibold text-white hover:bg-sky-800 disabled:opacity-60"
         >
-          {submitting ? 'Creating account…' : 'Create account'}
+          {submitting ? t('auth.register.submitting') : t('auth.register.submit')}
         </button>
       </form>
     </AuthLayout>
