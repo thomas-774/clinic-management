@@ -10,7 +10,7 @@ import WeekView from './schedule/WeekView'
 const navButton = 'rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50'
 
 /**
- * The doctor's schedule (FR-F.1 – F.4): a day view (default today) and a
+ * The schedule (FR-F.1 – F.4; the assistant's too, FR-I.6): a day view (default today) and a
  * week view. ?view=week and ?date= keep the place across reloads and links.
  */
 export default function Schedule() {

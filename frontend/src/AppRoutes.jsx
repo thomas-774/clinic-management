@@ -8,7 +8,6 @@ import AssistantLayout from './layouts/AssistantLayout'
 import DoctorLayout from './layouts/DoctorLayout'
 import PatientLayout from './layouts/PatientLayout'
 import AssistantPatientPage from './pages/assistant/PatientPage'
-import AssistantSchedule from './pages/assistant/Schedule'
 import AssistantToday from './pages/assistant/Today'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
@@ -69,7 +68,7 @@ export default function AppRoutes() {
             <Route index element={<AssistantToday />} />
             <Route path="patients" element={<PatientsList />} />
             <Route path="patients/:id" element={<AssistantPatientPage />} />
-            <Route path="schedule" element={<AssistantSchedule />} />
+            <Route path="schedule" element={<Schedule />} />
           </Route>
         </Route>
       </Route>

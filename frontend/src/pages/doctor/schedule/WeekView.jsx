@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { LoadError, Loading } from '../../../components/QueryState'
 import StatusBadge from '../../../components/StatusBadge'
-import { useSchedule } from '../../../hooks/useSchedule'
+import { useStaffApi } from '../../../staff/staffApi'
 import { addDays, dateRange, dayOfWeek } from '../../../utils/dates'
 import { formatDate, formatTime, todayInClinic } from '../../../utils/format'
 
@@ -11,6 +11,7 @@ import { formatDate, formatTime, todayInClinic } from '../../../utils/format'
  */
 export default function WeekView({ start, onOpenDay }) {
   const { t } = useTranslation()
+  const { useSchedule } = useStaffApi()
   const today = todayInClinic()
   const days = dateRange(start, 7)
   const { data, isPending, isError, refetch } = useSchedule({ from: start, to: addDays(start, 6) })
