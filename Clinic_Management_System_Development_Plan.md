@@ -530,10 +530,10 @@ Build in eight phases of roughly one week each; every phase ends with something 
 
 ### Phase 8 — Assistant (Module I)
 
-- [ ] `assistant` role, `users.is_active`, `payments.recorded_by`; doctor manages staff in Settings.
-- [ ] `/assistant/*` API with privacy-safe resources (no work done, illness or history), reusing BookingService and PaymentService.
-- [ ] Assistant area in the frontend: Today (queue + waiting to pay), Patients, Schedule.
-- [ ] **Test:** assistant gets 403 on every doctor route; assistant responses never contain medical fields; payment rules hold; walkthrough register → book → arrive → doctor visit → assistant collects payment.
+- [x] `assistant` role, `users.is_active`, `payments.recorded_by`; doctor manages staff in Settings.
+- [x] `/assistant/*` API with privacy-safe resources (no work done, illness or history), reusing BookingService and PaymentService.
+- [x] Assistant area in the frontend: Today (queue + waiting to pay), Patients, Schedule.
+- [x] **Test:** assistant gets 403 on every doctor route; assistant responses never contain medical fields; payment rules hold; walkthrough register → book → arrive → doctor visit → assistant collects payment.
 
 ## 9. Testing, Security and Deployment
 
