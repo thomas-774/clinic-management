@@ -4,11 +4,11 @@
 **Plan refs:** FR-C.2 – FR-C.4 · §7.2
 
 ## Steps
-- [ ] Header: patient info + current illness, with an edit modal (`Modal` component).
-- [ ] `HistoryList` in detailed mode: grouped or filterable by type; a "private" badge on non-visible entries.
-- [ ] Add/Edit history modal (type, title, details, recorded on, "visible to patient" toggle).
-- [ ] Delete with confirmation.
-- [ ] Empty placeholder section for the visit timeline (filled in by T5-10).
+- [x] Header: patient info + current illness, with an edit modal (`Modal` component).
+- [x] `HistoryList` in detailed mode: grouped or filterable by type; a "private" badge on non-visible entries.
+- [x] Add/Edit history modal (type, title, details, recorded on, "visible to patient" toggle).
+- [x] Delete with confirmation.
+- [x] Empty placeholder section for the visit timeline (filled in by T5-10).
 
 ## Done when
-- [ ] The doctor can add a private entry, and it does not appear on that patient's home page.
+- [x] The doctor can add a private entry, and it does not appear on that patient's home page.

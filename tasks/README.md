@@ -69,7 +69,7 @@ Backend
 Frontend
 - [x] [T2-07](phase-2-profiles-history/T2-07-fe-patient-home.md) PatientHome page · M
 - [x] [T2-08](phase-2-profiles-history/T2-08-fe-patients-list.md) PatientsList (doctor) with "New patient" form · M
-- [ ] [T2-09](phase-2-profiles-history/T2-09-fe-patient-details.md) PatientDetails with history management · L
+- [x] [T2-09](phase-2-profiles-history/T2-09-fe-patient-details.md) PatientDetails with history management · L
 
 ## Phase 3 — Availability and slot engine (Module G)
 

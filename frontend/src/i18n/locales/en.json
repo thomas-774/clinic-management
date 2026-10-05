@@ -138,5 +138,32 @@
     "copied": "Copied",
     "loginWith": "The patient logs in with the phone number",
     "done": "Done"
+  },
+  "patientDetails": {
+    "back": "← All patients",
+    "edit": "Edit",
+    "editTitle": "Edit patient",
+    "notFound": "This patient does not exist.",
+    "history": "Medical history",
+    "addEntry": "Add entry",
+    "filterByType": "Filter by type",
+    "allTypes": "All",
+    "editEntry": "Edit {{title}}",
+    "delete": "Delete",
+    "deleteEntry": "Delete {{title}}",
+    "deleteTitle": "Delete history entry?",
+    "deleteMessage": "“{{title}}” will be removed permanently.",
+    "visits": "Visits",
+    "noVisits": "No visits yet."
+  },
+  "historyForm": {
+    "addTitle": "Add history entry",
+    "editTitle": "Edit history entry",
+    "type": "Type",
+    "recordedOn": "Date",
+    "title": "Title",
+    "details": "Details",
+    "visible": "Visible to the patient",
+    "visibleHint": "Shown in the patient's simple history. Leave unchecked for private notes."
   }
 }

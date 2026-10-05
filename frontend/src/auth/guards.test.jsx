@@ -1,6 +1,7 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
 import * as authApi from '../api/auth'
+import * as doctorPatientsApi from '../api/doctorPatients'
 import { tokenStorage } from '../api/client'
 import { expectPath, renderAppAt as renderAt } from '../test/renderApp'
 
@@ -42,10 +43,12 @@ describe('route guards', () => {
     tokenStorage.set('doctor-token')
     vi.spyOn(authApi, 'me').mockResolvedValue(doctor)
 
+    const getPatient = vi.spyOn(doctorPatientsApi, 'getPatient').mockReturnValue(new Promise(() => {}))
+
     renderAt('/doctor/patients/12')
 
-    expect(await screen.findByRole('heading', { name: 'Patient' })).toBeInTheDocument()
     await expectPath('/doctor/patients/12')
+    await waitFor(() => expect(getPatient).toHaveBeenCalledWith(12))
   })
 
   it('sends a logged-in user away from /login to their home', async () => {

@@ -14,7 +14,9 @@ export function formatDate(value, language) {
   if (!value) return ''
   const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(value)
   return new Intl.DateTimeFormat(locale(language), {
-    dateStyle: 'medium',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
     timeZone: isDateOnly ? 'UTC' : CLINIC_TIME_ZONE,
   }).format(new Date(isDateOnly ? `${value}T00:00:00Z` : value))
 }
@@ -37,4 +39,9 @@ export function formatMoney(amount, language) {
     currency: 'EGP',
     minimumFractionDigits: 2,
   }).format(Number(amount ?? 0))
+}
+
+/** Today's date in clinic time as "YYYY-MM-DD" (for date inputs). */
+export function todayInClinic() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: CLINIC_TIME_ZONE }).format(new Date())
 }

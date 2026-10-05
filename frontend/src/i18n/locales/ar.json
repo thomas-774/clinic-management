@@ -138,5 +138,32 @@
     "copied": "تم النسخ",
     "loginWith": "يسجل المريض الدخول برقم الهاتف",
     "done": "تم"
+  },
+  "patientDetails": {
+    "back": "→ كل المرضى",
+    "edit": "تعديل",
+    "editTitle": "تعديل بيانات المريض",
+    "notFound": "هذا المريض غير موجود.",
+    "history": "التاريخ المرضي",
+    "addEntry": "إضافة سجل",
+    "filterByType": "تصفية حسب النوع",
+    "allTypes": "الكل",
+    "editEntry": "تعديل {{title}}",
+    "delete": "حذف",
+    "deleteEntry": "حذف {{title}}",
+    "deleteTitle": "حذف السجل؟",
+    "deleteMessage": "سيتم حذف «{{title}}» نهائيًا.",
+    "visits": "الزيارات",
+    "noVisits": "لا توجد زيارات بعد."
+  },
+  "historyForm": {
+    "addTitle": "إضافة سجل طبي",
+    "editTitle": "تعديل السجل الطبي",
+    "type": "النوع",
+    "recordedOn": "التاريخ",
+    "title": "العنوان",
+    "details": "التفاصيل",
+    "visible": "يظهر للمريض",
+    "visibleHint": "يظهر في السجل المختصر للمريض. اتركه دون تحديد للملاحظات الخاصة."
   }
 }
