@@ -3,6 +3,7 @@
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -27,6 +28,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(SetLocale::class);
 
         $middleware->alias(['role' => EnsureRole::class]);
+        // Check the role before route-model binding, so a wrong-role user gets
+        // 403 and can never probe which record ids exist (404 vs 403).
+        $middleware->appendToPriorityList(AuthenticatesRequests::class, EnsureRole::class);
 
         // There is no web login page; API guests get a JSON 401 instead of a redirect.
         $middleware->redirectGuestsTo(fn (Request $request) => $isApi($request) ? null : '/');

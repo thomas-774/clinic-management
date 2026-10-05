@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\Doctor\BlockedTimeController;
 use App\Http\Controllers\Api\V1\Doctor\MedicalHistoryController;
 use App\Http\Controllers\Api\V1\Doctor\PatientController;
 use App\Http\Controllers\Api\V1\Doctor\SettingsController;
@@ -47,5 +48,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
         Route::get('/working-hours', [WorkingHoursController::class, 'index'])->name('working-hours.index');
         Route::put('/working-hours', [WorkingHoursController::class, 'update'])->name('working-hours.update');
+        Route::get('/blocked-times', [BlockedTimeController::class, 'index'])->name('blocked-times.index');
+        Route::post('/blocked-times', [BlockedTimeController::class, 'store'])->name('blocked-times.store');
+        Route::delete('/blocked-times/{blockedTime}', [BlockedTimeController::class, 'destroy'])->name('blocked-times.destroy');
     });
 });

@@ -4,9 +4,9 @@
 **Plan refs:** FR-G.3 · §6.3
 
 ## Steps
-- [ ] `GET /doctor/blocked-times?from=&to=`: list (defaults to today onward).
-- [ ] `POST /doctor/blocked-times`: date (today or later), optional start/end time (both or neither; end > start), reason.
-- [ ] `DELETE /doctor/blocked-times/{id}`.
+- [x] `GET /doctor/blocked-times?from=&to=`: list (defaults to today onward).
+- [x] `POST /doctor/blocked-times`: date (today or later), optional start/end time (both or neither; end > start), reason.
+- [x] `DELETE /doctor/blocked-times/{id}`.
 
 ## Done when
-- [ ] A whole-day block and a time-range block can both be created and deleted.
+- [x] A whole-day block and a time-range block can both be created and deleted.
