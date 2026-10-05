@@ -111,7 +111,7 @@ Backend
 - [x] [T5-03](phase-5-visits-payments/T5-03-create-visit-endpoint.md) POST /doctor/visits (visit + first payment) · M
 - [x] [T5-04](phase-5-visits-payments/T5-04-update-visit-endpoint.md) PUT /doctor/visits/{id} · S
 - [x] [T5-05](phase-5-visits-payments/T5-05-add-payment-endpoint.md) Add payment (installments) · S
-- [ ] [T5-06](phase-5-visits-payments/T5-06-visit-payment-feature-tests.md) Feature tests: visits and payments · M
+- [x] [T5-06](phase-5-visits-payments/T5-06-visit-payment-feature-tests.md) Feature tests: visits and payments · M
 - [ ] [T5-07](phase-5-visits-payments/T5-07-balances-in-profiles.md) Visits and balances in the profile endpoints · S
 
 Frontend
