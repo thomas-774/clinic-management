@@ -9,7 +9,7 @@ Single-clinic web app for one doctor and their patients: profiles and medical hi
 
 | Folder | What it is |
 | --- | --- |
-| `backend/` | Laravel 11 REST API (Sanctum, MySQL 8) |
+| `backend/` | Laravel 13 REST API (PHP 8.3) (Sanctum, MySQL 8) |
 | `frontend/` | React (Vite) app (React Router, TanStack Query, Tailwind, react-i18next) |
 | `tasks/` | One file per task, grouped by phase |
 

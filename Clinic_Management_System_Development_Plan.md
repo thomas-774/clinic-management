@@ -13,7 +13,7 @@ Version 1 is a single-clinic web app with two roles (patient and doctor) and thr
 | Layer | Technology | Notes |
 | --- | --- | --- |
 | Frontend | React (Vite) + React Router | Tailwind CSS for styling, Axios for API calls, TanStack Query for server state |
-| Backend | Laravel 11 (REST API) | Laravel Sanctum for token auth, Form Requests for validation, API Resources for JSON |
+| Backend | Laravel 13 (REST API) | Laravel Sanctum for token auth, Form Requests for validation, API Resources for JSON |
 | Database | MySQL 8 (SQL) | Managed through Laravel migrations and seeders |
 | Tooling | Git + GitHub, Postman, PHPUnit/Pest, Vitest | One repo with `/backend` and `/frontend`, or two repos |
 

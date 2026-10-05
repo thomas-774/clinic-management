@@ -31,7 +31,7 @@ Phase order: 0 → 1 → (2 and 3 in parallel) → 4 → 5 → 6 → 7. Phase 5 
 
 - [x] [T0-01](phase-0-setup/T0-01-confirm-open-questions.md) Confirm open questions with the client · S
 - [ ] [T0-02](phase-0-setup/T0-02-repo-and-branching.md) Create repository and branching rules · S
-- [ ] [T0-03](phase-0-setup/T0-03-laravel-backend-setup.md) Create Laravel backend · S
+- [x] [T0-03](phase-0-setup/T0-03-laravel-backend-setup.md) Create Laravel backend · S
 - [ ] [T0-04](phase-0-setup/T0-04-react-frontend-setup.md) Create React (Vite) frontend · S
 - [ ] [T0-05](phase-0-setup/T0-05-cors-and-health-check.md) Connect frontend to backend (CORS + health check) · S
 - [ ] [T0-06](phase-0-setup/T0-06-test-tooling.md) Set up test tooling · S
