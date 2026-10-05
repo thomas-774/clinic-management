@@ -64,7 +64,7 @@ Backend
 - [x] [T2-03](phase-2-profiles-history/T2-03-doctor-patient-list.md) Doctor: patient list with search and create patient · M
 - [x] [T2-04](phase-2-profiles-history/T2-04-doctor-patient-details.md) Doctor: patient details and update · M
 - [x] [T2-05](phase-2-profiles-history/T2-05-history-crud.md) Medical history CRUD · M
-- [ ] [T2-06](phase-2-profiles-history/T2-06-history-privacy-tests.md) Tests: history privacy and profile access · S
+- [x] [T2-06](phase-2-profiles-history/T2-06-history-privacy-tests.md) Tests: history privacy and profile access · S
 
 Frontend
 - [ ] [T2-07](phase-2-profiles-history/T2-07-fe-patient-home.md) PatientHome page · M
