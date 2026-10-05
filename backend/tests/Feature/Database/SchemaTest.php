@@ -2,6 +2,7 @@
 
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 function insertUser(array $overrides = []): int
 {
@@ -18,6 +19,17 @@ function insertUser(array $overrides = []): int
 function insertPatient(array $userOverrides = []): int
 {
     return DB::table('patients')->insertGetId(['user_id' => insertUser($userOverrides), 'address' => 'Cairo']);
+}
+
+function insertAppointment(int $doctorId, int $patientId, string $status = 'booked', string $startAt = '2026-10-06 17:00:00'): int
+{
+    return DB::table('appointments')->insertGetId([
+        'doctor_id' => $doctorId,
+        'patient_id' => $patientId,
+        'start_at' => $startAt,
+        'end_at' => date('Y-m-d H:i:s', strtotime($startAt) + 45 * 60),
+        'status' => $status,
+    ]);
 }
 
 describe('users and patients (T1-01)', function () {
@@ -104,5 +116,49 @@ describe('availability tables (T1-03)', function () {
         expect(Schema::hasIndex('working_hours', ['doctor_id', 'day_of_week']))->toBeTrue()
             ->and(Schema::hasIndex('blocked_times', ['doctor_id', 'date']))->toBeTrue()
             ->and(Schema::hasIndex('working_hours', ['doctor_id', 'day_of_week'], 'unique'))->toBeFalse();
+    });
+});
+
+describe('appointments (T1-04)', function () {
+    beforeEach(function () {
+        $this->doctorId = insertUser(['role' => 'doctor', 'phone' => '01099999999']);
+    });
+
+    it('rejects two booked appointments at the same time for the same doctor', function () {
+        insertAppointment($this->doctorId, insertPatient(['phone' => '01011111111']));
+
+        expect(fn () => insertAppointment($this->doctorId, insertPatient(['phone' => '01022222222'])))
+            ->toThrow(QueryException::class);
+    });
+
+    it('lets a new booking take the time of a cancelled one', function () {
+        insertAppointment($this->doctorId, insertPatient(['phone' => '01011111111']), 'cancelled');
+        insertAppointment($this->doctorId, insertPatient(['phone' => '01022222222']), 'booked');
+
+        expect(DB::table('appointments')->count())->toBe(2);
+    });
+
+    it('fills active_slot only for slot-holding statuses', function () {
+        $patientId = insertPatient();
+        $booked = insertAppointment($this->doctorId, $patientId, 'booked', '2026-10-06 17:00:00');
+        $noShow = insertAppointment($this->doctorId, $patientId, 'no_show', '2026-10-06 17:45:00');
+
+        expect(DB::table('appointments')->find($booked)->active_slot)->toBe('2026-10-06 17:00:00')
+            ->and(DB::table('appointments')->find($noShow)->active_slot)->toBeNull();
+    });
+
+    it('frees the slot when a booked appointment is cancelled', function () {
+        $first = insertAppointment($this->doctorId, insertPatient(['phone' => '01011111111']));
+        DB::table('appointments')->where('id', $first)->update(['status' => 'cancelled']);
+
+        insertAppointment($this->doctorId, insertPatient(['phone' => '01022222222']));
+
+        expect(DB::table('appointments')->where('status', 'booked')->count())->toBe(1);
+    });
+
+    it('has the schedule and patient indexes', function () {
+        expect(Schema::hasIndex('appointments', ['doctor_id', 'active_slot'], 'unique'))->toBeTrue()
+            ->and(Schema::hasIndex('appointments', ['doctor_id', 'start_at']))->toBeTrue()
+            ->and(Schema::hasIndex('appointments', ['patient_id']))->toBeTrue();
     });
 });
