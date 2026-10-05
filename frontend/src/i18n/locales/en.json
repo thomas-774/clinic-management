@@ -232,5 +232,25 @@
   "slots": {
     "label": "Free times",
     "empty": "No free slots on this day."
+  },
+  "book": {
+    "date": "Date",
+    "dateHint_zero": "Today only.",
+    "dateHint_one": "You can book up to {{count}} day ahead.",
+    "dateHint_other": "You can book up to {{count}} days ahead.",
+    "pickDate": "Pick a date to see the free times.",
+    "freeTimesOn": "Free times on {{date}}",
+    "confirmTitle": "Confirm your appointment",
+    "time": "Time",
+    "duration": "Length",
+    "confirm": "Book this time",
+    "booking": "Booking…",
+    "booked": "Your appointment is booked.",
+    "slotTaken": "That time was just taken. Please pick another one.",
+    "alreadyBooked": "You already have an upcoming appointment.",
+    "goToMyAppointments": "Go to My appointments",
+    "dateHint_two": "You can book up to {{count}} days ahead.",
+    "dateHint_few": "You can book up to {{count}} days ahead.",
+    "dateHint_many": "You can book up to {{count}} days ahead."
   }
 }

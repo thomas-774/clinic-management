@@ -31,6 +31,8 @@ class SlotController extends Controller
             'meta' => [
                 'date' => $validated['date'],
                 'duration' => $service->duration(),
+                // Patients cannot read the doctor settings; the date picker needs its limit (FR-E.1).
+                'booking_window_days' => $service->settings()->booking_window_days,
             ],
             'message' => null,
         ]);

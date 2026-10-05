@@ -16,7 +16,7 @@ beforeEach(function () {
 it('returns the seeded 45-minute slots with start and end in Cairo time', function () {
     $this->actingAs($this->patient->user)->getJson('/api/v1/slots?date=2026-10-06')
         ->assertOk()
-        ->assertJsonPath('meta', ['date' => '2026-10-06', 'duration' => 45])
+        ->assertJsonPath('meta', ['date' => '2026-10-06', 'duration' => 45, 'booking_window_days' => 30])
         ->assertJsonCount(5, 'data')
         ->assertJsonPath('data.0', ['start_at' => '2026-10-06T17:00:00+03:00', 'end_at' => '2026-10-06T17:45:00+03:00'])
         ->assertJsonPath('data.4.start_at', '2026-10-06T20:00:00+03:00');
