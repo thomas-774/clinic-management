@@ -13,7 +13,27 @@ Single-clinic web app for one doctor and their patients: profiles and medical hi
 | `frontend/` | React (Vite) app (React Router, TanStack Query, Tailwind, react-i18next) |
 | `tasks/` | One file per task, grouped by phase |
 
-Setup instructions for each app are added in their own folders (T0-03, T0-04).
+## Run locally
+
+Needs PHP 8.3+, Composer, MySQL 8 and Node 20+. Details: [backend/README.md](backend/README.md).
+
+```bash
+# terminal 1 — API on http://localhost:8000
+cd backend && composer install && cp .env.example .env && php artisan key:generate
+php artisan migrate && php artisan serve
+
+# terminal 2 — React app on http://localhost:5173
+cd frontend && npm install && cp .env.example .env && npm run dev
+```
+
+The home page calls `GET /api/v1/health` and shows the API status and server time.
+
+## Tests
+
+| App | Command | Tooling |
+| --- | --- | --- |
+| Backend | `cd backend && php artisan test` | Pest on the MySQL database `clinic_testing` (create it and grant your DB user access) |
+| Frontend | `cd frontend && npm run test` | Vitest + React Testing Library (jsdom) |
 
 ## Branching
 

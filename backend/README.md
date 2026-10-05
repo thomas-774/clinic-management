@@ -15,3 +15,11 @@ php artisan serve             # http://localhost:8000
 
 - API routes live in `routes/api.php` and are served under `/api/v1`.
 - `APP_TIMEZONE=Africa/Cairo`; default locale `ar`, fallback `en`.
+
+## Tests
+
+```bash
+php artisan test
+```
+
+Pest runs against the MySQL database `clinic_testing` (set in `phpunit.xml`; credentials come from `.env`). Feature tests use `RefreshDatabase`.
