@@ -4,6 +4,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Booking limits
+    |--------------------------------------------------------------------------
+    |
+    | How many future appointments (booked or checked in) one patient may hold
+    | at a time (FR-E.5, BR-4). Raise it here without code changes.
+    |
+    */
+
+    'max_active_appointments' => (int) env('CLINIC_MAX_ACTIVE_APPOINTMENTS', 1),
+
+    /*
+    |--------------------------------------------------------------------------
     | Doctor account
     |--------------------------------------------------------------------------
     |
