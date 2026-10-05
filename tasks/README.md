@@ -118,7 +118,7 @@ Frontend
 - [x] [T5-08](phase-5-visits-payments/T5-08-fe-visit-form.md) MoneyField and VisitForm · M
 - [x] [T5-09](phase-5-visits-payments/T5-09-fe-start-visit-from-schedule.md) "Start visit" from the schedule · S
 - [x] [T5-10](phase-5-visits-payments/T5-10-fe-visit-timeline.md) Visit timeline and installments on PatientDetails · M
-- [ ] [T5-11](phase-5-visits-payments/T5-11-fe-balance-on-patient-home.md) Outstanding balance on PatientHome · S
+- [x] [T5-11](phase-5-visits-payments/T5-11-fe-balance-on-patient-home.md) Outstanding balance on PatientHome · S
 
 ## Phase 6 — Dashboard and reports (Module H)
 

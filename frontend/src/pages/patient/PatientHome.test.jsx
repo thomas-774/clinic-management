@@ -22,6 +22,7 @@ const profile = {
   ],
   next_appointment: null,
   outstanding_balance: '0.00',
+  unpaid_visits: [],
 }
 
 function renderHome() {
@@ -78,6 +79,38 @@ describe('PatientHome', () => {
 
     const card = (await screen.findByRole('heading', { name: 'Next appointment' })).closest('section')
     expect(within(card).getByRole('link', { name: 'Book an appointment' })).toHaveAttribute('href', '/patient/book')
+  })
+
+  it('shows the outstanding balance in red with the visits still owed', async () => {
+    vi.spyOn(patientApi, 'getProfile').mockResolvedValue({
+      ...profile,
+      outstanding_balance: '800.50',
+      unpaid_visits: [
+        { id: 9, visit_date: '2026-10-05', remaining: '500.00' },
+        { id: 4, visit_date: '2026-08-10', remaining: '300.50' },
+      ],
+    })
+    renderHome()
+
+    const card = (await screen.findByRole('heading', { name: 'Remaining balance' })).closest('section')
+    const total = within(card).getByText('EGP 800.50')
+    expect(total.className).toContain('text-red-600')
+    const rows = within(within(card).getByRole('list', { name: 'Visits with a balance' })).getAllByRole('listitem')
+    expect(rows[0]).toHaveTextContent('Visit of 5 Oct 2026')
+    expect(rows[0]).toHaveTextContent('EGP 500.00')
+    expect(rows[1]).toHaveTextContent('Visit of 10 Aug 2026')
+    expect(rows[1]).toHaveTextContent('EGP 300.50')
+    expect(within(card).queryByText('No balance due.')).not.toBeInTheDocument()
+  })
+
+  it('says "No balance due" when nothing is owed', async () => {
+    vi.spyOn(patientApi, 'getProfile').mockResolvedValue(profile)
+    renderHome()
+
+    const card = (await screen.findByRole('heading', { name: 'Remaining balance' })).closest('section')
+    expect(within(card).getByText('No balance due.')).toBeInTheDocument()
+    expect(within(card).getByText('EGP 0.00').className).not.toContain('text-red-600')
+    expect(within(card).queryByRole('list')).not.toBeInTheDocument()
   })
 
   it('updates phone and address', async () => {

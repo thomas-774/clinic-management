@@ -89,7 +89,7 @@
     "noAppointment": "لا يوجد لديك موعد قادم.",
     "bookNow": "احجز موعدًا",
     "balance": "المبلغ المتبقي",
-    "nothingDue": "لا توجد مبالغ مستحقة.",
+    "nothingDue": "لا يوجد رصيد مستحق.",
     "personalInfo": "البيانات الشخصية",
     "editContact": "تعديل بيانات التواصل",
     "contactSaved": "تم حفظ بيانات التواصل.",
@@ -99,7 +99,9 @@
     "currentIllness": "الشكوى الحالية",
     "noIllness": "لا يوجد.",
     "history": "التاريخ المرضي",
-    "manageAppointment": "عرض أو إلغاء"
+    "manageAppointment": "عرض أو إلغاء",
+    "unpaidVisits": "زيارات بها مبالغ متبقية",
+    "visitOn": "زيارة {{date}}"
   },
   "table": {
     "pagination": "الصفحات",

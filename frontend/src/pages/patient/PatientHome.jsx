@@ -115,7 +115,18 @@ export default function PatientHome() {
           <p className={`text-2xl font-bold ${hasBalance ? 'text-red-600' : 'text-slate-900'}`}>
             {formatMoney(profile.outstanding_balance)}
           </p>
-          {!hasBalance && <p className="text-sm text-slate-500">{t('patientHome.nothingDue')}</p>}
+          {hasBalance ? (
+            <ul aria-label={t('patientHome.unpaidVisits')} className="mt-2 divide-y divide-slate-100 text-sm">
+              {profile.unpaid_visits.map((visit) => (
+                <li key={visit.id} className="flex justify-between gap-3 py-1.5">
+                  <span className="text-slate-600">{t('patientHome.visitOn', { date: formatDate(visit.visit_date) })}</span>
+                  <span className="font-semibold text-red-600">{formatMoney(visit.remaining)}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-slate-500">{t('patientHome.nothingDue')}</p>
+          )}
         </Card>
       </div>
 

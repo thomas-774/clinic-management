@@ -4,8 +4,8 @@
 **Plan refs:** FR-B.4, FR-D.5
 
 ## Steps
-- [ ] Balance card: total outstanding (red if > 0, "No balance due" otherwise).
-- [ ] List of visits with an unpaid balance (date, remaining).
+- [x] Balance card: total outstanding (red if > 0, "No balance due" otherwise).
+- [x] List of visits with an unpaid balance (date, remaining).
 
 ## Done when
-- [ ] After the doctor saves a partially paid visit, the patient sees the remaining amount.
+- [x] After the doctor saves a partially paid visit, the patient sees the remaining amount.

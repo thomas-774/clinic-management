@@ -89,7 +89,7 @@
     "noAppointment": "You have no upcoming appointment.",
     "bookNow": "Book an appointment",
     "balance": "Remaining balance",
-    "nothingDue": "Nothing to pay.",
+    "nothingDue": "No balance due.",
     "personalInfo": "Personal information",
     "editContact": "Edit contact info",
     "contactSaved": "Contact info saved.",
@@ -99,7 +99,9 @@
     "currentIllness": "Current illness",
     "noIllness": "Nothing recorded.",
     "history": "Medical history",
-    "manageAppointment": "View or cancel"
+    "manageAppointment": "View or cancel",
+    "unpaidVisits": "Visits with a balance",
+    "visitOn": "Visit of {{date}}"
   },
   "table": {
     "pagination": "Pages",

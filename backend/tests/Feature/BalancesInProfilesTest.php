@@ -108,3 +108,19 @@ it('shows the same outstanding balance to the doctor and to the patient', functi
 
     expect(doctorView()->json('data.outstanding_balance'))->toBe(patientView()->json('data.outstanding_balance'))->toBe('750.50');
 });
+
+it('shows the patient the remaining amount right after the doctor saves a partially paid visit (T5-11)', function () {
+    $this->travelTo('2026-10-05 17:00:00');
+    app('auth')->forgetGuards();
+    $this->actingAs($this->doctor)->postJson('/api/v1/doctor/visits', [
+        'patient_id' => $this->patient->id,
+        'work_done' => 'Crown',
+        'total_amount' => 2000,
+        'paid_now' => 1500,
+    ])->assertCreated();
+
+    patientView()
+        ->assertJsonPath('data.outstanding_balance', '1550.50') // 1050.50 before + 500.00
+        ->assertJsonPath('data.unpaid_visits.0.visit_date', '2026-10-05')
+        ->assertJsonPath('data.unpaid_visits.0.remaining', '500.00');
+});
