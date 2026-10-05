@@ -4,7 +4,7 @@ Oct 5, 2026 · Thomas
 
 ## 1. Project Overview
 
-Version 1 is a single-clinic web app with two roles (patient and doctor) and three core areas: profile and medical history, visits and payments, and appointment booking with automatic slot generation.
+Version 1 is a single-clinic web app with three roles (patient, doctor and front-desk assistant) and three core areas: profile and medical history, visits and payments, and appointment booking with automatic slot generation.
 
 **Goal.** Let patients see their own record and book appointments online, and let the doctor manage records, visits, payments, schedule and revenue from one dashboard.
 
@@ -25,33 +25,36 @@ Version 1 is a single-clinic web app with two roles (patient and doctor) and thr
 - Dashboard: patient count and revenue per day, week and month, with per-patient payments.
 - Interface in Arabic (default, right-to-left) and English, with a language switcher.
 
-**Out of scope for v1** (can be added later): multiple doctors or clinics, receptionist role, SMS/WhatsApp reminders, online payment, prescriptions printing, file uploads (X-rays, lab results).
+- Assistant (front desk): registers new patients, records what the patient pays, runs today's queue and books appointments (Module I, added in Phase 8).
+
+**Out of scope for v1** (can be added later): multiple doctors or clinics, SMS/WhatsApp reminders, online payment, prescriptions printing, file uploads (X-rays, lab results).
 
 ## 2. User Roles and Permissions
 
-There are two roles; every API route checks the role, and a patient can only ever read their own data.
+There are three roles; every API route checks the role, and a patient can only ever read their own data. The assistant (added in Phase 8, Module I) works the front desk and never sees medical data.
 
-| Capability | Patient | Doctor |
-| --- | --- | --- |
-| Register / log in | Yes (self-register, or account created by the doctor) | Yes (account seeded) |
-| Create patient accounts | No | Yes (for patients who call by phone) |
-| View own profile (name, phone, address, illness) | Yes | — |
-| View any patient's profile | No | Yes |
-| Medical history | Simple summary only | Full detailed history, can add/edit |
-| Record today's treatment (visit notes) | No | Yes |
-| Record payments (paid / total / remaining) | No (sees own balance) | Yes |
-| See available slots and book | Yes | Yes (can book on behalf of a patient) |
-| Cancel own appointment | Yes (up to the cancellation cut-off, default 2 h before start) | Yes (any) |
-| View all appointments / schedule | No (own only) | Yes |
-| Mark patient Arrived / Checked In | No | Yes |
-| Set working hours and slot duration | No | Yes |
-| Revenue and patient-count dashboard | No | Yes |
+| Capability | Patient | Doctor | Assistant |
+| --- | --- | --- | --- |
+| Register / log in | Yes (self-register, or account created by the doctor) | Yes (account seeded) | Yes (account created by the doctor; can be deactivated) |
+| Create patient accounts | No | Yes (for patients who call by phone) | Yes (no illness field) |
+| View own profile (name, phone, address, illness) | Yes | — | — |
+| View any patient's profile | No | Yes | Contact info, visit dates and money only |
+| Medical history | Simple summary only | Full detailed history, can add/edit | No |
+| Record today's treatment (visit notes, total) | No | Yes | No (never sees work done) |
+| Record payments (paid / total / remaining) | No (sees own balance) | Yes | Yes (records amounts paid; cannot change the total) |
+| See available slots and book | Yes | Yes (can book on behalf of a patient) | Yes (on behalf of a patient) |
+| Cancel own appointment | Yes (up to the cancellation cut-off, default 2 h before start) | Yes (any) | Yes (any) |
+| View all appointments / schedule | No (own only) | Yes | Yes |
+| Mark patient Arrived / Checked In | No | Yes | Yes (also No-show; not Completed) |
+| Set working hours and slot duration | No | Yes | No |
+| Revenue and patient-count dashboard | No | Yes | No |
+| Manage assistant accounts | No | Yes | No |
 
 **Simple vs detailed history.** Each history entry has a `visibility` flag: `patient_visible` entries appear on the patient page as the simple history; all entries (including private clinical notes) appear for the doctor.
 
 ## 3. Functional Requirements by Module
 
-The system is split into eight modules (A–H); each requirement has an ID (FR-x.y) so it can be traced to tasks and tests.
+The system is split into nine modules (A–I); each requirement has an ID (FR-x.y) so it can be traced to tasks and tests.
 
 ### Module A — Authentication
 
@@ -114,6 +117,17 @@ The system is split into eight modules (A–H); each requirement has an ID (FR-x
 - **FR-H.2** Revenue = sum of payments received in that period (cash actually collected), with outstanding balances shown separately.
 - **FR-H.3** Table of payments in the selected period: date, patient, visit total, paid, remaining.
 - **FR-H.4** A revenue-per-day chart for the selected month.
+
+### Module I — Assistant (front desk)
+
+Added in Phase 8. The doctor sets the visit's work done and total cost; the assistant collects the money.
+
+- **FR-I.1** The doctor creates assistant accounts (name, phone, initial password shown once) in Settings → Staff, can edit them, reset the password and deactivate them. A deactivated assistant cannot log in and their tokens are revoked.
+- **FR-I.2** The assistant searches patients by name or phone and creates a patient account for a patient who does not exist yet (name, phone, address, optional email, date of birth, gender — no current illness). The initial password is shown once.
+- **FR-I.3** The assistant opens a patient and sees contact info, outstanding balance and every visit's date, total, paid, remaining and payments — never medical history, current illness or work done. The assistant can edit contact info only.
+- **FR-I.4** A "Waiting to pay" list shows the day's visits with a remaining balance; the assistant records the amount the patient pays (full or partial, cash/card/wallet) under the same rules as the doctor (PR-1 – PR-3). Later installments are recorded the same way from the patient page.
+- **FR-I.5** Every payment stores who recorded it (`recorded_by`); the doctor's payments report shows it.
+- **FR-I.6** The assistant sees the schedule (today's queue, day/week), marks patients Arrived, No-show or Cancelled, and books appointments on a patient's behalf (same booking rules; the patient cancellation cut-off BR-5 does not apply to the assistant). Completed is set only by the doctor's visit.
 
 ## 4. Business Rules
 
@@ -195,7 +209,8 @@ Nine tables cover the whole v1; every table also has `id` (BIGINT PK) and `creat
 | phone | VARCHAR(20) | UNIQUE, used for login |
 | email | VARCHAR(150) | UNIQUE, nullable |
 | password | VARCHAR(255) | bcrypt hash |
-| role | ENUM('patient','doctor') | |
+| role | ENUM('patient','doctor','assistant') | `assistant` added in Phase 8 |
+| is_active | BOOLEAN | default true; false blocks login (assistants, FR-I.1) |
 
 **patients** — one row per patient user
 
@@ -275,6 +290,7 @@ Nine tables cover the whole v1; every table also has `id` (BIGINT PK) and `creat
 | amount | DECIMAL(10,2) | > 0 |
 | method | ENUM('cash','card','wallet') | default cash |
 | paid_at | DATETIME | used for revenue reports |
+| recorded_by | FK → users.id | nullable; doctor or assistant who took the money (FR-I.5) |
 
 ### 5.2 Relationships
 
@@ -343,7 +359,7 @@ backend/app/
 | GET | /me | any | Current user | A.2 |
 | GET | /patient/profile | patient | Info, illness, simple history, balance, next appointment | B.1–B.4 |
 | PATCH | /patient/profile | patient | Update phone/address | B.5 |
-| GET | /slots?date=YYYY-MM-DD | patient, doctor | Free slots for a date | E.2 |
+| GET | /slots?date=YYYY-MM-DD | patient, doctor, assistant | Free slots for a date | E.2 |
 | POST | /patient/appointments | patient | Book `{ start_at }` | E.3 |
 | GET | /patient/appointments | patient | Own appointments | E.4 |
 | PATCH | /patient/appointments/{id}/cancel | patient | Cancel own | E.4 |
@@ -364,6 +380,14 @@ backend/app/
 | GET | /doctor/reports/summary?period=day\|week\|month | doctor | Patient count, revenue, outstanding | H.1–H.2 |
 | GET | /doctor/reports/payments?from=&to= | doctor | Per-patient payment table | H.3 |
 | GET | /doctor/reports/daily-revenue?month= | doctor | Chart data | H.4 |
+| GET / POST | /doctor/staff | doctor | List / create assistants; create returns the initial password once | I.1 |
+| PUT | /doctor/staff/{id} | doctor | Edit, deactivate, reset password | I.1 |
+| GET / POST | /assistant/patients[?search=] | assistant | Search / create patient (no illness) | I.2 |
+| GET / PUT | /assistant/patients/{id} | assistant | Contact info, balance, visits money only / edit contact info | I.3 |
+| GET | /assistant/visits/unpaid?date= | assistant | Visits with a remaining balance (default today) | I.4 |
+| POST | /assistant/visits/{id}/payments | assistant | Record a payment `{ amount, method, paid_at? }` | I.4–I.5 |
+| GET / POST | /assistant/appointments | assistant | Schedule / book on behalf of a patient | I.6 |
+| PATCH | /assistant/appointments/{id}/status | assistant | checked_in / no_show / cancelled | I.6 |
 
 ### 6.4 Key request example — create visit with payment
 
@@ -416,6 +440,10 @@ frontend/src/
 | /doctor/visits/new?appointment=:id | VisitForm | Work done, total, paid now, live remaining | POST /doctor/visits |
 | /doctor/settings | Settings | Weekly hours grid (several ranges per day), slot duration, cancellation cut-off, blocked dates, live slot preview | /doctor/settings, /working-hours, /blocked-times |
 | /doctor/reports | Reports | Period filter, payments table, daily revenue chart | /doctor/reports/* |
+| /assistant | Today | Today's queue (Arrived / No-show / Cancel) and "Waiting to pay" with Record payment | /assistant/appointments, /assistant/visits/* |
+| /assistant/patients | PatientsList | Search, "New patient" form without illness | GET / POST /assistant/patients |
+| /assistant/patients/:id | PatientPage | Contact info (edit), balance, visits money table, record payment, book appointment | /assistant/patients/{id}, /slots |
+| /assistant/schedule | Schedule | Day/week list with Arrived / No-show / Cancel, no Start visit | /assistant/appointments |
 
 ### 7.3 Key UI behaviour
 
@@ -439,6 +467,7 @@ Build in eight phases of roughly one week each; every phase ends with something 
 | 5 | Visits + payments | 2, 4 | Visit form with automatic remaining balance |
 | 6 | Dashboard + reports | 5 | Daily/weekly/monthly numbers |
 | 7 | Testing, polish, deploy | all | Live v1 |
+| 8 | Assistant (front desk) | 5, 6 | Assistant registers patients, records payments, runs the queue — build before the deploy tasks of Phase 7 (T7-05 onwards) |
 
 ### Phase 0 — Project setup
 
@@ -499,6 +528,13 @@ Build in eight phases of roughly one week each; every phase ends with something 
 - [ ] Seed realistic demo data; run a full walkthrough (book → arrive → visit → payment → dashboard).
 - [ ] Deploy (section 9) and hand over credentials and a short user guide to the doctor.
 
+### Phase 8 — Assistant (Module I)
+
+- [ ] `assistant` role, `users.is_active`, `payments.recorded_by`; doctor manages staff in Settings.
+- [ ] `/assistant/*` API with privacy-safe resources (no work done, illness or history), reusing BookingService and PaymentService.
+- [ ] Assistant area in the frontend: Today (queue + waiting to pay), Patients, Schedule.
+- [ ] **Test:** assistant gets 403 on every doctor route; assistant responses never contain medical fields; payment rules hold; walkthrough register → book → arrive → doctor visit → assistant collects payment.
+
 ## 9. Testing, Security and Deployment
 
 The three areas that must be tested hardest are slot generation, double booking and balance calculation, because errors there directly cost the clinic time or money.
@@ -534,8 +570,8 @@ The plan assumes one doctor in one clinic; the questions below should be confirm
 
 **Assumptions made**
 
-- One doctor, one clinic, no receptionist account in v1 (the schema keeps `doctor_id` everywhere so more doctors or a receptionist can be added later).
-- Currency is EGP; all payments are recorded manually by the doctor (no online payment).
+- One doctor, one clinic (the schema keeps `doctor_id` everywhere so more doctors can be added later). Assistant accounts belong to that clinic's doctor (Phase 8).
+- Currency is EGP; all payments are recorded manually by the doctor or the assistant (no online payment).
 - Revenue counts money actually received on the payment date, not the visit total.
 - Patients register themselves; the doctor can also add a patient who calls by phone.
 
@@ -547,6 +583,6 @@ The plan assumes one doctor in one clinic; the questions below should be confirm
 | More than one future appointment per patient? | **One for now**, kept in `config('clinic.max_active_appointments')` so it can be raised later. | FR-E.5, BR-4 · T4-01, T4-05 |
 | How late can a patient cancel? | **Up to X hours before start**, where X is a doctor setting `cancel_cutoff_hours` (default 2). | BR-5, FR-G.2 · T1-03, T3-01, T3-07, T4-02, T4-05, T4-08 |
 | Different hours per weekday? Break inside the shift? | **Yes to both.** Each weekday has zero or more time ranges; no rows = day off. | FR-G.1, §4.1, `working_hours` · T1-03, T1-07, T3-02, T3-04, T3-05, T3-07, T3-09 |
-| Receptionist login in v1? | **No**, doctor only. Can be added later. | §2 (unchanged) |
+| Receptionist login in v1? | **No**, doctor only. Can be added later. **Changed Oct 5, 2026:** an assistant role is added in Phase 8 — the doctor sets the total, the assistant records payments, registers patients, runs the queue and books; contact info and money only, no medical data; accounts made by the doctor in Settings. | §2, Module I · T8-01 … T8-13 |
 | Interface language? | **Arabic and English, Arabic is the default** (RTL). API messages are localized via `Accept-Language`. | §6.2, §7.3 · T1-08, T1-11, T1-14, T7-03 |
 | SMS/WhatsApp reminders? | **Not in v1.** | §1 out of scope (unchanged) |

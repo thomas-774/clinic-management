@@ -23,9 +23,10 @@ Each task is one file: what to build, which plan section it comes from, the step
 | 5 | [phase-5-visits-payments](phase-5-visits-payments/) | 11 | Visit form with automatic remaining balance |
 | 6 | [phase-6-dashboard-reports](phase-6-dashboard-reports/) | 6 | Daily / weekly / monthly numbers |
 | 7 | [phase-7-testing-deploy](phase-7-testing-deploy/) | 9 | Live v1 |
-| | **Total** | **75** | |
+| 8 | [phase-8-assistant](phase-8-assistant/) | 13 | Assistant registers patients, records payments, runs the queue |
+| | **Total** | **88** | |
 
-Phase order: 0 → 1 → (2 and 3 in parallel) → 4 → 5 → 6 → 7. Phase 5 needs both 2 and 4.
+Phase order: 0 → 1 → (2 and 3 in parallel) → 4 → 5 → 6 → 8 → 7. Phase 5 needs both 2 and 4. Phase 8 was added after Phase 6 and is built before Phase 7, so the assistant is tested and deployed with v1.
 
 ## Phase 0 — Setup
 
@@ -132,6 +133,27 @@ Frontend
 - [x] [T6-05](phase-6-dashboard-reports/T6-05-fe-reports-table.md) Reports page, filter and payments table · M
 - [x] [T6-06](phase-6-dashboard-reports/T6-06-fe-revenue-chart.md) Daily revenue chart · S
 
+## Phase 8 — Assistant / front desk (Module I)
+
+Built before Phase 7. The doctor sets the visit total; the assistant registers patients, records what they pay, runs the queue and books. Contact info and money only — no medical data.
+
+Backend
+- [ ] [T8-01](phase-8-assistant/T8-01-role-and-account-status.md) Assistant role and account status · S
+- [ ] [T8-02](phase-8-assistant/T8-02-staff-endpoints.md) Doctor: staff (assistant) endpoints · M
+- [ ] [T8-03](phase-8-assistant/T8-03-payment-recorded-by.md) Who recorded each payment · S
+- [ ] [T8-04](phase-8-assistant/T8-04-assistant-patients-api.md) Assistant: patients API (contact + money only) · M
+- [ ] [T8-05](phase-8-assistant/T8-05-assistant-payments-api.md) Assistant: waiting-to-pay list and record payment · S
+- [ ] [T8-06](phase-8-assistant/T8-06-assistant-schedule-api.md) Assistant: schedule, booking and check-in · S
+- [ ] [T8-07](phase-8-assistant/T8-07-assistant-permission-tests.md) Tests: assistant permissions and privacy · M
+
+Frontend
+- [ ] [T8-08](phase-8-assistant/T8-08-fe-role-and-layout.md) Assistant role, routes and layout · S
+- [ ] [T8-09](phase-8-assistant/T8-09-fe-today-page.md) Today page (queue + waiting to pay) · M
+- [ ] [T8-10](phase-8-assistant/T8-10-fe-patients-pages.md) Patients list and patient page · M
+- [ ] [T8-11](phase-8-assistant/T8-11-fe-schedule-page.md) Assistant schedule · S
+- [ ] [T8-12](phase-8-assistant/T8-12-fe-staff-settings.md) Settings → Staff (doctor) · S
+- [ ] [T8-13](phase-8-assistant/T8-13-walkthrough.md) Demo data and front-desk walkthrough · S
+
 ## Phase 7 — Testing, polish and deployment
 
 - [ ] [T7-01](phase-7-testing-deploy/T7-01-permission-feature-tests.md) Feature tests: permissions on every endpoint · M
@@ -156,3 +178,4 @@ Frontend
 | F — Schedule and check-in | FR-F.1 – F.4 | T4-03, T4-04, T4-09, T4-10, T5-09 |
 | G — Availability | FR-G.1 – G.4 | T3-01 … T3-09 |
 | H — Dashboard and reports | FR-H.1 – H.4 | T6-01 … T6-06 |
+| I — Assistant (front desk) | FR-I.1 – I.6 | T8-01 … T8-13 |
