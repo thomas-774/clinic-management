@@ -156,7 +156,8 @@
     "deleteMessage": "“{{title}}” will be removed permanently.",
     "visits": "Visits",
     "noVisits": "No visits yet.",
-    "newWalkInVisit": "New walk-in visit"
+    "newWalkInVisit": "New walk-in visit",
+    "outstanding": "Outstanding balance"
   },
   "historyForm": {
     "addTitle": "Add history entry",
@@ -346,5 +347,39 @@
     "overpaid": "The amount paid cannot be more than the total.",
     "save": "Save visit",
     "saved": "Visit saved. Remaining: {{remaining}}"
+  },
+  "paymentStatus": {
+    "paid": "Paid",
+    "partially_paid": "Partially paid",
+    "unpaid": "Unpaid"
+  },
+  "visits": {
+    "unpaidBalance": "Unpaid balance",
+    "edit": "Edit",
+    "addPayment": "Add payment",
+    "total": "Total",
+    "paid": "Paid",
+    "remaining": "Remaining",
+    "showPayments_zero": "Show payments ({{count}})",
+    "showPayments_one": "Show payment ({{count}})",
+    "showPayments_two": "Show payments ({{count}})",
+    "showPayments_few": "Show payments ({{count}})",
+    "showPayments_many": "Show payments ({{count}})",
+    "showPayments_other": "Show payments ({{count}})",
+    "hidePayments_zero": "Hide payments",
+    "hidePayments_one": "Hide payment",
+    "hidePayments_two": "Hide payments",
+    "hidePayments_few": "Hide payments",
+    "hidePayments_many": "Hide payments",
+    "hidePayments_other": "Hide payments",
+    "addPaymentTitle": "Add a payment for {{date}}",
+    "remainingNow": "Remaining now: {{amount}}",
+    "amount": "Amount",
+    "tooMuch": "The amount cannot be more than the remaining {{amount}}.",
+    "savePayment": "Save payment",
+    "paymentSaved": "Payment recorded. Remaining: {{remaining}}",
+    "editTitle": "Edit visit of {{date}}",
+    "belowPaid": "The total cannot be lower than the {{amount}} already paid.",
+    "alreadyPaid": "Paid so far: {{amount}}"
   }
 }

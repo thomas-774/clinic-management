@@ -6,10 +6,13 @@ import ConfirmDialog from '../../components/ConfirmDialog'
 import HistoryList from '../../components/HistoryList'
 import { LoadError, Loading } from '../../components/QueryState'
 import { useDeleteHistoryEntry, usePatient } from '../../hooks/usePatient'
-import { formatDate } from '../../utils/format'
+import { formatDate, formatMoney } from '../../utils/format'
+import AddPaymentModal from './AddPaymentModal'
 import EditPatientModal from './EditPatientModal'
+import EditVisitModal from './EditVisitModal'
 import { HISTORY_TYPES } from '../../utils/historyTypes'
 import HistoryEntryModal from './HistoryEntryModal'
+import VisitTimeline from './VisitTimeline'
 
 function InfoItem({ label, children }) {
   return (
@@ -31,6 +34,8 @@ export default function PatientDetails() {
   const [entryForm, setEntryForm] = useState(null) // null = closed, {} = new, entry = edit
   const [deleting, setDeleting] = useState(null)
   const [typeFilter, setTypeFilter] = useState('all')
+  const [paying, setPaying] = useState(null) // visit receiving an installment
+  const [editingVisit, setEditingVisit] = useState(null)
 
   if (isPending) return <Loading />
   if (isError) {
@@ -43,6 +48,7 @@ export default function PatientDetails() {
 
   const history = typeFilter === 'all' ? patient.history : patient.history.filter((entry) => entry.type === typeFilter)
   const typesInUse = HISTORY_TYPES.filter((type) => patient.history.some((entry) => entry.type === type))
+  const owes = Number(patient.outstanding_balance) > 0
 
   return (
     <div className="space-y-4">
@@ -58,6 +64,9 @@ export default function PatientDetails() {
         }
         title={<span className="text-2xl font-bold">{patient.name}</span>}
       >
+        <p className={`mb-3 inline-block rounded-lg px-3 py-1 text-sm font-semibold ${owes ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+          {t('patientDetails.outstanding')}: <span data-testid="outstanding">{formatMoney(patient.outstanding_balance)}</span>
+        </p>
         <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <InfoItem label={t('patientForm.phone')}>
             <span dir="ltr">{patient.phone}</span>
@@ -128,11 +137,12 @@ export default function PatientDetails() {
           </Link>
         }
       >
-        {/* Visit timeline with balances arrives in T5-10. */}
-        <p className="text-sm text-slate-500">{t('patientDetails.noVisits')}</p>
+        <VisitTimeline visits={patient.visits} onAddPayment={setPaying} onEdit={setEditingVisit} />
       </Card>
 
       {editingInfo && <EditPatientModal patient={patient} onClose={() => setEditingInfo(false)} />}
+      {paying && <AddPaymentModal visit={paying} onClose={() => setPaying(null)} />}
+      {editingVisit && <EditVisitModal visit={editingVisit} onClose={() => setEditingVisit(null)} />}
       {entryForm && (
         <HistoryEntryModal patientId={patient.id} entry={entryForm.id ? entryForm : null} onClose={() => setEntryForm(null)} />
       )}

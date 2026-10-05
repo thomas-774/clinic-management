@@ -156,7 +156,8 @@
     "deleteMessage": "سيتم حذف «{{title}}» نهائيًا.",
     "visits": "الزيارات",
     "noVisits": "لا توجد زيارات بعد.",
-    "newWalkInVisit": "زيارة جديدة بدون موعد"
+    "newWalkInVisit": "زيارة جديدة بدون موعد",
+    "outstanding": "الرصيد المستحق"
   },
   "historyForm": {
     "addTitle": "إضافة سجل طبي",
@@ -346,5 +347,39 @@
     "overpaid": "لا يمكن أن يزيد المدفوع عن التكلفة الإجمالية.",
     "save": "حفظ الزيارة",
     "saved": "تم حفظ الزيارة. المتبقي: {{remaining}}"
+  },
+  "paymentStatus": {
+    "paid": "مدفوع",
+    "partially_paid": "مدفوع جزئيًا",
+    "unpaid": "غير مدفوع"
+  },
+  "visits": {
+    "unpaidBalance": "رصيد غير مدفوع",
+    "edit": "تعديل",
+    "addPayment": "إضافة دفعة",
+    "total": "الإجمالي",
+    "paid": "المدفوع",
+    "remaining": "المتبقي",
+    "showPayments_zero": "عرض الدفعات",
+    "showPayments_one": "عرض الدفعة",
+    "showPayments_two": "عرض الدفعتين",
+    "showPayments_few": "عرض الدفعات ({{count}})",
+    "showPayments_many": "عرض الدفعات ({{count}})",
+    "showPayments_other": "عرض الدفعات ({{count}})",
+    "hidePayments_zero": "إخفاء الدفعات",
+    "hidePayments_one": "إخفاء الدفعة",
+    "hidePayments_two": "إخفاء الدفعتين",
+    "hidePayments_few": "إخفاء الدفعات",
+    "hidePayments_many": "إخفاء الدفعات",
+    "hidePayments_other": "إخفاء الدفعات",
+    "addPaymentTitle": "إضافة دفعة لزيارة {{date}}",
+    "remainingNow": "المتبقي حاليًا: {{amount}}",
+    "amount": "المبلغ",
+    "tooMuch": "لا يمكن أن يزيد المبلغ عن المتبقي ({{amount}}).",
+    "savePayment": "حفظ الدفعة",
+    "paymentSaved": "تم تسجيل الدفعة. المتبقي: {{remaining}}",
+    "editTitle": "تعديل زيارة {{date}}",
+    "belowPaid": "لا يمكن أن يقل الإجمالي عن المدفوع ({{amount}}).",
+    "alreadyPaid": "المدفوع حتى الآن: {{amount}}"
   }
 }
