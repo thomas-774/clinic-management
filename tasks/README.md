@@ -142,7 +142,7 @@ Backend
 - [x] [T8-02](phase-8-assistant/T8-02-staff-endpoints.md) Doctor: staff (assistant) endpoints · M
 - [x] [T8-03](phase-8-assistant/T8-03-payment-recorded-by.md) Who recorded each payment · S
 - [x] [T8-04](phase-8-assistant/T8-04-assistant-patients-api.md) Assistant: patients API (contact + money only) · M
-- [ ] [T8-05](phase-8-assistant/T8-05-assistant-payments-api.md) Assistant: waiting-to-pay list and record payment · S
+- [x] [T8-05](phase-8-assistant/T8-05-assistant-payments-api.md) Assistant: waiting-to-pay list and record payment · S
 - [ ] [T8-06](phase-8-assistant/T8-06-assistant-schedule-api.md) Assistant: schedule, booking and check-in · S
 - [ ] [T8-07](phase-8-assistant/T8-07-assistant-permission-tests.md) Tests: assistant permissions and privacy · M
 

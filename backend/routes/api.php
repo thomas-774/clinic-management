@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Assistant\PatientController as AssistantPatientController;
+use App\Http\Controllers\Api\V1\Assistant\VisitController as AssistantVisitController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\Doctor\BlockedTimeController;
 use App\Http\Controllers\Api\V1\Doctor\MedicalHistoryController;
@@ -86,5 +87,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/patients', [AssistantPatientController::class, 'store'])->name('patients.store');
         Route::get('/patients/{patient}', [AssistantPatientController::class, 'show'])->name('patients.show');
         Route::put('/patients/{patient}', [AssistantPatientController::class, 'update'])->name('patients.update');
+
+        Route::get('/visits/unpaid', [AssistantVisitController::class, 'unpaid'])->name('visits.unpaid');
+        Route::post('/visits/{visit}/payments', [AssistantVisitController::class, 'storePayment'])->name('visits.payments.store');
     });
 });

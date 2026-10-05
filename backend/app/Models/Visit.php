@@ -55,4 +55,12 @@ class Visit extends Model
     {
         $query->withSum('payments', 'amount');
     }
+
+    /**
+     * Visits that still owe money: total > sum of payments (PR-1).
+     */
+    public function scopeUnpaid(Builder $query): void
+    {
+        $query->whereRaw('visits.total_amount > (select coalesce(sum(payments.amount), 0) from payments where payments.visit_id = visits.id)');
+    }
 }
