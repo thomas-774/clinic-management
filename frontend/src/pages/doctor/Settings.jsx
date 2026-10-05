@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSearchParams } from 'react-router-dom'
 import { LoadError, Loading } from '../../components/QueryState'
 import { useDoctorSettings, useUpdateSettings, useUpdateWorkingHours, useWorkingHours } from '../../hooks/useSettings'
 import { useToast } from '../../toast/useToast'
@@ -7,6 +8,8 @@ import { errorMessage } from '../../utils/apiErrors'
 import BlockedTimesCard from './settings/BlockedTimesCard'
 import StaffCard from './settings/StaffCard'
 import BookingSettingsForm from './settings/BookingSettingsForm'
+import DrugsTab from './settings/DrugsTab'
+import PrescriptionHeaderTab from './settings/PrescriptionHeaderTab'
 import SlotPreview from './settings/SlotPreview'
 import WeeklyHoursForm from './settings/WeeklyHoursForm'
 
@@ -60,7 +63,6 @@ function SettingsEditor({ initialSettings, initialWeek }) {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold text-slate-900">{t('pages.settings')}</h1>
       <BookingSettingsForm
         value={settings}
         onChange={setSettings}
@@ -84,13 +86,68 @@ function SettingsEditor({ initialSettings, initialWeek }) {
   )
 }
 
+/** Hours and booking, then the prescription parts (FR-J.6). */
+const TABS = ['general', 'drugs', 'prescription']
+
+/** Tab bar (ARIA tabs): ← → / Home / End move between tabs; the open tab is kept in ?tab=. */
+function Tabs({ current, onChange }) {
+  const { t } = useTranslation()
+  const refs = useRef({})
+
+  const onKeyDown = (event) => {
+    const index = TABS.indexOf(current)
+    const rtl = document.documentElement.dir === 'rtl'
+    const step = { ArrowRight: rtl ? -1 : 1, ArrowLeft: rtl ? 1 : -1 }[event.key]
+    let next = null
+    if (step) next = TABS[(index + step + TABS.length) % TABS.length]
+    if (event.key === 'Home') next = TABS[0]
+    if (event.key === 'End') next = TABS[TABS.length - 1]
+    if (!next) return
+    event.preventDefault()
+    onChange(next)
+    refs.current[next]?.focus()
+  }
+
+  return (
+    <div role="tablist" aria-label={t('pages.settings')} onKeyDown={onKeyDown} className="flex gap-1 overflow-x-auto overflow-y-hidden border-b border-slate-200">
+      {TABS.map((tab) => (
+        <button
+          key={tab}
+          ref={(element) => {
+            refs.current[tab] = element
+          }}
+          type="button"
+          role="tab"
+          id={`settings-tab-${tab}`}
+          aria-selected={current === tab}
+          aria-controls={`settings-panel-${tab}`}
+          tabIndex={current === tab ? 0 : -1}
+          onClick={() => onChange(tab)}
+          className={`-mb-px whitespace-nowrap border-b-2 px-4 py-2 text-sm font-semibold ${
+            current === tab ? 'border-sky-700 text-sky-800' : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          {t(`settings.tabs.${tab}`)}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export default function Settings() {
+  const { t } = useTranslation()
+  const [params, setParams] = useSearchParams()
+  const tab = TABS.includes(params.get('tab')) ? params.get('tab') : 'general'
   const settings = useDoctorSettings()
   const hours = useWorkingHours()
 
-  if (settings.isPending || hours.isPending) return <Loading />
-  if (settings.isError || hours.isError) {
-    return (
+  let panel
+  if (tab === 'drugs') {
+    panel = <DrugsTab />
+  } else if (settings.isPending || hours.isPending) {
+    panel = <Loading />
+  } else if (settings.isError || hours.isError) {
+    panel = (
       <LoadError
         onRetry={() => {
           settings.refetch()
@@ -98,7 +155,19 @@ export default function Settings() {
         }}
       />
     )
+  } else if (tab === 'prescription') {
+    panel = <PrescriptionHeaderTab settings={settings.data} />
+  } else {
+    panel = <SettingsEditor initialSettings={settings.data} initialWeek={hours.data} />
   }
 
-  return <SettingsEditor initialSettings={settings.data} initialWeek={hours.data} />
+  return (
+    <div className="space-y-4">
+      <h1 className="text-2xl font-bold text-slate-900">{t('pages.settings')}</h1>
+      <Tabs current={tab} onChange={(next) => setParams(next === 'general' ? {} : { tab: next }, { replace: true })} />
+      <div role="tabpanel" id={`settings-panel-${tab}`} aria-labelledby={`settings-tab-${tab}`}>
+        {panel}
+      </div>
+    </div>
+  )
 }

@@ -1,5 +1,5 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { getDrug, searchDrugs } from '../api/drugs'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { createDrug, getDrug, listDrugs, searchDrugs, updateDrug } from '../api/drugs'
 import { useDebouncedValue } from './useDebouncedValue'
 
 export const drugsKey = ['doctor', 'drugs']
@@ -34,5 +34,36 @@ export function useDrug(id) {
     queryFn: () => getDrug(id),
     enabled: Boolean(id),
     staleTime: 5 * 60_000,
+  })
+}
+
+/** Settings → Drugs (FR-J.6): one page of the catalogue; keeps the previous page on screen while the next loads. */
+export function useDrugList({ search, category, includeHidden, page }) {
+  return useQuery({
+    queryKey: [...drugsKey, 'list', { search, category, includeHidden, page }],
+    queryFn: () => listDrugs({ search, category, includeHidden, page }),
+    placeholderData: keepPreviousData,
+  })
+}
+
+/** A catalogue change touches the list, the search suggestions and the side notes. */
+function useRefreshDrugs() {
+  const queryClient = useQueryClient()
+  return () => queryClient.invalidateQueries({ queryKey: drugsKey })
+}
+
+/** Adds a drug, or edits one when `id` is given. */
+export function useSaveDrug() {
+  return useMutation({
+    mutationFn: ({ id, ...fields }) => (id ? updateDrug(id, fields) : createDrug(fields)),
+    onSuccess: useRefreshDrugs(),
+  })
+}
+
+/** Hides (`is_active: false`) or shows a drug; hidden drugs are never suggested (RX-3). */
+export function useSetDrugActive() {
+  return useMutation({
+    mutationFn: ({ id, isActive }) => updateDrug(id, { is_active: isActive }),
+    onSuccess: useRefreshDrugs(),
   })
 }
