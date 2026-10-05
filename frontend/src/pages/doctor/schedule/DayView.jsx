@@ -68,8 +68,11 @@ function Actions({ appointment, onChange, busy }) {
   )
 }
 
-/** One day's appointments by time with status actions (FR-F.1, F.3, F.4). */
-export default function DayView({ date }) {
+/**
+ * One day's appointments by time with status actions (FR-F.1, F.3, F.4).
+ * `compact` (the dashboard's queue) leaves out the phone numbers.
+ */
+export default function DayView({ date, compact = false }) {
   const { t } = useTranslation()
   const toast = useToast()
   const { data, isPending, isError, refetch } = useSchedule({ from: date, to: date })
@@ -104,16 +107,18 @@ export default function DayView({ date }) {
           {data.map((appointment) => (
             <li
               key={appointment.id}
-              className={`flex flex-col gap-3 p-4 sm:flex-row sm:items-center ${appointment.status === 'cancelled' ? 'opacity-60' : ''}`}
+              className={`flex flex-col gap-3 sm:flex-row sm:items-center ${compact ? 'px-4 py-3' : 'p-4'} ${appointment.status === 'cancelled' ? 'opacity-60' : ''}`}
             >
               <span dir="ltr" className="w-28 shrink-0 font-semibold text-slate-900 rtl:text-end">
                 {formatTime(appointment.start_at)} – {formatTime(appointment.end_at)}
               </span>
               <div className="min-w-0 flex-1">
                 <p className="font-semibold text-slate-900">{appointment.patient.name}</p>
-                <p dir="ltr" className="text-sm text-slate-500 rtl:text-end">
-                  {appointment.patient.phone}
-                </p>
+                {!compact && (
+                  <p dir="ltr" className="text-sm text-slate-500 rtl:text-end">
+                    {appointment.patient.phone}
+                  </p>
+                )}
               </div>
               <StatusBadge status={appointment.status} />
               <Actions appointment={appointment} onChange={change} busy={updateStatus.isPending} />

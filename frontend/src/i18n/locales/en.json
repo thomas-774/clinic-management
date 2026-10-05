@@ -383,5 +383,18 @@
     "editTitle": "Edit visit of {{date}}",
     "belowPaid": "The total cannot be lower than the {{amount}} already paid.",
     "alreadyPaid": "Paid so far: {{amount}}"
+  },
+  "dashboard": {
+    "today": "Today",
+    "thisWeek": "This week",
+    "thisMonth": "This month",
+    "range": "{{from}} – {{to}}",
+    "patientsSeen": "Patients seen",
+    "revenue": "Revenue",
+    "outstandingTitle": "Outstanding balances",
+    "outstanding": "Still owed by patients",
+    "outstandingHint": "Not included in revenue.",
+    "queue": "Today's queue",
+    "openSchedule": "Open schedule"
   }
 }

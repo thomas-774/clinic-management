@@ -1,15 +1,17 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { addPayment, createVisit, updateVisit } from '../api/visits'
 import { patientsKey } from './usePatients'
+import { reportsKey } from './useReports'
 import { scheduleKey } from './useSchedule'
 
-/** Visits change balances on the patient pages and appointment statuses on the schedule. */
+/** Visits change balances on the patient pages, appointment statuses on the schedule and the report numbers. */
 function useRefreshAfterVisit() {
   const queryClient = useQueryClient()
   return () =>
     Promise.all([
       queryClient.invalidateQueries({ queryKey: patientsKey }),
       queryClient.invalidateQueries({ queryKey: scheduleKey }),
+      queryClient.invalidateQueries({ queryKey: reportsKey }),
     ])
 }
 

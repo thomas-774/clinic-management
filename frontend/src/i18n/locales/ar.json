@@ -383,5 +383,18 @@
     "editTitle": "تعديل زيارة {{date}}",
     "belowPaid": "لا يمكن أن يقل الإجمالي عن المدفوع ({{amount}}).",
     "alreadyPaid": "المدفوع حتى الآن: {{amount}}"
+  },
+  "dashboard": {
+    "today": "اليوم",
+    "thisWeek": "هذا الأسبوع",
+    "thisMonth": "هذا الشهر",
+    "range": "{{from}} – {{to}}",
+    "patientsSeen": "عدد المرضى",
+    "revenue": "الإيرادات",
+    "outstandingTitle": "المبالغ المستحقة",
+    "outstanding": "المتبقي على المرضى",
+    "outstandingHint": "غير محسوب ضمن الإيرادات.",
+    "queue": "مواعيد اليوم",
+    "openSchedule": "فتح الجدول"
   }
 }
