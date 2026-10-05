@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\Doctor\BlockedTimeController;
 use App\Http\Controllers\Api\V1\Doctor\MedicalHistoryController;
 use App\Http\Controllers\Api\V1\Doctor\PatientController;
+use App\Http\Controllers\Api\V1\Doctor\ScheduleController;
 use App\Http\Controllers\Api\V1\Doctor\SettingsController;
 use App\Http\Controllers\Api\V1\Doctor\WorkingHoursController;
 use App\Http\Controllers\Api\V1\Patient\AppointmentController as PatientAppointmentController;
@@ -49,6 +50,9 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::put('/{medicalHistoryEntry}', [MedicalHistoryController::class, 'update'])->name('update');
             Route::delete('/{medicalHistoryEntry}', [MedicalHistoryController::class, 'destroy'])->name('destroy');
         });
+
+        Route::get('/appointments', [ScheduleController::class, 'index'])->name('appointments.index');
+        Route::post('/appointments', [ScheduleController::class, 'store'])->name('appointments.store');
 
         Route::get('/settings', [SettingsController::class, 'show'])->name('settings.show');
         Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
