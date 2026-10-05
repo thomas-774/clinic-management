@@ -98,7 +98,8 @@
     "address": "Address",
     "currentIllness": "Current illness",
     "noIllness": "Nothing recorded.",
-    "history": "Medical history"
+    "history": "Medical history",
+    "manageAppointment": "View or cancel"
   },
   "table": {
     "pagination": "Pages",

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import Card from '../../components/Card'
 import HistoryList from '../../components/HistoryList'
 import { LoadError, Loading } from '../../components/QueryState'
+import StatusBadge from '../../components/StatusBadge'
 import TextField from '../../components/form/TextField'
 import { useProfile, useUpdateProfile } from '../../hooks/useProfile'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
@@ -89,9 +90,18 @@ export default function PatientHome() {
       <div className="grid gap-4 sm:grid-cols-2">
         <Card title={t('patientHome.nextAppointment')}>
           {next ? (
-            <p className="text-slate-900">
-              {formatDate(next.start_at)} · {formatTime(next.start_at)}
-            </p>
+            <>
+              <p className="font-semibold text-slate-900">{formatDate(next.start_at)}</p>
+              <p className="mt-1 flex items-center gap-2 text-slate-700">
+                <span dir="ltr">
+                  {formatTime(next.start_at)} – {formatTime(next.end_at)}
+                </span>
+                <StatusBadge status={next.status} />
+              </p>
+              <Link to="/patient/appointments" className="mt-2 inline-block text-sm font-semibold text-sky-700 hover:underline">
+                {t('patientHome.manageAppointment')}
+              </Link>
+            </>
           ) : (
             <>
               <p className="text-sm text-slate-500">{t('patientHome.noAppointment')}</p>

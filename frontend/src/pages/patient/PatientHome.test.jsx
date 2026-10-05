@@ -51,6 +51,35 @@ describe('PatientHome', () => {
     expect(screen.getByText('EGP 0.00')).toBeInTheDocument()
   })
 
+  it('shows the next appointment with date, time and status', async () => {
+    vi.spyOn(patientApi, 'getProfile').mockResolvedValue({
+      ...profile,
+      next_appointment: {
+        id: 9,
+        start_at: '2026-10-06T18:30:00+03:00',
+        end_at: '2026-10-06T19:15:00+03:00',
+        status: 'booked',
+        can_cancel: true,
+      },
+    })
+    renderHome()
+
+    const card = (await screen.findByRole('heading', { name: 'Next appointment' })).closest('section')
+    expect(card).toHaveTextContent('6 Oct 2026')
+    expect(card).toHaveTextContent('18:30 – 19:15')
+    expect(within(card).getByText('Booked')).toHaveAttribute('data-status', 'booked')
+    expect(within(card).getByRole('link', { name: 'View or cancel' })).toHaveAttribute('href', '/patient/appointments')
+    expect(within(card).queryByRole('link', { name: 'Book an appointment' })).not.toBeInTheDocument()
+  })
+
+  it('offers "Book now" when there is no upcoming appointment', async () => {
+    vi.spyOn(patientApi, 'getProfile').mockResolvedValue(profile)
+    renderHome()
+
+    const card = (await screen.findByRole('heading', { name: 'Next appointment' })).closest('section')
+    expect(within(card).getByRole('link', { name: 'Book an appointment' })).toHaveAttribute('href', '/patient/book')
+  })
+
   it('updates phone and address', async () => {
     vi.spyOn(patientApi, 'getProfile').mockResolvedValue(profile)
     const update = vi

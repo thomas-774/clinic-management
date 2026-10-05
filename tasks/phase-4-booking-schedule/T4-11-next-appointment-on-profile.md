@@ -4,8 +4,8 @@
 **Plan refs:** FR-B.4
 
 ## Steps
-- [ ] Backend: fill `next_appointment` in `GET /patient/profile` (earliest future booked / checked_in).
-- [ ] Frontend: PatientHome card showing date, time, status, or a "Book now" button.
+- [x] Backend: fill `next_appointment` in `GET /patient/profile` (earliest future booked / checked_in).
+- [x] Frontend: PatientHome card showing date, time, status, or a "Book now" button.
 
 ## Done when
-- [ ] After booking, the patient's home page shows the appointment.
+- [x] After booking, the patient's home page shows the appointment.

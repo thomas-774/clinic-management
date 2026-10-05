@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AppointmentStatus;
 use Database\Factories\PatientFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -41,6 +42,18 @@ class Patient extends Model
     public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class);
+    }
+
+    /**
+     * The earliest appointment still ahead: booked or checked in, not over yet (FR-B.4).
+     */
+    public function nextAppointment(): ?Appointment
+    {
+        return $this->appointments()
+            ->whereIn('status', [AppointmentStatus::Booked, AppointmentStatus::CheckedIn])
+            ->where('end_at', '>', now())
+            ->orderBy('start_at')
+            ->first();
     }
 
     public function visits(): HasMany

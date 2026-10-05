@@ -98,7 +98,8 @@
     "address": "العنوان",
     "currentIllness": "الشكوى الحالية",
     "noIllness": "لا يوجد.",
-    "history": "التاريخ المرضي"
+    "history": "التاريخ المرضي",
+    "manageAppointment": "عرض أو إلغاء"
   },
   "table": {
     "pagination": "الصفحات",

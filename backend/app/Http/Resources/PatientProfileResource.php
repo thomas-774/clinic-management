@@ -29,7 +29,7 @@ class PatientProfileResource extends PatientResource
                     ->orderByDesc('id')
                     ->get(),
             ),
-            'next_appointment' => null,      // T4-11
+            'next_appointment' => ($next = $this->nextAppointment()) ? AppointmentResource::make($next) : null,
             'outstanding_balance' => '0.00', // T5-07
         ];
     }
