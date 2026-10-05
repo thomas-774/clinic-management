@@ -616,9 +616,9 @@ Build in eight phases of roughly one week each; every phase ends with something 
 
 ### Phase 9 — Prescriptions (Module J)
 
-- [ ] `drugs` table and the catalogue transcribed from `Drugs-for-Dentistry.pdf` into a seed file (no prices), checked against the PDF.
-- [ ] Drug search / catalogue API and the prescriptions API (snapshotted lines, RX-1 – RX-5); print header fields in doctor settings.
-- [ ] Frontend: DrugSearch, DrugInfoPanel side note, PrescriptionForm, print page (A5/A4), prescriptions on PatientDetails, Settings → Drugs and Prescription.
+- [x] `drugs` table and the catalogue transcribed from `Drugs-for-Dentistry.pdf` into a seed file (no prices), checked against the PDF.
+- [x] Drug search / catalogue API and the prescriptions API (snapshotted lines, RX-1 – RX-5); print header fields in doctor settings.
+- [x] Frontend: DrugSearch, DrugInfoPanel side note, PrescriptionForm, print page (A5/A4), prescriptions on PatientDetails, Settings → Drugs and Prescription.
 - [ ] **Test:** search ranking and hidden drugs; patient and assistant get 403 on every drug and prescription route; editing a drug never changes an issued prescription; the printed page holds only header, patient, lines, notes and signature; walkthrough visit → prescription → print on the clinic printer.
 
 ## 9. Testing, Security and Deployment
