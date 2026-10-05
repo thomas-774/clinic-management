@@ -35,6 +35,7 @@ class PatientDetailResource extends PatientResource
             ),
             'visits' => VisitResource::collection($visits),
             'outstanding_balance' => app(PaymentService::class)->sumRemaining($visits),
+            'prescriptions_count' => $this->prescriptions()->count(),
         ];
     }
 }

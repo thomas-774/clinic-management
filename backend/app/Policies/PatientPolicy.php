@@ -50,6 +50,14 @@ class PatientPolicy
         return $user->isDoctor();
     }
 
+    /**
+     * Prescriptions are the doctor's only; patients and the assistant never see them in v1 (FR-J.7).
+     */
+    public function managePrescriptions(User $user, Patient $patient): bool
+    {
+        return $user->isDoctor();
+    }
+
     private function isStaff(User $user): bool
     {
         return $user->isDoctor() || $user->isAssistant();

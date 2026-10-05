@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\Doctor\BlockedTimeController;
 use App\Http\Controllers\Api\V1\Doctor\DrugController;
 use App\Http\Controllers\Api\V1\Doctor\MedicalHistoryController;
 use App\Http\Controllers\Api\V1\Doctor\PatientController;
+use App\Http\Controllers\Api\V1\Doctor\PrescriptionController;
 use App\Http\Controllers\Api\V1\Doctor\ReportController;
 use App\Http\Controllers\Api\V1\Doctor\ScheduleController;
 use App\Http\Controllers\Api\V1\Doctor\SettingsController;
@@ -45,7 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/appointments/{appointment}/cancel', [PatientAppointmentController::class, 'cancel'])->name('appointments.cancel');
     });
 
-    // Doctor area: /api/v1/doctor/* (patients, schedule, visits, settings, reports, drugs).
+    // Doctor area: /api/v1/doctor/* (patients, schedule, visits, settings, reports, drugs, prescriptions).
     Route::prefix('doctor')->middleware('role:doctor')->name('doctor.')->group(function () {
         Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
         Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
@@ -82,6 +83,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/drugs', [DrugController::class, 'store'])->name('drugs.store');
         Route::get('/drugs/{drug}', [DrugController::class, 'show'])->name('drugs.show');
         Route::put('/drugs/{drug}', [DrugController::class, 'update'])->name('drugs.update');
+
+        Route::get('/patients/{patient}/prescriptions', [PrescriptionController::class, 'index'])->name('patients.prescriptions.index');
+        Route::post('/patients/{patient}/prescriptions', [PrescriptionController::class, 'store'])->name('patients.prescriptions.store');
+        Route::get('/prescriptions/{prescription}', [PrescriptionController::class, 'show'])->name('prescriptions.show');
+        Route::put('/prescriptions/{prescription}', [PrescriptionController::class, 'update'])->name('prescriptions.update');
+        Route::delete('/prescriptions/{prescription}', [PrescriptionController::class, 'destroy'])->name('prescriptions.destroy');
 
         Route::get('/reports/summary', [ReportController::class, 'summary'])->name('reports.summary');
         Route::get('/reports/payments', [ReportController::class, 'payments'])->name('reports.payments');
