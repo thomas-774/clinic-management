@@ -169,7 +169,7 @@ Backend and data
 - [x] [T9-07](phase-9-prescriptions/T9-07-prescription-permission-tests.md) Tests: prescription permissions and privacy · M
 
 Frontend
-- [ ] [T9-08](phase-9-prescriptions/T9-08-fe-drug-search.md) DrugSearch combobox · M
+- [x] [T9-08](phase-9-prescriptions/T9-08-fe-drug-search.md) DrugSearch combobox · M
 - [ ] [T9-09](phase-9-prescriptions/T9-09-fe-drug-info-panel.md) DrugInfoPanel (side note) · S
 - [ ] [T9-10](phase-9-prescriptions/T9-10-fe-prescription-form.md) PrescriptionForm page · L
 - [ ] [T9-11](phase-9-prescriptions/T9-11-fe-print-page.md) Prescription print page · M

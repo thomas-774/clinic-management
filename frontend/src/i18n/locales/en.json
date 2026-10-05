@@ -492,5 +492,13 @@
         "action": "Yes, reset"
       }
     }
+  },
+  "drugSearch": {
+    "label": "Medication",
+    "placeholder": "Type a drug or ingredient name…",
+    "results": "Matching drugs",
+    "searching": "Searching…",
+    "useAsWritten": "Use as written:",
+    "noMatch": "Not in the drug list."
   }
 }
