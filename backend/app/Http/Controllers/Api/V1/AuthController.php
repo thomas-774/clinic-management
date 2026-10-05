@@ -46,7 +46,8 @@ class AuthController extends Controller
             ->where(str_contains($login, '@') ? 'email' : 'phone', $login)
             ->first();
 
-        if (! $user || ! Hash::check($request->validated('password'), $user->password)) {
+        // A deactivated account gets the same answer as a wrong password (FR-I.1).
+        if (! $user || ! Hash::check($request->validated('password'), $user->password) || ! $user->is_active) {
             throw ValidationException::withMessages(['login' => __('auth.failed')]);
         }
 

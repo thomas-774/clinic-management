@@ -13,12 +13,21 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'phone', 'email', 'password', 'role'])]
+#[Fillable(['name', 'phone', 'email', 'password', 'role', 'is_active'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
+
+    /**
+     * Matches the column default, so a new model is active before a refresh.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'is_active' => true,
+    ];
 
     /**
      * Get the attributes that should be cast.
@@ -30,6 +39,7 @@ class User extends Authenticatable
         return [
             'password' => 'hashed',
             'role' => UserRole::class,
+            'is_active' => 'boolean',
         ];
     }
 
@@ -50,6 +60,14 @@ class User extends Authenticatable
     public function isPatient(): bool
     {
         return $this->role === UserRole::Patient;
+    }
+
+    /**
+     * The front-desk assistant (Module I).
+     */
+    public function isAssistant(): bool
+    {
+        return $this->role === UserRole::Assistant;
     }
 
     /**

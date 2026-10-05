@@ -49,6 +49,20 @@ class UserFactory extends Factory
         ]);
     }
 
+    public function assistant(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Assistant,
+        ]);
+    }
+
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_active' => false,
+        ]);
+    }
+
     public function withoutEmail(): static
     {
         return $this->state(fn (array $attributes) => [

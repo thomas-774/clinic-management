@@ -138,7 +138,7 @@ Frontend
 Built before Phase 7. The doctor sets the visit total; the assistant registers patients, records what they pay, runs the queue and books. Contact info and money only — no medical data.
 
 Backend
-- [ ] [T8-01](phase-8-assistant/T8-01-role-and-account-status.md) Assistant role and account status · S
+- [x] [T8-01](phase-8-assistant/T8-01-role-and-account-status.md) Assistant role and account status · S
 - [ ] [T8-02](phase-8-assistant/T8-02-staff-endpoints.md) Doctor: staff (assistant) endpoints · M
 - [ ] [T8-03](phase-8-assistant/T8-03-payment-recorded-by.md) Who recorded each payment · S
 - [ ] [T8-04](phase-8-assistant/T8-04-assistant-patients-api.md) Assistant: patients API (contact + money only) · M
