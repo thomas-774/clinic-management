@@ -170,7 +170,7 @@ Backend and data
 
 Frontend
 - [x] [T9-08](phase-9-prescriptions/T9-08-fe-drug-search.md) DrugSearch combobox · M
-- [ ] [T9-09](phase-9-prescriptions/T9-09-fe-drug-info-panel.md) DrugInfoPanel (side note) · S
+- [x] [T9-09](phase-9-prescriptions/T9-09-fe-drug-info-panel.md) DrugInfoPanel (side note) · S
 - [ ] [T9-10](phase-9-prescriptions/T9-10-fe-prescription-form.md) PrescriptionForm page · L
 - [ ] [T9-11](phase-9-prescriptions/T9-11-fe-print-page.md) Prescription print page · M
 - [ ] [T9-12](phase-9-prescriptions/T9-12-fe-prescriptions-on-patient.md) Prescriptions on PatientDetails and visits · S

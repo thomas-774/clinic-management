@@ -500,5 +500,28 @@
     "searching": "جارٍ البحث…",
     "useAsWritten": "استخدم كما هو مكتوب:",
     "noMatch": "غير موجود في قائمة الأدوية."
+  },
+  "drugInfo": {
+    "title": "ملاحظة الدواء",
+    "empty": "اختر دواءً أو مرّر عليه لرؤية ملاحظته.",
+    "notInCatalogue": "غير موجود في قائمة الأدوية، لذلك لا توجد له ملاحظة.",
+    "uses": "الاستخدامات",
+    "warnings": "تحذيرات",
+    "ingredients": "المواد الفعالة",
+    "suggestedDose": "الجرعة المقترحة",
+    "useDose": "استخدم الجرعة المقترحة"
+  },
+  "drugCategory": {
+    "mouth_cleaning": "تنظيف الفم",
+    "sensitive_toothpaste": "معجون للأسنان الحساسة",
+    "vitamin_c": "فيتامين سي",
+    "anti_inflammatory": "مضادات الالتهاب",
+    "antibiotic": "مضادات حيوية",
+    "analgesic_sedative": "مسكنات ومهدئات",
+    "antifungal": "مضادات الفطريات",
+    "calcium": "كالسيوم",
+    "cod_liver_oil": "زيت كبد الحوت",
+    "local_anesthetic": "تخدير موضعي",
+    "other": "أخرى"
   }
 }

@@ -500,5 +500,28 @@
     "searching": "Searching…",
     "useAsWritten": "Use as written:",
     "noMatch": "Not in the drug list."
+  },
+  "drugInfo": {
+    "title": "Drug note",
+    "empty": "Pick or highlight a drug to see its note.",
+    "notInCatalogue": "Not in the catalogue, so there is no note for it.",
+    "uses": "Uses",
+    "warnings": "Warnings",
+    "ingredients": "Active ingredients",
+    "suggestedDose": "Suggested dose",
+    "useDose": "Use suggested dose"
+  },
+  "drugCategory": {
+    "mouth_cleaning": "Mouth cleaning",
+    "sensitive_toothpaste": "Sensitive toothpaste",
+    "vitamin_c": "Vitamin C",
+    "anti_inflammatory": "Anti-inflammatory",
+    "antibiotic": "Antibiotic",
+    "analgesic_sedative": "Analgesic / sedative",
+    "antifungal": "Antifungal",
+    "calcium": "Calcium",
+    "cod_liver_oil": "Cod liver oil",
+    "local_anesthetic": "Local anaesthetic",
+    "other": "Other"
   }
 }
