@@ -4,8 +4,8 @@
 **Plan refs:** FR-G.2 · BR-5 · §6.3
 
 ## Steps
-- [ ] `GET /doctor/settings`: slot duration, booking window, cancellation cut-off.
-- [ ] `PUT /doctor/settings`: `slot_duration_minutes` (integer, 10–240), `booking_window_days` (1–90), `cancel_cutoff_hours` (integer, 0–72).
+- [x] `GET /doctor/settings`: slot duration, booking window, cancellation cut-off.
+- [x] `PUT /doctor/settings`: `slot_duration_minutes` (integer, 10–240), `booking_window_days` (1–90), `cancel_cutoff_hours` (integer, 0–72).
 
 ## Done when
-- [ ] Changing the duration to 60 and the cut-off to 24 is saved and returned.
+- [x] Changing the duration to 60 and the cut-off to 24 is saved and returned.

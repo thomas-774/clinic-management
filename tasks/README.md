@@ -74,7 +74,7 @@ Frontend
 ## Phase 3 — Availability and slot engine (Module G)
 
 Backend
-- [ ] [T3-01](phase-3-availability-slots/T3-01-settings-endpoints.md) Doctor settings endpoints · S
+- [x] [T3-01](phase-3-availability-slots/T3-01-settings-endpoints.md) Doctor settings endpoints · S
 - [ ] [T3-02](phase-3-availability-slots/T3-02-working-hours-endpoints.md) Working hours endpoints · M
 - [ ] [T3-03](phase-3-availability-slots/T3-03-blocked-times-endpoints.md) Blocked times endpoints · S
 - [ ] [T3-04](phase-3-availability-slots/T3-04-slot-service.md) SlotService::generate() · M
