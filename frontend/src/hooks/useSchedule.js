@@ -4,11 +4,12 @@ import { bookForPatient, getSchedule, updateAppointmentStatus } from '../api/app
 export const scheduleKey = ['doctor', 'appointments']
 
 /** The doctor's appointments between two dates; refreshed every 60 s (§7.3). */
-export function useSchedule({ from, to }) {
+export function useSchedule({ from, to }, { enabled = true } = {}) {
   return useQuery({
     queryKey: [...scheduleKey, { from, to }],
     queryFn: () => getSchedule({ from, to }),
     refetchInterval: 60_000,
+    enabled,
   })
 }
 

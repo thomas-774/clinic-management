@@ -321,5 +321,28 @@
     "count_few": "{{count}} appointments",
     "count_many": "{{count}} appointments",
     "count_other": "{{count}} appointments"
+  },
+  "money": {
+    "egp": "EGP"
+  },
+  "paymentMethod": {
+    "cash": "Cash",
+    "card": "Card",
+    "wallet": "Wallet"
+  },
+  "visitForm": {
+    "appointment": "Appointment",
+    "walkIn": "Walk-in visit",
+    "noContext": "Open a visit from the schedule or from a patient’s page.",
+    "toSchedule": "Go to the schedule",
+    "workDone": "Work done today",
+    "total": "Total cost",
+    "paidNow": "Amount paid now",
+    "paidNowHint": "Leave empty if nothing was paid.",
+    "method": "Payment method",
+    "remaining": "Remaining",
+    "overpaid": "The amount paid cannot be more than the total.",
+    "save": "Save visit",
+    "saved": "Visit saved. Remaining: {{remaining}}"
   }
 }

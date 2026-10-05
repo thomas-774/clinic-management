@@ -11,8 +11,8 @@ import { patientsKey } from './usePatients'
 export const patientKey = (id) => [...patientsKey, 'detail', String(id)]
 
 /** One patient for the doctor: info, detailed history, visits. */
-export function usePatient(id) {
-  return useQuery({ queryKey: patientKey(id), queryFn: () => getPatient(id) })
+export function usePatient(id, { enabled = true } = {}) {
+  return useQuery({ queryKey: patientKey(id), queryFn: () => getPatient(id), enabled })
 }
 
 /** After any change: refresh the patient lists and every patient detail. */

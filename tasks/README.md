@@ -115,7 +115,7 @@ Backend
 - [x] [T5-07](phase-5-visits-payments/T5-07-balances-in-profiles.md) Visits and balances in the profile endpoints · S
 
 Frontend
-- [ ] [T5-08](phase-5-visits-payments/T5-08-fe-visit-form.md) MoneyField and VisitForm · M
+- [x] [T5-08](phase-5-visits-payments/T5-08-fe-visit-form.md) MoneyField and VisitForm · M
 - [ ] [T5-09](phase-5-visits-payments/T5-09-fe-start-visit-from-schedule.md) "Start visit" from the schedule · S
 - [ ] [T5-10](phase-5-visits-payments/T5-10-fe-visit-timeline.md) Visit timeline and installments on PatientDetails · M
 - [ ] [T5-11](phase-5-visits-payments/T5-11-fe-balance-on-patient-home.md) Outstanding balance on PatientHome · S
