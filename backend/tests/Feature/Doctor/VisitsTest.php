@@ -41,6 +41,11 @@ function putVisit(int $id, array $body)
     return test()->actingAs(test()->doctor)->putJson("/api/v1/doctor/visits/{$id}", $body);
 }
 
+function payVisit(int $id, array $body)
+{
+    return test()->actingAs(test()->doctor)->postJson("/api/v1/doctor/visits/{$id}/payments", $body);
+}
+
 describe('POST /doctor/visits', function () {
     it('returns the §6.4 example and completes the appointment', function () {
         $response = postVisit(visitBody())
@@ -156,5 +161,65 @@ describe('PUT /doctor/visits/{id}', function () {
     it('validates the fields and returns 404 for an unknown visit', function () {
         putVisit($this->visitId, ['total_amount' => 'abc'])->assertUnprocessable()->assertJsonValidationErrors(['work_done', 'total_amount']);
         putVisit(999999, ['work_done' => 'x', 'total_amount' => 1])->assertNotFound();
+    });
+});
+
+describe('POST /doctor/visits/{id}/payments', function () {
+    beforeEach(function () {
+        // An old visit from last month: 1500 total, 1000 paid then.
+        $this->travelTo('2026-09-10 18:00:00');
+        $this->visitId = postVisit(visitBody())->assertCreated()->json('data.id');
+        $this->travelTo('2026-10-05 17:20:00');
+    });
+
+    it('records an installment on an old visit and lowers its remaining balance', function () {
+        payVisit($this->visitId, ['amount' => 200, 'method' => 'card'])
+            ->assertCreated()
+            ->assertJsonPath('message', 'Payment recorded.')
+            ->assertJsonPath('data.visit_date', '2026-09-10')
+            ->assertJsonPath('data.paid', '1200.00')
+            ->assertJsonPath('data.remaining', '300.00')
+            ->assertJsonPath('data.payment_status', 'partially_paid')
+            ->assertJsonCount(2, 'data.payments')
+            ->assertJsonPath('data.payments.1.amount', '200.00')
+            ->assertJsonPath('data.payments.1.method', 'card')
+            ->assertJsonPath('data.payments.1.paid_at', '2026-10-05T17:20:00+03:00'); // counts in October (PR-4)
+    });
+
+    it('pays off the rest → paid', function () {
+        payVisit($this->visitId, ['amount' => '500.00'])
+            ->assertCreated()
+            ->assertJsonPath('data.remaining', '0.00')
+            ->assertJsonPath('data.payment_status', 'paid')
+            ->assertJsonPath('data.payments.1.method', 'cash');
+    });
+
+    it('keeps a given paid_at', function () {
+        payVisit($this->visitId, ['amount' => 100, 'paid_at' => '2026-10-01T12:00:00+03:00'])
+            ->assertCreated()
+            ->assertJsonPath('data.payments.1.paid_at', '2026-10-01T12:00:00+03:00');
+    });
+
+    it('rejects more than the remaining amount with 422', function () {
+        payVisit($this->visitId, ['amount' => 600])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['amount' => 'The payment cannot be more than the remaining 500.00 EGP.']);
+
+        expect(Visit::find($this->visitId)->payments()->count())->toBe(1);
+    });
+
+    it('validates the fields', function (array $body, string $field) {
+        payVisit($this->visitId, $body)->assertUnprocessable()->assertJsonValidationErrors([$field]);
+    })->with([
+        [[], 'amount'],
+        [['amount' => 0], 'amount'],
+        [['amount' => -5], 'amount'],
+        [['amount' => '1.234'], 'amount'],
+        [['amount' => 10, 'method' => 'cheque'], 'method'],
+        [['amount' => 10, 'paid_at' => '2026-10-06 10:00'], 'paid_at'],
+    ]);
+
+    it('returns 404 for an unknown visit', function () {
+        payVisit(999999, ['amount' => 10])->assertNotFound();
     });
 });

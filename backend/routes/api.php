@@ -58,6 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/visits', [VisitController::class, 'store'])->name('visits.store');
         Route::put('/visits/{visit}', [VisitController::class, 'update'])->name('visits.update');
+        Route::post('/visits/{visit}/payments', [VisitController::class, 'storePayment'])->name('visits.payments.store');
 
         Route::get('/settings', [SettingsController::class, 'show'])->name('settings.show');
         Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');

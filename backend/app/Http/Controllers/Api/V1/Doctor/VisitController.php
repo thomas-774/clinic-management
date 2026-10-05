@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1\Doctor;
 use App\Enums\AppointmentStatus;
 use App\Enums\PaymentMethod;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Doctor\StorePaymentRequest;
 use App\Http\Requests\Doctor\StoreVisitRequest;
 use App\Http\Requests\Doctor\UpdateVisitRequest;
 use App\Http\Resources\VisitResource;
@@ -13,6 +14,7 @@ use App\Models\Visit;
 use App\Services\PaymentService;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -91,5 +93,24 @@ class VisitController extends Controller
         });
 
         return VisitResource::make($visit->load('payments'))->withMessage(__('Visit updated.'));
+    }
+
+    /**
+     * POST /doctor/visits/{visit}/payments — an installment (FR-D.6); returns
+     * the visit with its new balance.
+     */
+    public function storePayment(StorePaymentRequest $request, Visit $visit, PaymentService $payments): JsonResponse
+    {
+        $payments->addPayment(
+            $visit,
+            $request->validated('amount'),
+            PaymentMethod::tryFrom((string) $request->validated('method')) ?? PaymentMethod::Cash,
+            $request->filled('paid_at') ? Carbon::parse($request->validated('paid_at')) : null,
+        );
+
+        return VisitResource::make($visit->refresh()->load('payments'))
+            ->withMessage(__('Payment recorded.'))
+            ->response()
+            ->setStatusCode(201);
     }
 }
