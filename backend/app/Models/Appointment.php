@@ -58,4 +58,33 @@ class Appointment extends Model
     {
         return $this->hasOne(Visit::class);
     }
+
+    /**
+     * Still ahead of the patient: booked or checked in, and not over yet.
+     */
+    public function isUpcoming(): bool
+    {
+        return in_array($this->status, [AppointmentStatus::Booked, AppointmentStatus::CheckedIn], true)
+            && $this->end_at->isFuture();
+    }
+
+    /**
+     * BR-5: a patient may cancel a booked appointment only until
+     * start_at − cancel_cutoff_hours (doctor setting). The doctor has no limit.
+     */
+    public function patientCanCancel(): bool
+    {
+        $cutoffHours = ($this->doctor->doctorSetting ?? new DoctorSetting)->cancel_cutoff_hours;
+
+        return $this->status === AppointmentStatus::Booked
+            && now()->lte($this->start_at->copy()->subHours($cutoffHours));
+    }
+
+    /**
+     * Frees the slot: active_slot becomes NULL, so it can be booked again.
+     */
+    public function cancel(): void
+    {
+        $this->update(['status' => AppointmentStatus::Cancelled, 'cancelled_at' => now()]);
+    }
 }

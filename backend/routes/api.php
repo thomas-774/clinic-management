@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\Doctor\MedicalHistoryController;
 use App\Http\Controllers\Api\V1\Doctor\PatientController;
 use App\Http\Controllers\Api\V1\Doctor\SettingsController;
 use App\Http\Controllers\Api\V1\Doctor\WorkingHoursController;
+use App\Http\Controllers\Api\V1\Patient\AppointmentController as PatientAppointmentController;
 use App\Http\Controllers\Api\V1\Patient\ProfileController;
 use App\Http\Controllers\Api\V1\SlotController;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('patient')->middleware('role:patient')->name('patient.')->group(function () {
         Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::get('/appointments', [PatientAppointmentController::class, 'index'])->name('appointments.index');
+        Route::post('/appointments', [PatientAppointmentController::class, 'store'])->name('appointments.store');
+        Route::patch('/appointments/{appointment}/cancel', [PatientAppointmentController::class, 'cancel'])->name('appointments.cancel');
     });
 
     // Doctor area: /api/v1/doctor/* (patients, schedule, visits, settings, reports).
