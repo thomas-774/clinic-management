@@ -38,6 +38,10 @@ class SettingsController extends Controller
      */
     private function settings(Request $request): DoctorSetting
     {
-        return $request->user()->doctorSetting()->firstOrCreate([]);
+        $settings = $request->user()->doctorSetting()->firstOrCreate([]);
+        // Reading settings is not "creating" them: answer 200, not 201.
+        $settings->wasRecentlyCreated = false;
+
+        return $settings;
     }
 }
