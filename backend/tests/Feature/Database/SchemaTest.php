@@ -67,3 +67,42 @@ describe('medical_history_entries (T1-02)', function () {
         ]))->toThrow(QueryException::class);
     });
 });
+
+describe('availability tables (T1-03)', function () {
+    it('fills doctor settings with the default values', function () {
+        $doctorId = insertUser(['role' => 'doctor']);
+        DB::table('doctor_settings')->insert(['doctor_id' => $doctorId]);
+
+        $settings = DB::table('doctor_settings')->where('doctor_id', $doctorId)->first();
+
+        expect($settings->slot_duration_minutes)->toBe(45)
+            ->and($settings->booking_window_days)->toBe(30)
+            ->and($settings->cancel_cutoff_hours)->toBe(2);
+        expect(fn () => DB::table('doctor_settings')->insert(['doctor_id' => $doctorId]))
+            ->toThrow(QueryException::class);
+    });
+
+    it('allows several working-hour ranges on the same weekday', function () {
+        $doctorId = insertUser(['role' => 'doctor']);
+        DB::table('working_hours')->insert([
+            ['doctor_id' => $doctorId, 'day_of_week' => 2, 'start_time' => '10:00', 'end_time' => '13:00'],
+            ['doctor_id' => $doctorId, 'day_of_week' => 2, 'start_time' => '17:00', 'end_time' => '21:00'],
+        ]);
+
+        expect(DB::table('working_hours')->where('day_of_week', 2)->count())->toBe(2);
+    });
+
+    it('allows a whole-day block with no times', function () {
+        $doctorId = insertUser(['role' => 'doctor']);
+        DB::table('blocked_times')->insert(['doctor_id' => $doctorId, 'date' => '2026-10-06']);
+
+        $block = DB::table('blocked_times')->first();
+        expect($block->start_time)->toBeNull()->and($block->end_time)->toBeNull();
+    });
+
+    it('has the lookup indexes', function () {
+        expect(Schema::hasIndex('working_hours', ['doctor_id', 'day_of_week']))->toBeTrue()
+            ->and(Schema::hasIndex('blocked_times', ['doctor_id', 'date']))->toBeTrue()
+            ->and(Schema::hasIndex('working_hours', ['doctor_id', 'day_of_week'], 'unique'))->toBeFalse();
+    });
+});
