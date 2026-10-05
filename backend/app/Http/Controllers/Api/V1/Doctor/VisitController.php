@@ -6,6 +6,7 @@ use App\Enums\AppointmentStatus;
 use App\Enums\PaymentMethod;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Doctor\StoreVisitRequest;
+use App\Http\Requests\Doctor\UpdateVisitRequest;
 use App\Http\Resources\VisitResource;
 use App\Models\Appointment;
 use App\Models\Visit;
@@ -69,5 +70,26 @@ class VisitController extends Controller
             ->withMessage(__('Visit saved.'))
             ->response()
             ->setStatusCode(201);
+    }
+
+    /**
+     * PUT /doctor/visits/{visit} — work done and total; remaining follows.
+     */
+    public function update(UpdateVisitRequest $request, Visit $visit, PaymentService $payments): VisitResource
+    {
+        $visit = DB::transaction(function () use ($request, $visit, $payments) {
+            // Locked, so a payment arriving now cannot push paid above the new total.
+            $locked = Visit::query()->lockForUpdate()->findOrFail($visit->getKey());
+            $payments->assertTotalAllowed($locked, $request->validated('total_amount'));
+
+            $locked->update([
+                'work_done' => $request->validated('work_done'),
+                'total_amount' => PaymentService::money($request->validated('total_amount')),
+            ]);
+
+            return $locked;
+        });
+
+        return VisitResource::make($visit->load('payments'))->withMessage(__('Visit updated.'));
     }
 }

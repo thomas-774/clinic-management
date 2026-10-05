@@ -36,6 +36,11 @@ function postVisit(array $body)
     return test()->actingAs(test()->doctor)->postJson('/api/v1/doctor/visits', $body);
 }
 
+function putVisit(int $id, array $body)
+{
+    return test()->actingAs(test()->doctor)->putJson("/api/v1/doctor/visits/{$id}", $body);
+}
+
 describe('POST /doctor/visits', function () {
     it('returns the §6.4 example and completes the appointment', function () {
         $response = postVisit(visitBody())
@@ -114,4 +119,42 @@ describe('POST /doctor/visits', function () {
         [['paid_now' => -5], 'paid_now'],
         [['method' => 'cheque'], 'method'],
     ]);
+});
+
+describe('PUT /doctor/visits/{id}', function () {
+    beforeEach(function () {
+        $this->visitId = postVisit(visitBody())->assertCreated()->json('data.id'); // 1500 / 1000
+    });
+
+    it('updates work done and total and recalculates remaining', function () {
+        putVisit($this->visitId, ['work_done' => 'Root canal, both sessions', 'total_amount' => '1800.50'])
+            ->assertOk()
+            ->assertJsonPath('message', 'Visit updated.')
+            ->assertJsonPath('data.work_done', 'Root canal, both sessions')
+            ->assertJsonPath('data.total_amount', '1800.50')
+            ->assertJsonPath('data.paid', '1000.00')
+            ->assertJsonPath('data.remaining', '800.50')
+            ->assertJsonPath('data.payment_status', 'partially_paid')
+            ->assertJsonCount(1, 'data.payments');
+    });
+
+    it('accepts lowering the total to exactly what was paid', function () {
+        putVisit($this->visitId, ['work_done' => 'Done', 'total_amount' => 1000])
+            ->assertOk()
+            ->assertJsonPath('data.remaining', '0.00')
+            ->assertJsonPath('data.payment_status', 'paid');
+    });
+
+    it('returns 422 when the total goes below the amount already paid', function () {
+        putVisit($this->visitId, ['work_done' => 'Done', 'total_amount' => '999.99'])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['total_amount' => 'The total cannot be lower than the 1000.00 EGP already paid.']);
+
+        expect(Visit::find($this->visitId)->total_amount)->toBe('1500.00');
+    });
+
+    it('validates the fields and returns 404 for an unknown visit', function () {
+        putVisit($this->visitId, ['total_amount' => 'abc'])->assertUnprocessable()->assertJsonValidationErrors(['work_done', 'total_amount']);
+        putVisit(999999, ['work_done' => 'x', 'total_amount' => 1])->assertNotFound();
+    });
 });

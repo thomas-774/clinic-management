@@ -57,6 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/appointments/{appointment}/status', [ScheduleController::class, 'updateStatus'])->name('appointments.status');
 
         Route::post('/visits', [VisitController::class, 'store'])->name('visits.store');
+        Route::put('/visits/{visit}', [VisitController::class, 'update'])->name('visits.update');
 
         Route::get('/settings', [SettingsController::class, 'show'])->name('settings.show');
         Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
