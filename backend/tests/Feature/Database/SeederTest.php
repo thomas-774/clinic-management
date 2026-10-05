@@ -1,11 +1,14 @@
 <?php
 
 use App\Enums\UserRole;
+use App\Models\Drug;
 use App\Models\MedicalHistoryEntry;
 use App\Models\Patient;
+use App\Models\Prescription;
 use App\Models\User;
 use Database\Seeders\AssistantSeeder;
 use Database\Seeders\DoctorSeeder;
+use Database\Seeders\PrescriptionSeeder;
 use Illuminate\Support\Facades\Hash;
 
 beforeEach(function () {
@@ -84,6 +87,22 @@ it('fills the demo prescription header without overwriting edits (T9-06)', funct
         ->clinic_name->toBe('My Clinic')
         ->prescription_paper->toBe('A4')
         ->doctor_title->toBe(DoctorSeeder::DEMO_PRINT_HEADER['doctor_title']);
+});
+
+it('seeds one demo prescription for each of two patients, once (T9-14)', function () {
+    $this->seed();
+    $this->seed(PrescriptionSeeder::class);
+
+    $prescriptions = Prescription::with('items')->orderBy('patient_id')->get();
+    $firstTwo = Patient::orderBy('id')->take(2)->pluck('id')->all();
+
+    expect($prescriptions)->toHaveCount(2)
+        ->and($prescriptions->pluck('patient_id')->all())->toBe($firstTwo)
+        ->and($prescriptions[0]->items->pluck('drug_name')->all())->toBe(['Augmentin 1 g', 'Brufen 400 mg', 'Panadol Extra'])
+        ->and($prescriptions[0]->items->pluck('drug_id')->filter()->count())->toBe(2)
+        ->and($prescriptions[0]->items[0]->drug_form)->toBe(Drug::where('seed_key', 'augmentin-1g-tabs')->value('form'))
+        ->and($prescriptions[1]->items->pluck('drug_name')->all())->toBe(['Flagyl 500 mg', 'Hexitol'])
+        ->and($prescriptions[1]->issued_on->format('Y-m-d'))->toBe(today()->subDays(10)->format('Y-m-d'));
 });
 
 it('refuses to seed without doctor credentials', function () {

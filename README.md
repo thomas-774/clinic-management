@@ -28,6 +28,43 @@ cd frontend && npm install && cp .env.example .env && npm run dev
 
 The home page calls `GET /api/v1/health` and shows the API status and server time.
 
+## Printing prescriptions
+
+A prescription prints on one A5 sheet (or A4, chosen in **Settings → Prescription**, where the clinic name, title, address, phone and footer are also set). **Save & Print** on the prescription form and **Reprint** on the patient page open the print page, which starts printing on its own; **Print again** prints another copy.
+
+### 1. Set up the printer (once)
+
+1. Connect the printer to the clinic PC and install its driver.
+2. In Windows **Settings → Bluetooth & devices → Printers & scanners**, turn off "Let Windows manage my default printer", open the clinic printer and choose **Set as default**.
+3. Load A5 paper (or A4 if the setting says A4). In the printer's **Printing preferences**, set the same paper size.
+
+### 2. Normal mode: the print dialog
+
+The browser's print dialog opens. The first time only, choose:
+
+- **Printer:** the clinic printer.
+- **Paper size:** A5 (or A4), **Margins:** Default, **Scale:** 100 (or Default).
+- Under **More settings**, turn off **Headers and footers** (otherwise the page address and date print on the edges).
+
+Chrome and Edge remember these choices, so after that it is just **Print**.
+
+### 3. One-click mode: no dialog
+
+Chrome or Edge started with `--kiosk-printing` prints straight to the Windows default printer, without the dialog.
+
+1. Do one print in normal mode first (step 2), so the browser has saved the paper size and "Headers and footers" off.
+2. Right-click the desktop → **New → Shortcut**, and enter (change the address to the clinic's):
+
+   ```text
+   "C:\Program Files\Google\Chrome\Application\chrome.exe" --kiosk-printing http://localhost:5173/doctor
+   ```
+
+   For Edge: `"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --kiosk-printing http://localhost:5173/doctor`.
+   Name it e.g. "Clinic (one-click print)".
+3. **Close every window of that browser before using the shortcut**, or the flag is ignored and the dialog still appears. Also turn off the browser's background running (Chrome: Settings → System → "Continue running background apps"; Edge: Settings → System → "Startup boost" and "Continue running background extensions and apps").
+
+If the dialog still appears, a window of the same browser was still open. If a URL or date prints on the edges, "Headers and footers" is still on. If the page comes out on two sheets, the paper size in the printer and in Settings → Prescription do not match.
+
 ## Tests
 
 | App | Command | Tooling |
