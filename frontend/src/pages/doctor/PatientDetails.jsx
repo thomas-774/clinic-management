@@ -117,7 +117,17 @@ export default function PatientDetails() {
         />
       </Card>
 
-      <Card title={t('patientDetails.visits')}>
+      <Card
+        title={t('patientDetails.visits')}
+        action={
+          <Link
+            to={`/doctor/visits/new?patient=${patient.id}`}
+            className="rounded-lg bg-sky-700 px-3 py-1.5 text-sm font-semibold text-white hover:bg-sky-800"
+          >
+            {t('patientDetails.newWalkInVisit')}
+          </Link>
+        }
+      >
         {/* Visit timeline with balances arrives in T5-10. */}
         <p className="text-sm text-slate-500">{t('patientDetails.noVisits')}</p>
       </Card>

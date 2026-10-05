@@ -4,9 +4,9 @@
 **Plan refs:** FR-F.3 · FR-D.1
 
 ## Steps
-- [ ] On checked-in appointments, the **Start visit** button opens `/doctor/visits/new?appointment=:id`.
-- [ ] After saving, the schedule shows the appointment as Completed (invalidate the query).
-- [ ] "New walk-in visit" button on PatientDetails.
+- [x] On checked-in appointments, the **Start visit** button opens `/doctor/visits/new?appointment=:id`.
+- [x] After saving, the schedule shows the appointment as Completed (invalidate the query).
+- [x] "New walk-in visit" button on PatientDetails.
 
 ## Done when
-- [ ] Arrived → Start visit → Save → the badge turns green.
+- [x] Arrived → Start visit → Save → the badge turns green.

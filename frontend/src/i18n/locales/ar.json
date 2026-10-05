@@ -155,7 +155,8 @@
     "deleteTitle": "حذف السجل؟",
     "deleteMessage": "سيتم حذف «{{title}}» نهائيًا.",
     "visits": "الزيارات",
-    "noVisits": "لا توجد زيارات بعد."
+    "noVisits": "لا توجد زيارات بعد.",
+    "newWalkInVisit": "زيارة جديدة بدون موعد"
   },
   "historyForm": {
     "addTitle": "إضافة سجل طبي",
@@ -320,7 +321,8 @@
     "count_two": "موعدان",
     "count_few": "{{count}} مواعيد",
     "count_many": "{{count}} موعدًا",
-    "count_other": "{{count}} موعد"
+    "count_other": "{{count}} موعد",
+    "startVisit": "بدء الزيارة"
   },
   "money": {
     "egp": "ج.م"

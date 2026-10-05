@@ -5,7 +5,7 @@ import { vi } from 'vitest'
 import * as authApi from '../../api/auth'
 import { tokenStorage } from '../../api/client'
 import * as api from '../../api/doctorPatients'
-import { renderAppAt } from '../../test/renderApp'
+import { expectPath, renderAppAt } from '../../test/renderApp'
 
 function makePatient(history) {
   return {
@@ -156,6 +156,16 @@ describe('PatientDetails', () => {
       7,
       expect.objectContaining({ name: 'Mona Ali', current_illness: 'Root canal needed', gender: 'female', date_of_birth: '1990-05-01' }),
     ])
+  })
+
+  it('opens a walk-in visit form for this patient', async () => {
+    fakeServer()
+    renderDetails()
+
+    await userEvent.click(await screen.findByRole('link', { name: 'New walk-in visit' }))
+
+    await expectPath('/doctor/visits/new')
+    expect(await screen.findByText('Walk-in visit')).toBeInTheDocument()
   })
 
   it('says so when the patient does not exist', async () => {

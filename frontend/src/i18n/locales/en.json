@@ -155,7 +155,8 @@
     "deleteTitle": "Delete history entry?",
     "deleteMessage": "“{{title}}” will be removed permanently.",
     "visits": "Visits",
-    "noVisits": "No visits yet."
+    "noVisits": "No visits yet.",
+    "newWalkInVisit": "New walk-in visit"
   },
   "historyForm": {
     "addTitle": "Add history entry",
@@ -320,7 +321,8 @@
     "count_two": "{{count}} appointments",
     "count_few": "{{count}} appointments",
     "count_many": "{{count}} appointments",
-    "count_other": "{{count}} appointments"
+    "count_other": "{{count}} appointments",
+    "startVisit": "Start visit"
   },
   "money": {
     "egp": "EGP"

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import ConfirmDialog from '../../../components/ConfirmDialog'
 import { LoadError, Loading } from '../../../components/QueryState'
 import StatusBadge from '../../../components/StatusBadge'
@@ -13,6 +14,18 @@ const NEEDS_CONFIRM = ['no_show', 'cancelled']
 
 function Actions({ appointment, onChange, busy }) {
   const { t } = useTranslation()
+  if (appointment.status === 'checked_in') {
+    // The appointment travels with the link, so the form needs no extra request (FR-F.3).
+    return (
+      <Link
+        to={`/doctor/visits/new?appointment=${appointment.id}`}
+        state={{ appointment }}
+        className="rounded-lg bg-green-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-green-700"
+      >
+        {t('schedule.startVisit')}
+      </Link>
+    )
+  }
   if (appointment.status !== 'booked') return null
   return (
     <div className="flex flex-wrap gap-2">

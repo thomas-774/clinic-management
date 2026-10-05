@@ -7,7 +7,8 @@ import * as authApi from '../../api/auth'
 import { tokenStorage } from '../../api/client'
 import * as patientsApi from '../../api/doctorPatients'
 import * as slotsApi from '../../api/slots'
-import { renderAppAt } from '../../test/renderApp'
+import * as visitsApi from '../../api/visits'
+import { expectPath, renderAppAt } from '../../test/renderApp'
 
 const MONA = { id: 1, name: 'Mona Ali', phone: '01011112222' }
 const AHMED = { id: 2, name: 'Ahmed Hassan', phone: '01233334444' }
@@ -49,7 +50,23 @@ function fakeServer(rows = []) {
     appointments = [...appointments, created]
     return created
   })
-  return { getSchedule, updateStatus, book }
+  // Saving a visit completes its appointment, like POST /doctor/visits.
+  const createVisit = vi.spyOn(visitsApi, 'createVisit').mockImplementation(async (fields) => {
+    appointments = appointments.map((a) => (a.id === fields.appointment_id ? { ...a, status: 'completed' } : a))
+    return { id: 88, ...fields, paid: fields.paid_now, remaining: '0.00', payment_status: 'paid', payments: [] }
+  })
+  vi.spyOn(patientsApi, 'getPatient').mockImplementation(async (id) => ({
+    ...[MONA, AHMED].find((p) => p.id === Number(id)),
+    email: null,
+    address: 'Cairo',
+    date_of_birth: null,
+    gender: null,
+    current_illness: null,
+    history: [],
+    visits: [],
+    outstanding_balance: '0.00',
+  }))
+  return { getSchedule, updateStatus, book, createVisit }
 }
 
 function renderSchedule(path = '/doctor/schedule') {
@@ -99,6 +116,7 @@ describe('Schedule: day view', () => {
     expect(within(rowOf('Mona Ali')).getByRole('button', { name: 'No-show' })).toBeInTheDocument()
     expect(within(rowOf('Mona Ali')).getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
     expect(within(rowOf('Ahmed Hassan')).queryByRole('button')).not.toBeInTheDocument()
+    expect(within(rowOf('Ahmed Hassan')).getByRole('link', { name: 'Start visit' })).toHaveAttribute('href', '/doctor/visits/new?appointment=2')
   })
 
   it('checks a patient in and the badge turns blue', async () => {
@@ -191,6 +209,42 @@ describe('Schedule: day view', () => {
     expect(await screen.findByText('Appointment booked for Ahmed Hassan.')).toBeInTheDocument()
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(await screen.findByText('Ahmed Hassan')).toBeInTheDocument()
+  })
+})
+
+describe('Schedule: start visit (T5-09)', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-10-05T14:05:00Z')) // 17:05 in Cairo
+  })
+
+  afterEach(() => vi.useRealTimers())
+
+  it('Arrived → Start visit → Save → the badge turns green', async () => {
+    const server = fakeServer([appt(1, '2026-10-05', '17:00', '17:45', MONA)])
+    renderSchedule()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Arrived' }))
+    await userEvent.click(await screen.findByRole('link', { name: 'Start visit' }))
+
+    // The form gets the appointment from the link: no schedule lookup needed.
+    expect(await screen.findByRole('heading', { name: 'New visit' })).toBeInTheDocument()
+    expect(screen.getByText(/Appointment: 5 Oct 2026/)).toHaveTextContent('17:00 – 17:45')
+    await userEvent.type(screen.getByLabelText('Work done today'), 'Filling')
+    await userEvent.type(screen.getByLabelText('Total cost'), '400')
+    await userEvent.type(screen.getByLabelText('Amount paid now'), '400')
+    await userEvent.click(screen.getByRole('button', { name: 'Save visit' }))
+
+    expect(server.createVisit).toHaveBeenCalledWith(expect.objectContaining({ patient_id: 1, appointment_id: 1, total_amount: '400' }))
+    await expectPath('/doctor/patients/1')
+
+    await userEvent.click(screen.getAllByRole('link', { name: 'Schedule' })[0])
+    const badge = await within(await screen.findByRole('list', { name: 'Appointments' })).findByText('Completed')
+    expect(badge).toHaveAttribute('data-status', 'completed')
+    expect(badge.className).toContain('bg-green-100')
+    expect(screen.queryByRole('link', { name: 'Start visit' })).not.toBeInTheDocument()
   })
 })
 
