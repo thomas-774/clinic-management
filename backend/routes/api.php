@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\Doctor\MedicalHistoryController;
 use App\Http\Controllers\Api\V1\Doctor\PatientController;
 use App\Http\Controllers\Api\V1\Patient\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -33,5 +34,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
         Route::get('/patients/{patient}', [PatientController::class, 'show'])->name('patients.show');
         Route::put('/patients/{patient}', [PatientController::class, 'update'])->name('patients.update');
+
+        Route::scopeBindings()->prefix('/patients/{patient}/history')->name('patients.history.')->group(function () {
+            Route::post('/', [MedicalHistoryController::class, 'store'])->name('store');
+            Route::put('/{medicalHistoryEntry}', [MedicalHistoryController::class, 'update'])->name('update');
+            Route::delete('/{medicalHistoryEntry}', [MedicalHistoryController::class, 'destroy'])->name('destroy');
+        });
     });
 });
