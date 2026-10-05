@@ -1,17 +1,19 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import Card from '../../components/Card'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import HistoryList from '../../components/HistoryList'
 import { LoadError, Loading } from '../../components/QueryState'
 import { useDeleteHistoryEntry, usePatient } from '../../hooks/usePatient'
+import { usePatientPrescriptions } from '../../hooks/usePrescriptions'
 import { formatDate, formatMoney } from '../../utils/format'
 import AddPaymentModal from './AddPaymentModal'
 import EditPatientModal from './EditPatientModal'
 import EditVisitModal from './EditVisitModal'
 import { HISTORY_TYPES } from '../../utils/historyTypes'
 import HistoryEntryModal from './HistoryEntryModal'
+import PatientPrescriptions from './PatientPrescriptions'
 import VisitTimeline from './VisitTimeline'
 
 function InfoItem({ label, children }) {
@@ -29,6 +31,11 @@ export default function PatientDetails() {
   const { t } = useTranslation()
   const id = Number(useParams().id)
   const { data: patient, isPending, isError, error, refetch } = usePatient(id)
+  // The list is only asked for when the patient has prescriptions.
+  const prescriptions = usePatientPrescriptions(id, { enabled: patient?.prescriptions_count > 0 })
+  // A visit just saved in VisitForm: offer to write its prescription.
+  const savedVisitId = useLocation().state?.savedVisitId ?? null
+  const [offerDismissed, setOfferDismissed] = useState(false)
   const deleteEntry = useDeleteHistoryEntry(id)
   const [editingInfo, setEditingInfo] = useState(false)
   const [entryForm, setEntryForm] = useState(null) // null = closed, {} = new, entry = edit
@@ -49,12 +56,36 @@ export default function PatientDetails() {
   const history = typeFilter === 'all' ? patient.history : patient.history.filter((entry) => entry.type === typeFilter)
   const typesInUse = HISTORY_TYPES.filter((type) => patient.history.some((entry) => entry.type === type))
   const owes = Number(patient.outstanding_balance) > 0
+  const prescriptionCounts = {}
+  for (const prescription of patient.prescriptions_count > 0 ? (prescriptions.data ?? []) : []) {
+    if (prescription.visit_id) prescriptionCounts[prescription.visit_id] = (prescriptionCounts[prescription.visit_id] ?? 0) + 1
+  }
+  const savedVisit = !offerDismissed && patient.visits.find((visit) => visit.id === savedVisitId)
 
   return (
     <div className="space-y-4">
       <Link to="/doctor/patients" className="text-sm text-sky-700 hover:underline">
         {t('patientDetails.back')}
       </Link>
+
+      {savedVisit && (
+        <div role="status" className="flex flex-wrap items-center gap-3 rounded-xl bg-violet-50 p-4 ring-1 ring-violet-200">
+          <p className="text-sm text-violet-900">{t('prescriptions.visitSaved', { date: formatDate(savedVisit.visit_date) })}</p>
+          <Link
+            to={`/doctor/patients/${patient.id}/prescriptions/new?visit=${savedVisit.id}`}
+            className="rounded-lg bg-violet-700 px-3 py-1.5 text-sm font-semibold text-white hover:bg-violet-800"
+          >
+            {t('prescriptions.writeForSavedVisit')}
+          </Link>
+          <button
+            type="button"
+            onClick={() => setOfferDismissed(true)}
+            className="ms-auto rounded-lg px-3 py-1.5 text-sm text-violet-800 hover:bg-violet-100"
+          >
+            {t('prescriptions.notNow')}
+          </button>
+        </div>
+      )}
 
       <Card
         action={
@@ -137,8 +168,16 @@ export default function PatientDetails() {
           </Link>
         }
       >
-        <VisitTimeline visits={patient.visits} onAddPayment={setPaying} onEdit={setEditingVisit} />
+        <VisitTimeline
+          visits={patient.visits}
+          onAddPayment={setPaying}
+          onEdit={setEditingVisit}
+          patientId={patient.id}
+          prescriptionCounts={prescriptionCounts}
+        />
       </Card>
+
+      <PatientPrescriptions patient={patient} prescriptions={prescriptions} />
 
       {editingInfo && <EditPatientModal patient={patient} onClose={() => setEditingInfo(false)} />}
       {paying && <AddPaymentModal visit={paying} onClose={() => setPaying(null)} />}

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import PaymentStatusBadge from '../../components/PaymentStatusBadge'
 import { formatDate, formatMoney, formatTime } from '../../utils/format'
 
@@ -14,7 +15,7 @@ function Amount({ label, children, className = 'text-slate-900' }) {
   )
 }
 
-function VisitItem({ visit, onAddPayment, onEdit }) {
+function VisitItem({ visit, onAddPayment, onEdit, prescriptionCount = 0, prescriptionsFor = null }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const owes = Number(visit.remaining) > 0
@@ -27,7 +28,21 @@ function VisitItem({ visit, onAddPayment, onEdit }) {
         <h3 className="font-semibold text-slate-900">{formatDate(visit.visit_date)}</h3>
         <PaymentStatusBadge status={visit.payment_status} />
         {owes && <span className="rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white">{t('visits.unpaidBalance')}</span>}
+        {prescriptionCount > 0 && (
+          <span className="rounded-full bg-violet-50 px-2 py-0.5 text-xs font-semibold text-violet-800 ring-1 ring-violet-200">
+            {t('prescriptions.visitBadge', { count: prescriptionCount })}
+          </span>
+        )}
         <div className="ms-auto flex gap-1">
+          {prescriptionsFor && (
+            <Link
+              to={`/doctor/patients/${prescriptionsFor}/prescriptions/new?visit=${visit.id}`}
+              aria-label={t('prescriptions.writeForVisitLabel', { date: formatDate(visit.visit_date) })}
+              className={`${smallButton} text-violet-700`}
+            >
+              {t('prescriptions.write')}
+            </Link>
+          )}
           {onEdit && (
             <button type="button" onClick={() => onEdit(visit)} className={`${smallButton} text-sky-700`}>
               {t('visits.edit')}
@@ -78,15 +93,27 @@ function VisitItem({ visit, onAddPayment, onEdit }) {
   )
 }
 
-/** Every visit, newest first, with its money (FR-C.5, FR-D.5). */
-export default function VisitTimeline({ visits, onAddPayment, onEdit }) {
+/**
+ * Every visit, newest first, with its money (FR-C.5, FR-D.5). For the doctor,
+ * `patientId` adds "Write prescription" on each visit, and
+ * `prescriptionCounts` ({ visitId: count }) a badge on visits that have
+ * prescriptions (FR-J.7).
+ */
+export default function VisitTimeline({ visits, onAddPayment, onEdit, patientId, prescriptionCounts }) {
   const { t } = useTranslation()
   if (!visits.length) return <p className="text-sm text-slate-500">{t('patientDetails.noVisits')}</p>
 
   return (
     <ol aria-label={t('patientDetails.visits')} className="space-y-5 border-s-2 border-slate-100 ps-3">
       {visits.map((visit) => (
-        <VisitItem key={visit.id} visit={visit} onAddPayment={onAddPayment} onEdit={onEdit} />
+        <VisitItem
+          key={visit.id}
+          visit={visit}
+          onAddPayment={onAddPayment}
+          onEdit={onEdit}
+          prescriptionsFor={patientId ?? null}
+          prescriptionCount={prescriptionCounts?.[visit.id] ?? 0}
+        />
       ))}
     </ol>
   )

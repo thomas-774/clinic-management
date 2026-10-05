@@ -564,5 +564,25 @@
     "signature": "التوقيع",
     "printAgain": "اطبع مرة أخرى",
     "backToPatient": "→ رجوع للمريض"
+  },
+  "prescriptions": {
+    "title": "الروشتات",
+    "write": "كتابة روشتة",
+    "empty": "لا توجد روشتات بعد.",
+    "forVisit": "زيارة {{date}}",
+    "open": "فتح / تعديل",
+    "openLabel": "فتح روشتة {{date}}",
+    "reprint": "إعادة الطباعة",
+    "reprintLabel": "إعادة طباعة روشتة {{date}}",
+    "delete": "حذف",
+    "deleteLabel": "حذف روشتة {{date}}",
+    "deleteTitle": "حذف الروشتة؟",
+    "deleteMessage": "سيتم حذف روشتة {{date}} نهائيًا.",
+    "deleted": "تم حذف الروشتة.",
+    "visitBadge": "روشتات: {{count}}",
+    "writeForVisitLabel": "كتابة روشتة لزيارة {{date}}",
+    "visitSaved": "تم حفظ زيارة {{date}}.",
+    "writeForSavedVisit": "كتابة روشتة لهذه الزيارة",
+    "notNow": "ليس الآن"
   }
 }

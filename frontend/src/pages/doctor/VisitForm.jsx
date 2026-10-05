@@ -98,7 +98,8 @@ export default function VisitForm() {
       {
         onSuccess: (visit) => {
           toast.success(t('visitForm.saved', { remaining: formatMoney(visit.remaining) }))
-          navigate(`/doctor/patients/${patient.id}`)
+          // The patient page then offers to write this visit's prescription (FR-J.7).
+          navigate(`/doctor/patients/${patient.id}`, { state: { savedVisitId: visit.id } })
         },
       },
     )

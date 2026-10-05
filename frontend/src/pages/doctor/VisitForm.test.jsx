@@ -94,6 +94,39 @@ describe('VisitForm', () => {
     await expectPath('/doctor/patients/7')
   })
 
+  it('after saving, the patient page offers a prescription for this visit', async () => {
+    fakeServer()
+    const saved = {
+      id: 88,
+      patient_id: 7,
+      appointment_id: 40,
+      visit_date: '2026-10-05',
+      work_done: 'Extraction',
+      total_amount: '800.00',
+      paid: '800.00',
+      remaining: '0.00',
+      payment_status: 'paid',
+      payments: [],
+    }
+    patientsApi.getPatient.mockResolvedValue({ ...MONA, address: 'Cairo', history: [], visits: [saved], outstanding_balance: '0.00' })
+    renderForm('/doctor/visits/new?appointment=40')
+
+    await userEvent.type(await screen.findByLabelText('Work done today'), 'Extraction')
+    await userEvent.type(screen.getByLabelText('Total cost'), '800')
+    await userEvent.type(screen.getByLabelText('Amount paid now'), '800')
+    await userEvent.click(screen.getByRole('button', { name: 'Save visit' }))
+
+    await expectPath('/doctor/patients/7')
+    expect(await screen.findByText('The visit of 5 Oct 2026 is saved.')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Write prescription for this visit' })).toHaveAttribute(
+      'href',
+      '/doctor/patients/7/prescriptions/new?visit=88',
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: 'Not now' }))
+    expect(screen.queryByRole('link', { name: 'Write prescription for this visit' })).not.toBeInTheDocument()
+  })
+
   it('shows 0 in black when fully paid', async () => {
     fakeServer()
     renderForm('/doctor/visits/new?appointment=40')

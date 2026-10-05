@@ -564,5 +564,25 @@
     "signature": "Signature",
     "printAgain": "Print again",
     "backToPatient": "← Back to patient"
+  },
+  "prescriptions": {
+    "title": "Prescriptions",
+    "write": "Write prescription",
+    "empty": "No prescriptions yet.",
+    "forVisit": "Visit of {{date}}",
+    "open": "Open / Edit",
+    "openLabel": "Open the prescription of {{date}}",
+    "reprint": "Reprint",
+    "reprintLabel": "Reprint the prescription of {{date}}",
+    "delete": "Delete",
+    "deleteLabel": "Delete the prescription of {{date}}",
+    "deleteTitle": "Delete prescription?",
+    "deleteMessage": "The prescription of {{date}} will be removed permanently.",
+    "deleted": "Prescription deleted.",
+    "visitBadge": "Prescriptions: {{count}}",
+    "writeForVisitLabel": "Write a prescription for the visit of {{date}}",
+    "visitSaved": "The visit of {{date}} is saved.",
+    "writeForSavedVisit": "Write prescription for this visit",
+    "notNow": "Not now"
   }
 }
