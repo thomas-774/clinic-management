@@ -151,7 +151,7 @@ Frontend
 - [x] [T8-09](phase-8-assistant/T8-09-fe-today-page.md) Today page (queue + waiting to pay) · M
 - [x] [T8-10](phase-8-assistant/T8-10-fe-patients-pages.md) Patients list and patient page · M
 - [x] [T8-11](phase-8-assistant/T8-11-fe-schedule-page.md) Assistant schedule · S
-- [ ] [T8-12](phase-8-assistant/T8-12-fe-staff-settings.md) Settings → Staff (doctor) · S
+- [x] [T8-12](phase-8-assistant/T8-12-fe-staff-settings.md) Settings → Staff (doctor) · S
 - [ ] [T8-13](phase-8-assistant/T8-13-walkthrough.md) Demo data and front-desk walkthrough · S
 
 ## Phase 7 — Testing, polish and deployment

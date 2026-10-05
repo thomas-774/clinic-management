@@ -24,6 +24,7 @@ function fakeServer() {
   vi.spyOn(api, 'getSettings').mockImplementation(async () => state.settings)
   vi.spyOn(api, 'getWorkingHours').mockImplementation(async () => state.week)
   vi.spyOn(api, 'getBlockedTimes').mockResolvedValue([])
+  vi.spyOn(api, 'getStaff').mockResolvedValue([])
   return {
     state,
     updateSettings: vi.spyOn(api, 'updateSettings').mockImplementation(async (fields) => (state.settings = fields)),

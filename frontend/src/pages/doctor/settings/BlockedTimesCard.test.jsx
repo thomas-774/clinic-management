@@ -10,6 +10,7 @@ import { renderAppAt } from '../../../test/renderApp'
 function fakeServer(initial = []) {
   let blocks = [...initial]
   let nextId = 100
+  vi.spyOn(api, 'getStaff').mockResolvedValue([])
   vi.spyOn(api, 'getSettings').mockResolvedValue({ slot_duration_minutes: 45, booking_window_days: 30, cancel_cutoff_hours: 2 })
   vi.spyOn(api, 'getWorkingHours').mockResolvedValue([0, 1, 2, 3, 4, 5, 6].map((d) => ({ day_of_week: d, ranges: [] })))
   vi.spyOn(api, 'getBlockedTimes').mockImplementation(async () => blocks)

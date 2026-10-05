@@ -5,6 +5,7 @@ import { useDoctorSettings, useUpdateSettings, useUpdateWorkingHours, useWorking
 import { useToast } from '../../toast/useToast'
 import { errorMessage } from '../../utils/apiErrors'
 import BlockedTimesCard from './settings/BlockedTimesCard'
+import StaffCard from './settings/StaffCard'
 import BookingSettingsForm from './settings/BookingSettingsForm'
 import SlotPreview from './settings/SlotPreview'
 import WeeklyHoursForm from './settings/WeeklyHoursForm'
@@ -78,6 +79,7 @@ function SettingsEditor({ initialSettings, initialWeek }) {
         )}
       />
       <BlockedTimesCard />
+      <StaffCard />
     </div>
   )
 }

@@ -456,5 +456,41 @@
     "nextAppointment": "Next appointment",
     "bookAppointment": "Book appointment",
     "noAppointment": "No upcoming appointment."
+  },
+  "staff": {
+    "title": "Staff",
+    "hint": "Assistants work the front desk: they register patients, record payments and run the queue. They never see medical data.",
+    "add": "Add assistant",
+    "addTitle": "Add assistant",
+    "editTitle": "Edit assistant",
+    "createdTitle": "Assistant added",
+    "create": "Add assistant",
+    "empty": "No assistants yet.",
+    "active": "Active",
+    "inactive": "Inactive",
+    "reset": "Reset password",
+    "deactivate": "Deactivate",
+    "activate": "Activate",
+    "editLabel": "Edit {{name}}",
+    "resetLabel": "Reset password of {{name}}",
+    "deactivateLabel": "Deactivate {{name}}",
+    "activateLabel": "Activate {{name}}",
+    "passwordOnce": "Give {{name}} this password. It is shown only once.",
+    "loginWith": "They log in with the phone number",
+    "resetTitle": "New password",
+    "activated": "{{name}} can log in again.",
+    "deactivated": "{{name}} was deactivated and logged out.",
+    "confirm": {
+      "deactivate": {
+        "title": "Deactivate this assistant?",
+        "message": "{{name}} will be logged out and will not be able to log in until you activate them again.",
+        "action": "Yes, deactivate"
+      },
+      "reset": {
+        "title": "Reset the password?",
+        "message": "{{name}} will be logged out and get a new password, shown once.",
+        "action": "Yes, reset"
+      }
+    }
   }
 }
