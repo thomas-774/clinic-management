@@ -202,7 +202,14 @@
     "minutes_zero": "{{count}} minutes",
     "minutes_two": "{{count}} minutes",
     "minutes_few": "{{count}} minutes",
-    "minutes_many": "{{count}} minutes"
+    "minutes_many": "{{count}} minutes",
+    "previewFor": "Slots on {{day}}",
+    "previewCount_zero": "No slots fit in these hours.",
+    "previewCount_one": "{{count}} slot",
+    "previewCount_two": "{{count}} slots",
+    "previewCount_few": "{{count}} slots",
+    "previewCount_many": "{{count}} slots",
+    "previewCount_other": "{{count}} slots"
   },
   "blocked": {
     "title": "Holidays and blocked times",

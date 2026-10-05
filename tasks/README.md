@@ -84,7 +84,7 @@ Backend
 Frontend
 - [x] [T3-07](phase-3-availability-slots/T3-07-fe-settings-hours-duration.md) Settings: weekly hours and duration · M
 - [x] [T3-08](phase-3-availability-slots/T3-08-fe-blocked-dates.md) Blocked dates management · S
-- [ ] [T3-09](phase-3-availability-slots/T3-09-fe-slot-preview.md) Live slot preview · S
+- [x] [T3-09](phase-3-availability-slots/T3-09-fe-slot-preview.md) Live slot preview · S
 
 ## Phase 4 — Booking, schedule and check-in (Modules E, F)
 

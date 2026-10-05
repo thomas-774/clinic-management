@@ -139,3 +139,47 @@ describe('Settings: hours and duration', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Please fix the highlighted fields.')
   })
 })
+
+describe('Settings: live slot preview', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+  })
+
+  const preview = (dayName) => screen.getByRole('group', { name: `Slots on ${dayName}` })
+  const chips = (dayName) => within(preview(dayName)).queryAllByTestId('preview-slot').map((chip) => chip.textContent)
+
+  it('shows the slots each working day would produce, and none for a day off', async () => {
+    fakeServer()
+    renderSettings()
+    await screen.findAllByRole('listitem')
+
+    expect(chips('Saturday')).toEqual(['17:00', '17:45', '18:30', '19:15', '20:00'])
+    expect(preview('Saturday')).toHaveTextContent('5 slots')
+    expect(screen.queryByRole('group', { name: 'Slots on Friday' })).not.toBeInTheDocument()
+  })
+
+  it('updates instantly when the duration changes, before saving', async () => {
+    const server = fakeServer()
+    renderSettings()
+    await screen.findAllByRole('listitem')
+
+    await userEvent.selectOptions(screen.getByLabelText('Appointment length'), '60')
+
+    expect(chips('Saturday')).toEqual(['17:00', '18:00', '19:00', '20:00'])
+    expect(server.updateSettings).not.toHaveBeenCalled()
+  })
+
+  it('updates when a break is added to a day', async () => {
+    fakeServer()
+    renderSettings()
+    await screen.findAllByRole('listitem')
+    await userEvent.selectOptions(screen.getByLabelText('Appointment length'), '60')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Add range on Tuesday' }))
+    fireEvent.change(screen.getByLabelText('Tuesday range 2 start'), { target: { value: '10:00' } })
+    fireEvent.change(screen.getByLabelText('Tuesday range 2 end'), { target: { value: '13:00' } })
+
+    expect(chips('Tuesday')).toEqual(['10:00', '11:00', '12:00', '17:00', '18:00', '19:00', '20:00'])
+  })
+})

@@ -202,7 +202,14 @@
     "minutes_zero": "{{count}} دقيقة",
     "minutes_two": "دقيقتان",
     "minutes_few": "{{count}} دقائق",
-    "minutes_many": "{{count}} دقيقة"
+    "minutes_many": "{{count}} دقيقة",
+    "previewFor": "مواعيد يوم {{day}}",
+    "previewCount_zero": "لا توجد مواعيد في هذه الفترات.",
+    "previewCount_one": "موعد واحد",
+    "previewCount_two": "موعدان",
+    "previewCount_few": "{{count}} مواعيد",
+    "previewCount_many": "{{count}} موعدًا",
+    "previewCount_other": "{{count}} موعد"
   },
   "blocked": {
     "title": "الإجازات والأوقات المحجوبة",

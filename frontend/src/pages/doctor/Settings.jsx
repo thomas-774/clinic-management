@@ -6,6 +6,7 @@ import { useToast } from '../../toast/useToast'
 import { errorMessage } from '../../utils/apiErrors'
 import BlockedTimesCard from './settings/BlockedTimesCard'
 import BookingSettingsForm from './settings/BookingSettingsForm'
+import SlotPreview from './settings/SlotPreview'
 import WeeklyHoursForm from './settings/WeeklyHoursForm'
 
 /** All 422 messages keyed by field, e.g. { "days.2.ranges.0.end_time": "…" }. */
@@ -72,6 +73,9 @@ function SettingsEditor({ initialSettings, initialWeek }) {
         errors={errorsOf(saveHours.error)}
         onSave={handleSaveHours}
         saving={saveHours.isPending}
+        renderPreview={(day) => (
+          <SlotPreview dayName={t(`days.${day}`)} ranges={week[day].ranges} duration={settings.slot_duration_minutes} />
+        )}
       />
       <BlockedTimesCard />
     </div>
