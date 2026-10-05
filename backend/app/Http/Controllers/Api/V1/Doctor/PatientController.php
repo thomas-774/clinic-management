@@ -1,0 +1,92 @@
+<?php
+
+namespace App\Http\Controllers\Api\V1\Doctor;
+
+use App\Enums\UserRole;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Doctor\StorePatientRequest;
+use App\Http\Resources\ApiResourceCollection;
+use App\Http\Resources\PatientListItemResource;
+use App\Http\Resources\PatientResource;
+use App\Models\Patient;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+
+class PatientController extends Controller
+{
+    public const PER_PAGE = 20;
+
+    /**
+     * Letters and digits that cannot be confused when read out over the phone.
+     */
+    private const PASSWORD_ALPHABET = 'abcdefghjkmnpqrstuvwxyz23456789';
+
+    /**
+     * GET /doctor/patients?search= — search by name or phone, sorted by name (FR-C.1).
+     */
+    public function index(Request $request): ApiResourceCollection
+    {
+        Gate::authorize('viewAny', Patient::class);
+
+        $search = trim((string) $request->query('search', ''));
+
+        $patients = Patient::query()
+            ->select('patients.*')
+            ->join('users', 'users.id', '=', 'patients.user_id')
+            ->with('user')
+            ->withMax('visits', 'visit_date')
+            ->when($search !== '', function ($query) use ($search) {
+                $like = '%'.addcslashes($search, '\\%_').'%';
+                $query->where(fn ($q) => $q
+                    ->where('users.name', 'like', $like)
+                    ->orWhere('users.phone', 'like', $like));
+            })
+            ->orderBy('users.name')
+            ->orderBy('patients.id')
+            ->paginate(self::PER_PAGE)
+            ->withQueryString();
+
+        return PatientListItemResource::collection($patients);
+    }
+
+    /**
+     * POST /doctor/patients — create the account; the initial password is
+     * returned in this response only and stored hashed (FR-C.6).
+     */
+    public function store(StorePatientRequest $request): JsonResponse
+    {
+        Gate::authorize('create', Patient::class);
+
+        $password = $this->initialPassword();
+
+        $patient = DB::transaction(function () use ($request, $password) {
+            $user = User::create([
+                ...$request->safe()->only(['name', 'phone', 'email']),
+                'password' => $password,
+                'role' => UserRole::Patient,
+            ]);
+
+            return $user->patient()->create(
+                $request->safe()->only(['address', 'date_of_birth', 'gender', 'current_illness']),
+            );
+        });
+
+        return PatientResource::make($patient->load('user'))
+            ->additional(['data' => ['initial_password' => $password]])
+            ->withMessage(__('Patient account created.'))
+            ->response()
+            ->setStatusCode(201);
+    }
+
+    private function initialPassword(int $length = 8): string
+    {
+        $alphabet = self::PASSWORD_ALPHABET;
+
+        return collect(range(1, $length))
+            ->map(fn () => $alphabet[random_int(0, strlen($alphabet) - 1)])
+            ->implode('');
+    }
+}

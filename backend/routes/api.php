@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\Doctor\PatientController;
 use App\Http\Controllers\Api\V1\Patient\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Doctor area: /api/v1/doctor/* (patients, schedule, visits, settings, reports).
     Route::prefix('doctor')->middleware('role:doctor')->name('doctor.')->group(function () {
-        //
+        Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
+        Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
     });
 });
