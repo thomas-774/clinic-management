@@ -5,9 +5,11 @@ import { LoadError, Loading } from '../../components/QueryState'
 import { useReportPayments } from '../../hooks/useReports'
 import { addDays, monthRange, weekStart } from '../../utils/dates'
 import { formatDate, formatMoney, todayInClinic } from '../../utils/format'
+import RevenueChart from './reports/RevenueChart'
 
 const PERIODS = ['day', 'week', 'month', 'custom']
 const DATE = /^\d{4}-\d{2}-\d{2}$/
+const MONTH = /^\d{4}-\d{2}$/
 
 /** [from, to] for a period, as inclusive "YYYY-MM-DD" dates in clinic time. */
 function rangeOf(period, today, params) {
@@ -22,24 +24,35 @@ const dateInput =
   'rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-200'
 
 /**
- * Reports (FR-H.3): a period filter kept in the URL (?period=day|week|custom,
- * this month by default; ?from=&to= for a custom range; ?page=) and the
- * payments table with a totals row for the whole range.
+ * Reports: a period filter kept in the URL (?period=day|week|custom, this
+ * month by default; ?from=&to= for a custom range; ?page=), the payments
+ * table with a totals row for the whole range (FR-H.3), and the daily revenue
+ * chart for ?month=YYYY-MM, this month by default (FR-H.4).
  */
 export default function Reports() {
   const { t } = useTranslation()
   const [params, setParams] = useSearchParams()
   const period = PERIODS.includes(params.get('period')) ? params.get('period') : 'month'
-  const { from, to } = rangeOf(period, todayInClinic(), params)
+  const today = todayInClinic()
+  const { from, to } = rangeOf(period, today, params)
+  const month = MONTH.test(params.get('month') ?? '') ? params.get('month') : today.slice(0, 7)
   const page = Math.max(1, Number(params.get('page')) || 1)
   const validRange = DATE.test(from) && DATE.test(to) && from <= to
 
+  // The table filter and the chart month are independent: changing one keeps the other.
+  const keepMonth = params.has('month') ? { month } : {}
   const choosePeriod = (next) => {
-    if (next === 'month') setParams({})
-    else if (next === 'custom') setParams({ period: 'custom', from, to })
-    else setParams({ period: next })
+    if (next === 'month') setParams(keepMonth)
+    else if (next === 'custom') setParams({ period: 'custom', from, to, ...keepMonth })
+    else setParams({ period: next, ...keepMonth })
   }
-  const setCustom = (field, value) => setParams({ period: 'custom', from, to, [field]: value })
+  const setCustom = (field, value) => setParams({ period: 'custom', from, to, ...keepMonth, [field]: value })
+  const chooseMonth = (next) => {
+    const nextParams = new URLSearchParams(params)
+    if (next === today.slice(0, 7)) nextParams.delete('month')
+    else nextParams.set('month', next)
+    setParams(nextParams)
+  }
   const goToPage = (next) => {
     const nextParams = new URLSearchParams(params)
     nextParams.set('page', String(next))
@@ -125,6 +138,8 @@ export default function Reports() {
           />
         )}
       </section>
+
+      <RevenueChart month={month} onMonthChange={chooseMonth} />
     </div>
   )
 }

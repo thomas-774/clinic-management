@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { getReportPayments, getReportSummary } from '../api/reports'
+import { getDailyRevenue, getReportPayments, getReportSummary } from '../api/reports'
 
 export const reportsKey = ['doctor', 'reports']
 
@@ -18,5 +18,14 @@ export function useReportPayments({ from, to, page }, { enabled = true } = {}) {
     queryFn: () => getReportPayments({ from, to, page }),
     placeholderData: keepPreviousData,
     enabled,
+  })
+}
+
+/** Revenue for every day of a "YYYY-MM" month (FR-H.4). */
+export function useDailyRevenue(month) {
+  return useQuery({
+    queryKey: [...reportsKey, 'daily-revenue', month],
+    queryFn: () => getDailyRevenue(month),
+    placeholderData: keepPreviousData,
   })
 }

@@ -415,6 +415,16 @@
     "paid": "Paid",
     "remaining": "Remaining",
     "totals": "Total",
-    "empty": "No payments in this period."
+    "empty": "No payments in this period.",
+    "chart": {
+      "title": "Revenue per day",
+      "month": "Month",
+      "total": "Month total",
+      "label": "Bar chart of revenue per day. Month total {{total}}.",
+      "empty": "No payments were received in this month.",
+      "revenue": "Revenue",
+      "showTable": "Show as table",
+      "hideTable": "Hide table"
+    }
   }
 }

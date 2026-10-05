@@ -56,6 +56,7 @@ describe('Reports: payments table', () => {
     vi.restoreAllMocks()
     vi.useFakeTimers({ toFake: ['Date'] })
     vi.setSystemTime(new Date('2026-10-05T14:20:00Z')) // Monday 17:20 in Cairo
+    vi.spyOn(reportsApi, 'getDailyRevenue').mockResolvedValue([]) // the chart is covered in RevenueChart.test.jsx
   })
 
   afterEach(() => vi.useRealTimers())

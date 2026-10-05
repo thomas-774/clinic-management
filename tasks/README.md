@@ -130,7 +130,7 @@ Backend
 Frontend
 - [x] [T6-04](phase-6-dashboard-reports/T6-04-fe-dashboard.md) Dashboard · M
 - [x] [T6-05](phase-6-dashboard-reports/T6-05-fe-reports-table.md) Reports page, filter and payments table · M
-- [ ] [T6-06](phase-6-dashboard-reports/T6-06-fe-revenue-chart.md) Daily revenue chart · S
+- [x] [T6-06](phase-6-dashboard-reports/T6-06-fe-revenue-chart.md) Daily revenue chart · S
 
 ## Phase 7 — Testing, polish and deployment
 
