@@ -4,9 +4,9 @@
 **Plan refs:** §7.1 api/
 
 ## Steps
-- [ ] `api/client.js`: a request interceptor adds `Authorization: Bearer <token>` from storage and `Accept-Language` from the current i18n language.
-- [ ] Response interceptor: on 401, clear the token and redirect to `/login`.
-- [ ] `api/auth.js`: `register`, `login`, `logout`, `me`.
+- [x] `api/client.js`: a request interceptor adds `Authorization: Bearer <token>` from storage and `Accept-Language` from the current i18n language.
+- [x] Response interceptor: on 401, clear the token and redirect to `/login`.
+- [x] `api/auth.js`: `register`, `login`, `logout`, `me`.
 
 ## Done when
-- [ ] Requests from a logged-in user carry the token, and an expired token sends the user to `/login`.
+- [x] Requests from a logged-in user carry the token, and an expired token sends the user to `/login`.
