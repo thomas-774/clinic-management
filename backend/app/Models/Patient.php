@@ -87,4 +87,9 @@ class Patient extends Model
     {
         return $this->hasManyThrough(Payment::class, Visit::class);
     }
+
+    public function prescriptions(): HasMany
+    {
+        return $this->hasMany(Prescription::class);
+    }
 }

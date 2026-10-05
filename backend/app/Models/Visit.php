@@ -47,6 +47,11 @@ class Visit extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function prescriptions(): HasMany
+    {
+        return $this->hasMany(Prescription::class);
+    }
+
     /**
      * Adds payments_sum_amount in the same query, so PaymentService can give
      * paid / remaining for a list of visits without one query each.

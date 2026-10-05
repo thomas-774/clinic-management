@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * A catalogue drug (FR-J.1). Hidden drugs (is_active = false) are never
@@ -42,6 +43,14 @@ class Drug extends Model
             'source_page' => 'integer',
             'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * Lines that name this drug; they keep their own name / form snapshot (RX-2).
+     */
+    public function prescriptionItems(): HasMany
+    {
+        return $this->hasMany(PrescriptionItem::class);
     }
 
     public function scopeActive(Builder $query): void
