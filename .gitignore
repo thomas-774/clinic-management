@@ -1,0 +1,27 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Environment files (never commit secrets)
+.env
+.env.*
+!.env.example
+
+# Backend (Laravel) — backend/.gitignore from Laravel adds the rest
+backend/vendor/
+backend/node_modules/
+backend/storage/*.key
+backend/.phpunit.result.cache
+
+# Frontend (Vite)
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+
+# Logs
+*.log
+npm-debug.log*
