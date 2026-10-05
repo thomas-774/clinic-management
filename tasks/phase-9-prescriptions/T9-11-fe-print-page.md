@@ -20,3 +20,4 @@
   Note: `pages/doctor/PrescriptionPrintPage.test.jsx` (6 tests, also A4 and empty parts, "Back to patient" and Arabic RTL).
 - [x] Headless Edge `--print-to-pdf` of the page gives one A5 page with no app chrome, in ar and en.
   Note: printed over the DevTools protocol (`Page.printToPDF` with `preferCSSPageSize`, as the page needs a logged-in token): ar and en each gave one 148 × 210 mm page with only the prescription, and `window.print` was called once per load. With the setting on A4 it gave one 210 × 297 mm page.
+  Note (fix, found in the T9-14 walkthrough): a longer prescription printed a blank second Letter-size sheet, because zero-height boxes after the sheet (the hidden toast area, an element the browser adds) stayed on the default page and Chrome breaks the page when the page name changes. The print page now also puts the `rx-paper-*` class on `<html>`; re-checked: one page in ar, en and A4.

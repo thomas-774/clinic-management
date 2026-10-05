@@ -101,11 +101,16 @@ describe('PrescriptionPrintPage', () => {
     expect(print).toHaveBeenCalledTimes(2)
   })
 
-  it('"Back to patient" goes to the patient page', async () => {
+  it('puts the page on the paper size while open; "Back to patient" goes to the patient page', async () => {
     renderPrint()
 
-    await userEvent.click(await screen.findByRole('link', { name: '← Back to patient' }))
+    await screen.findByRole('article', { name: 'Prescription' })
+    // The whole document is on the A5 page while printing, so no blank second sheet comes out.
+    expect(document.documentElement).toHaveClass('rx-paper-a5')
+
+    await userEvent.click(screen.getByRole('link', { name: '← Back to patient' }))
     await expectPath('/doctor/patients/7')
+    expect(document.documentElement).not.toHaveClass('rx-paper-a5')
   })
 
   it('uses the A4 page when the settings say so, and leaves out empty header parts', async () => {
@@ -118,6 +123,7 @@ describe('PrescriptionPrintPage', () => {
 
     const sheet = await screen.findByRole('article', { name: 'Prescription' })
     expect(sheet).toHaveClass('rx-paper-a4')
+    expect(document.documentElement).toHaveClass('rx-paper-a4')
     expect(within(sheet).queryByRole('heading', { level: 1 })).not.toBeInTheDocument()
     expect(sheet).not.toHaveTextContent('Age')
     expect(sheet).not.toHaveTextContent('Notes')

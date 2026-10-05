@@ -26,6 +26,21 @@ function usePrintOnce(ready) {
 }
 
 /**
+ * Puts the whole document on the sheet's named page (index.css) while the
+ * print page is open. With the name on the sheet alone, any box after it
+ * (the hidden toast area, an element the browser adds) stays on the default
+ * page, and Chrome then prints a blank second sheet.
+ */
+function usePaperClass(paper) {
+  useEffect(() => {
+    if (!paper) return undefined
+    const className = `rx-paper-${paper.toLowerCase()}`
+    document.documentElement.classList.add(className)
+    return () => document.documentElement.classList.remove(className)
+  }, [paper])
+}
+
+/**
  * /doctor/prescriptions/:id/print (§7.3 Printing, FR-J.5): only the
  * prescription, outside the doctor layout, and the browser's print dialog
  * on load. "Print again" and "Back to patient" are never printed.
@@ -34,6 +49,7 @@ export default function PrescriptionPrintPage() {
   const { t } = useTranslation()
   const { id } = useParams()
   const { data, isPending, isError, error, refetch } = usePrescription(id)
+  usePaperClass(data ? paperOf(data) : null)
   usePrintOnce(Boolean(data))
 
   if (isPending) return <Loading />
