@@ -15,6 +15,11 @@ function insertUser(array $overrides = []): int
     ], $overrides));
 }
 
+function insertPatient(array $userOverrides = []): int
+{
+    return DB::table('patients')->insertGetId(['user_id' => insertUser($userOverrides), 'address' => 'Cairo']);
+}
+
 describe('users and patients (T1-01)', function () {
     it('rejects a duplicate phone number', function () {
         insertUser(['phone' => '01011111111']);
@@ -38,5 +43,27 @@ describe('users and patients (T1-01)', function () {
 
         DB::table('users')->where('id', $userId)->delete();
         expect(DB::table('patients')->count())->toBe(0);
+    });
+});
+
+describe('medical_history_entries (T1-02)', function () {
+    it('makes a new entry private by default', function () {
+        $id = DB::table('medical_history_entries')->insertGetId([
+            'patient_id' => insertPatient(),
+            'type' => 'allergy',
+            'title' => 'Penicillin',
+            'recorded_on' => '2026-10-05',
+        ]);
+
+        expect((bool) DB::table('medical_history_entries')->find($id)->patient_visible)->toBeFalse();
+    });
+
+    it('rejects an unknown entry type', function () {
+        expect(fn () => DB::table('medical_history_entries')->insert([
+            'patient_id' => insertPatient(),
+            'type' => 'unknown',
+            'title' => 'X',
+            'recorded_on' => '2026-10-05',
+        ]))->toThrow(QueryException::class);
     });
 });

@@ -40,7 +40,7 @@ Phase order: 0 → 1 → (2 and 3 in parallel) → 4 → 5 → 6 → 7. Phase 5 
 
 Backend
 - [x] [T1-01](phase-1-database-auth/T1-01-migration-users-patients.md) Migrations: users and patients · S
-- [ ] [T1-02](phase-1-database-auth/T1-02-migration-medical-history.md) Migration: medical_history_entries · S
+- [x] [T1-02](phase-1-database-auth/T1-02-migration-medical-history.md) Migration: medical_history_entries · S
 - [ ] [T1-03](phase-1-database-auth/T1-03-migration-availability.md) Migrations: doctor_settings, working_hours, blocked_times · S
 - [ ] [T1-04](phase-1-database-auth/T1-04-migration-appointments.md) Migration: appointments (with active_slot) · M
 - [ ] [T1-05](phase-1-database-auth/T1-05-migration-visits-payments.md) Migrations: visits and payments · S
