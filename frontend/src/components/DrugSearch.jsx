@@ -24,6 +24,8 @@ function MatchedName({ name, query }) {
  * - `onFreeText(name)` — the doctor chose to use the typed name as written.
  * - `onHighlight(drug | null)` — the highlighted result changed, so the side
  *   note can show it before anything is picked.
+ * - `onInputChange(text)` — the typed text changed (the form tracks lines
+ *   that were typed in but not picked yet).
  */
 export default function DrugSearch({
   label,
@@ -32,6 +34,7 @@ export default function DrugSearch({
   onSelect,
   onFreeText,
   onHighlight,
+  onInputChange,
   inputRef,
   autoFocus = false,
   invalid = false,
@@ -134,6 +137,7 @@ export default function DrugSearch({
         onChange={(event) => {
           setText(event.target.value)
           setOpen(true)
+          onInputChange?.(event.target.value)
         }}
         onKeyDown={onKeyDown}
         onBlur={() => setOpen(false)}

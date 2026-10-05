@@ -39,7 +39,9 @@
     "visitForm": "New visit",
     "settings": "Settings",
     "reports": "Reports",
-    "today": "Today at the desk"
+    "today": "Today at the desk",
+    "newPrescription": "New prescription",
+    "editPrescription": "Edit prescription"
   },
   "auth": {
     "login": {
@@ -523,5 +525,33 @@
     "cod_liver_oil": "Cod liver oil",
     "local_anesthetic": "Local anaesthetic",
     "other": "Other"
+  },
+  "prescriptionForm": {
+    "notFound": "This prescription does not exist.",
+    "age": "Age {{age}}",
+    "date": "Date",
+    "forVisit": "For the visit of {{date}}",
+    "reminder": "Check before prescribing",
+    "lines": "Medications",
+    "line": "Medication {{number}}",
+    "drugFor": "Drug for medication {{number}}",
+    "instructionsFor": "Instructions for medication {{number}}",
+    "instructionsPlaceholder": "e.g. 1 tablet every 12 hours after meals for 5 days",
+    "change": "Change",
+    "changeDrug": "Change {{name}}",
+    "notInCatalogue": "Not in the catalogue",
+    "moveUp": "Move medication {{number}} up",
+    "moveDown": "Move medication {{number}} down",
+    "remove": "Remove medication {{number}}",
+    "addLine": "Add medication",
+    "maxLines": "A prescription can have up to {{max}} medications.",
+    "needLine": "Add at least one medication.",
+    "needDrug": "Choose a drug from the list, or use the name as written.",
+    "needInstructions": "Write the instructions for this medication.",
+    "tooLong": "The instructions can be at most {{max}} characters.",
+    "notes": "Notes",
+    "notesHint": "General advice, printed under the medications.",
+    "saveAndPrint": "Save & Print",
+    "saved": "Prescription saved."
   }
 }

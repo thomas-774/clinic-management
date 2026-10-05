@@ -1,4 +1,4 @@
-import { addDays, dateRange, dayOfWeek, weekStart } from './dates'
+import { addDays, ageOn, dateRange, dayOfWeek, weekStart } from './dates'
 
 describe('date helpers', () => {
   it('adds days across month ends', () => {
@@ -19,5 +19,11 @@ describe('date helpers', () => {
 
   it('lists consecutive dates', () => {
     expect(dateRange('2026-10-30', 3)).toEqual(['2026-10-30', '2026-10-31', '2026-11-01'])
+  })
+
+  it('counts whole years of age on a date', () => {
+    expect(ageOn('1990-10-06', '2026-10-05')).toBe(35)
+    expect(ageOn('1990-10-06', '2026-10-06')).toBe(36)
+    expect(ageOn(null, '2026-10-06')).toBeNull()
   })
 })

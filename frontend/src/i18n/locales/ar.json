@@ -39,7 +39,9 @@
     "visitForm": "زيارة جديدة",
     "settings": "الإعدادات",
     "reports": "التقارير",
-    "today": "اليوم في الاستقبال"
+    "today": "اليوم في الاستقبال",
+    "newPrescription": "روشتة جديدة",
+    "editPrescription": "تعديل الروشتة"
   },
   "auth": {
     "login": {
@@ -523,5 +525,33 @@
     "cod_liver_oil": "زيت كبد الحوت",
     "local_anesthetic": "تخدير موضعي",
     "other": "أخرى"
+  },
+  "prescriptionForm": {
+    "notFound": "هذه الروشتة غير موجودة.",
+    "age": "السن {{age}}",
+    "date": "التاريخ",
+    "forVisit": "لزيارة {{date}}",
+    "reminder": "راجع قبل كتابة الدواء",
+    "lines": "الأدوية",
+    "line": "الدواء {{number}}",
+    "drugFor": "اسم الدواء {{number}}",
+    "instructionsFor": "طريقة استخدام الدواء {{number}}",
+    "instructionsPlaceholder": "مثال: قرص كل 12 ساعة بعد الأكل لمدة 5 أيام",
+    "change": "تغيير",
+    "changeDrug": "تغيير {{name}}",
+    "notInCatalogue": "ليس في قائمة الأدوية",
+    "moveUp": "نقل الدواء {{number}} لأعلى",
+    "moveDown": "نقل الدواء {{number}} لأسفل",
+    "remove": "حذف الدواء {{number}}",
+    "addLine": "إضافة دواء",
+    "maxLines": "الروشتة تتسع لـ {{max}} دواء على الأكثر.",
+    "needLine": "أضف دواءً واحدًا على الأقل.",
+    "needDrug": "اختر دواءً من القائمة، أو استخدم الاسم كما كُتب.",
+    "needInstructions": "اكتب طريقة استخدام هذا الدواء.",
+    "tooLong": "طريقة الاستخدام لا تزيد عن {{max}} حرفًا.",
+    "notes": "ملاحظات",
+    "notesHint": "نصائح عامة تُطبع تحت الأدوية.",
+    "saveAndPrint": "حفظ وطباعة",
+    "saved": "تم حفظ الروشتة."
   }
 }

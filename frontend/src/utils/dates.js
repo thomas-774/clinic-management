@@ -30,3 +30,9 @@ export function monthRange(date) {
 export function dateRange(date, count) {
   return Array.from({ length: count }, (_, i) => addDays(date, i))
 }
+
+/** Whole years from `birthDate` to `onDate` (both "YYYY-MM-DD"); null without a birth date. */
+export function ageOn(birthDate, onDate) {
+  if (!birthDate) return null
+  return dayjs(onDate).diff(dayjs(birthDate), 'year')
+}
