@@ -252,5 +252,24 @@
     "slotTaken": "تم حجز هذا الموعد للتو. يرجى اختيار وقت آخر.",
     "alreadyBooked": "لديك موعد قادم بالفعل.",
     "goToMyAppointments": "الذهاب إلى مواعيدي"
+  },
+  "appointmentStatus": {
+    "booked": "محجوز",
+    "checked_in": "حضر",
+    "completed": "مكتمل",
+    "no_show": "لم يحضر",
+    "cancelled": "ملغى"
+  },
+  "myAppointments": {
+    "upcoming": "المواعيد القادمة",
+    "past": "المواعيد السابقة",
+    "noUpcoming": "ليس لديك مواعيد قادمة.",
+    "noPast": "لا توجد مواعيد سابقة.",
+    "cancel": "إلغاء الموعد",
+    "tooLate": "فات وقت الإلغاء عبر الإنترنت — يرجى الاتصال بالعيادة.",
+    "cancelTitle": "إلغاء الموعد؟",
+    "cancelMessage": "سيتم إلغاء موعدك يوم {{date}} الساعة {{time}} وسيصبح الوقت متاحًا لغيرك.",
+    "confirmCancel": "نعم، ألغِ الموعد",
+    "cancelled": "تم إلغاء الموعد."
   }
 }

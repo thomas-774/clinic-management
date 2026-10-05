@@ -252,5 +252,24 @@
     "dateHint_two": "You can book up to {{count}} days ahead.",
     "dateHint_few": "You can book up to {{count}} days ahead.",
     "dateHint_many": "You can book up to {{count}} days ahead."
+  },
+  "appointmentStatus": {
+    "booked": "Booked",
+    "checked_in": "Checked in",
+    "completed": "Completed",
+    "no_show": "No-show",
+    "cancelled": "Cancelled"
+  },
+  "myAppointments": {
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "noUpcoming": "You have no upcoming appointments.",
+    "noPast": "No past appointments.",
+    "cancel": "Cancel appointment",
+    "tooLate": "Too late to cancel online — please call the clinic.",
+    "cancelTitle": "Cancel this appointment?",
+    "cancelMessage": "Your appointment on {{date}} at {{time}} will be cancelled and the time freed for others.",
+    "confirmCancel": "Yes, cancel it",
+    "cancelled": "Appointment cancelled."
   }
 }
