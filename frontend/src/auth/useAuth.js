@@ -7,6 +7,15 @@ export function homePathFor(role) {
   return role === 'doctor' ? '/doctor' : '/patient'
 }
 
+/**
+ * Where a user goes after logging in: back to the page that sent them to
+ * /login (`from`) when it is inside their own area, otherwise their home.
+ */
+export function landingPathFor(user, from) {
+  const home = homePathFor(user.role)
+  return from && (from === home || from.startsWith(`${home}/`)) ? from : home
+}
+
 /** `{ user, role, loading, login, register, logout }` from <AuthProvider>. */
 export function useAuth() {
   const context = useContext(AuthContext)

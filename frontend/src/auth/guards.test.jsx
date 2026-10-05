@@ -1,36 +1,11 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
-import { MemoryRouter, useLocation } from 'react-router-dom'
+import { screen } from '@testing-library/react'
 import { vi } from 'vitest'
 import * as authApi from '../api/auth'
 import { tokenStorage } from '../api/client'
-import AppRoutes from '../AppRoutes'
-import { AuthProvider } from './AuthContext'
-
-function CurrentPath() {
-  return <span data-testid="path">{useLocation().pathname}</span>
-}
-
-function renderAt(path) {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[path]}>
-        <AuthProvider>
-          <AppRoutes />
-          <CurrentPath />
-        </AuthProvider>
-      </MemoryRouter>
-    </QueryClientProvider>,
-  )
-}
+import { expectPath, renderAppAt as renderAt } from '../test/renderApp'
 
 const patient = { id: 2, name: 'Mona', role: 'patient', patient_id: 1 }
 const doctor = { id: 1, name: 'Dr. Doctor', role: 'doctor' }
-
-async function expectPath(path) {
-  await waitFor(() => expect(screen.getByTestId('path')).toHaveTextContent(new RegExp(`^${path}$`)))
-}
 
 describe('route guards', () => {
   beforeEach(() => {
