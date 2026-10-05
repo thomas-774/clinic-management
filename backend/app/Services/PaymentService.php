@@ -6,6 +6,7 @@ use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
 use App\Models\Patient;
 use App\Models\Payment;
+use App\Models\User;
 use App\Models\Visit;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
@@ -115,12 +116,13 @@ class PaymentService
     /**
      * Records an installment (FR-D.6). The visit row is locked so two payments
      * at the same time cannot together go over the remaining amount.
+     * $recordedBy is the doctor or assistant who took the money (FR-I.5).
      *
      * @throws ValidationException
      */
-    public function addPayment(Visit $visit, string|int|float $amount, PaymentMethod $method = PaymentMethod::Cash, ?CarbonInterface $paidAt = null): Payment
+    public function addPayment(Visit $visit, string|int|float $amount, PaymentMethod $method = PaymentMethod::Cash, ?CarbonInterface $paidAt = null, ?User $recordedBy = null): Payment
     {
-        return DB::transaction(function () use ($visit, $amount, $method, $paidAt) {
+        return DB::transaction(function () use ($visit, $amount, $method, $paidAt, $recordedBy) {
             $locked = Visit::query()->lockForUpdate()->findOrFail($visit->getKey());
             $this->assertPaymentAllowed($locked, $amount);
 
@@ -128,6 +130,7 @@ class PaymentService
                 'amount' => self::money($amount),
                 'method' => $method,
                 'paid_at' => $paidAt ?? now(),
+                'recorded_by' => $recordedBy?->id,
             ]);
         });
     }

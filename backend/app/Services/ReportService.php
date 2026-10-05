@@ -95,7 +95,7 @@ class ReportService
     public function payments(CarbonInterface $from, CarbonInterface $to): Builder
     {
         return $this->paymentsOfVisitsBetween($from, $to)
-            ->with(['visit' => fn ($q) => $q->withPaid(), 'visit.patient.user:id,name'])
+            ->with(['visit' => fn ($q) => $q->withPaid(), 'visit.patient.user:id,name', 'recordedBy:id,name'])
             ->orderByDesc(Visit::query()->select('visit_date')->whereColumn('visits.id', 'payments.visit_id'))
             ->orderByDesc('paid_at')
             ->orderByDesc('id');
@@ -141,6 +141,7 @@ class ReportService
             'visit_total' => PaymentService::money($visit->total_amount),
             'paid' => PaymentService::money($payment->amount),
             'remaining' => $this->payments->remaining($visit),
+            'recorded_by_name' => $payment->recordedBy?->name,
         ];
     }
 

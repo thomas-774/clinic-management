@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['visit_id', 'amount', 'method', 'paid_at'])]
+#[Fillable(['visit_id', 'amount', 'method', 'paid_at', 'recorded_by'])]
 class Payment extends Model
 {
     /** @use HasFactory<PaymentFactory> */
@@ -39,5 +39,13 @@ class Payment extends Model
     public function visit(): BelongsTo
     {
         return $this->belongsTo(Visit::class);
+    }
+
+    /**
+     * The doctor or assistant who took the money (FR-I.5); null on older rows.
+     */
+    public function recordedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'recorded_by');
     }
 }

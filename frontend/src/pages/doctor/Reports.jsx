@@ -89,6 +89,7 @@ export default function Reports() {
       },
     },
     { key: 'remaining', header: t('reports.remaining'), render: (row) => formatMoney(row.remaining), className: 'whitespace-nowrap' },
+    { key: 'recorded_by', header: t('reports.recordedBy'), render: (row) => row.recorded_by_name ?? '—' },
   ]
 
   const totals = payments.data?.meta.totals

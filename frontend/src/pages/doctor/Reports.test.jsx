@@ -9,7 +9,7 @@ import { expectPath, renderAppAt } from '../../test/renderApp'
 
 // paid_at, patient, visit (and its date), visit total, paid, remaining (what the visit still owes now)
 const PAYMENTS = [
-  { id: 5, paid_at: '2026-10-05T17:00:00+03:00', patient_id: 1, patient_name: 'Mona Ali', visit_id: 1, visit_date: '2026-10-05', visit_total: '1500.00', paid: '1000.00', remaining: '500.00' },
+  { id: 5, paid_at: '2026-10-05T17:00:00+03:00', patient_id: 1, patient_name: 'Mona Ali', visit_id: 1, visit_date: '2026-10-05', visit_total: '1500.00', paid: '1000.00', remaining: '500.00', recorded_by_name: 'Amal Saad' },
   { id: 4, paid_at: '2026-10-05T09:00:00+03:00', patient_id: 2, patient_name: 'Ahmed Hassan', visit_id: 2, visit_date: '2026-10-03', visit_total: '800.00', paid: '200.00', remaining: '300.00' },
   { id: 3, paid_at: '2026-10-03T10:00:00+03:00', patient_id: 2, patient_name: 'Ahmed Hassan', visit_id: 2, visit_date: '2026-10-03', visit_total: '800.00', paid: '300.00', remaining: '300.00' },
   { id: 2, paid_at: '2026-10-01T12:00:00+03:00', patient_id: 3, patient_name: 'Sara Adel', visit_id: 3, visit_date: '2026-10-01', visit_total: '600.00', paid: '600.00', remaining: '0.00' },
@@ -72,7 +72,7 @@ describe('Reports: payments table', () => {
 
     const rows = bodyRows()
     expect(rows).toHaveLength(4)
-    expect(cellTexts(rows[0])).toEqual(['5 Oct 2026', 'Mona Ali', 'EGP 1,500.00', 'EGP 1,000.00', 'EGP 500.00'])
+    expect(cellTexts(rows[0])).toEqual(['5 Oct 2026', 'Mona Ali', 'EGP 1,500.00', 'EGP 1,000.00', 'EGP 500.00', 'Amal Saad'])
   })
 
   it("links each patient to the patient's page", async () => {
@@ -93,7 +93,7 @@ describe('Reports: payments table', () => {
     await screen.findByRole('table')
 
     const [mona, ahmedLater, ahmedSameDay] = bodyRows()
-    expect(cellTexts(ahmedLater)).toEqual(['3 Oct 2026', 'Ahmed Hassan', 'EGP 800.00', 'EGP 200.00paid on 5 Oct 2026', 'EGP 300.00'])
+    expect(cellTexts(ahmedLater)).toEqual(['3 Oct 2026', 'Ahmed Hassan', 'EGP 800.00', 'EGP 200.00paid on 5 Oct 2026', 'EGP 300.00', '—'])
     expect(within(mona).queryByText(/paid on/)).not.toBeInTheDocument()
     expect(within(ahmedSameDay).queryByText(/paid on/)).not.toBeInTheDocument()
   })
@@ -103,7 +103,7 @@ describe('Reports: payments table', () => {
     renderReports()
     await screen.findByRole('table')
 
-    expect(cellTexts(totalsRow())).toEqual(['Total', '', '', 'EGP 2,100.00', 'EGP 800.00'])
+    expect(cellTexts(totalsRow())).toEqual(['Total', '', '', 'EGP 2,100.00', 'EGP 800.00', ''])
   })
 
   it('updates the table and totals when the period changes, and keeps it in the URL', async () => {

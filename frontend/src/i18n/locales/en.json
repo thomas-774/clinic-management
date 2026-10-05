@@ -424,6 +424,7 @@
     "paid": "Paid",
     "paidOn": "paid on {{date}}",
     "remaining": "Remaining",
+    "recordedBy": "Recorded by",
     "totals": "Total",
     "empty": "No payments in this period.",
     "chart": {

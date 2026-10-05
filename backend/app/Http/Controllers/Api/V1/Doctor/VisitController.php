@@ -54,6 +54,7 @@ class VisitController extends Controller
                     'amount' => $paidNow,
                     'method' => $request->validated('method') ?? PaymentMethod::Cash,
                     'paid_at' => now(),
+                    'recorded_by' => $request->user()->id,
                 ]);
             }
 
@@ -107,6 +108,7 @@ class VisitController extends Controller
             $request->validated('amount'),
             PaymentMethod::tryFrom((string) $request->validated('method')) ?? PaymentMethod::Cash,
             $request->filled('paid_at') ? Carbon::parse($request->validated('paid_at')) : null,
+            $request->user(),
         );
 
         return VisitResource::make($visit->refresh()->load('payments'))
