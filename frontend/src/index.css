@@ -4,3 +4,33 @@
   /* Cairo covers Arabic and Latin, so both languages share one font. */
   --font-sans: "Cairo", ui-sans-serif, system-ui, sans-serif;
 }
+
+/*
+ * Prescription print page (§7.3 Printing): A5 by default, A4 when the
+ * settings say so. The sheet's rx-paper-* class picks the named page.
+ */
+@page rx-a5 {
+  size: A5;
+  margin: 10mm;
+}
+
+@page rx-a4 {
+  size: A4;
+  margin: 10mm;
+}
+
+.rx-paper-a5 {
+  page: rx-a5;
+}
+
+.rx-paper-a4 {
+  page: rx-a4;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff;
+    color: #000;
+  }
+}

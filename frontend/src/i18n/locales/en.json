@@ -552,6 +552,17 @@
     "notes": "Notes",
     "notesHint": "General advice, printed under the medications.",
     "saveAndPrint": "Save & Print",
-    "saved": "Prescription saved."
+    "saved": "Prescription saved.",
+    "back": "← {{name}}"
+  },
+  "rxPrint": {
+    "title": "Prescription",
+    "patient": "Patient",
+    "age": "Age",
+    "date": "Date",
+    "notes": "Notes",
+    "signature": "Signature",
+    "printAgain": "Print again",
+    "backToPatient": "← Back to patient"
   }
 }

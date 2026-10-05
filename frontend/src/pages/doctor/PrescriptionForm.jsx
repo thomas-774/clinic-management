@@ -270,7 +270,7 @@ function PrescriptionEditor({ patient, prescription, visitId }) {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <Link to={`/doctor/patients/${patient.id}`} className="text-sm text-sky-700 hover:underline">
-            ← {patient.name}
+            {t('prescriptionForm.back', { name: patient.name })}
           </Link>
           <h1 className="text-2xl font-bold text-slate-900">
             {t(prescription ? 'pages.editPrescription' : 'pages.newPrescription')}

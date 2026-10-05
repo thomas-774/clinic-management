@@ -4,7 +4,6 @@ import GuestRoute from './auth/GuestRoute'
 import ProtectedRoute from './auth/ProtectedRoute'
 import RoleRoute from './auth/RoleRoute'
 import FullPageLoader from './components/FullPageLoader'
-import PagePlaceholder from './components/PagePlaceholder'
 import AssistantLayout from './layouts/AssistantLayout'
 import DoctorLayout from './layouts/DoctorLayout'
 import PatientLayout from './layouts/PatientLayout'
@@ -16,6 +15,7 @@ import Dashboard from './pages/doctor/Dashboard'
 import PatientDetails from './pages/doctor/PatientDetails'
 import PatientsList from './pages/doctor/PatientsList'
 import PrescriptionForm from './pages/doctor/PrescriptionForm'
+import PrescriptionPrintPage from './pages/doctor/PrescriptionPrintPage'
 import Reports from './pages/doctor/Reports'
 import Schedule from './pages/doctor/Schedule'
 import Settings from './pages/doctor/Settings'
@@ -62,11 +62,11 @@ export default function AppRoutes() {
             <Route path="visits/new" element={<VisitForm />} />
             <Route path="patients/:id/prescriptions/new" element={<PrescriptionForm />} />
             <Route path="prescriptions/:id/edit" element={<PrescriptionForm editing />} />
-            {/* Replaced by the print page (outside the layout) in T9-11. */}
-            <Route path="prescriptions/:id/print" element={<PagePlaceholder title="Prescription" />} />
             <Route path="settings" element={<Settings />} />
             <Route path="reports" element={<Reports />} />
           </Route>
+          {/* Print-only page: no sidebar or menus (RX-4). */}
+          <Route path="prescriptions/:id/print" element={<PrescriptionPrintPage />} />
         </Route>
 
         <Route path="/assistant" element={<RoleRoute role="assistant" />}>
