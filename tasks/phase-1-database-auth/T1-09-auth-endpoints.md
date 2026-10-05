@@ -4,13 +4,13 @@
 **Plan refs:** FR-A.1 – FR-A.3 · §6.3 · §9.2
 
 ## Steps
-- [ ] `RegisterRequest`: name, phone (unique), email (optional, unique), password (confirmed, min 8), address.
-- [ ] `POST /auth/register`: creates the User (role patient) and the Patient in one transaction; returns token + user.
-- [ ] `POST /auth/login`: accepts phone **or** email + password; returns a Sanctum token + role.
-- [ ] `POST /auth/logout`: revokes the current token.
-- [ ] `GET /me`: current user + role (+ patient id for patients).
-- [ ] Rate-limit login to 5 attempts per minute.
-- [ ] Feature tests: register, login by phone, login by email, wrong password, logout, rate limit.
+- [x] `RegisterRequest`: name, phone (unique), email (optional, unique), password (confirmed, min 8), address.
+- [x] `POST /auth/register`: creates the User (role patient) and the Patient in one transaction; returns token + user.
+- [x] `POST /auth/login`: accepts phone **or** email + password; returns a Sanctum token + role.
+- [x] `POST /auth/logout`: revokes the current token.
+- [x] `GET /me`: current user + role (+ patient id for patients).
+- [x] Rate-limit login to 5 attempts per minute.
+- [x] Feature tests: register, login by phone, login by email, wrong password, logout, rate limit.
 
 ## Done when
-- [ ] All auth feature tests pass.
+- [x] All auth feature tests pass.
