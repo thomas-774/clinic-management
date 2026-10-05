@@ -33,6 +33,15 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * The clinic's doctor. v1 has exactly one (§10); with more doctors this
+     * becomes a choice made by the patient.
+     */
+    public static function clinicDoctor(): self
+    {
+        return static::query()->where('role', UserRole::Doctor)->orderBy('id')->firstOrFail();
+    }
+
     public function isDoctor(): bool
     {
         return $this->role === UserRole::Doctor;
