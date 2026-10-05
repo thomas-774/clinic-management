@@ -439,5 +439,18 @@
       "showTable": "Show as table",
       "hideTable": "Hide table"
     }
+  },
+  "desk": {
+    "queue": "Today's queue",
+    "openSchedule": "Open the schedule",
+    "waitingToPay": "Waiting to pay",
+    "waitingHint": "Today's visits that still owe money. The doctor sets the total; record what the patient pays.",
+    "noneWaiting": "Nobody is waiting to pay.",
+    "waitingList": "Visits waiting for payment",
+    "total": "Total {{amount}}",
+    "paid": "Paid {{amount}}",
+    "remaining": "Remaining",
+    "recordPayment": "Record payment",
+    "recordPaymentTitle": "Payment from {{name}}"
   }
 }

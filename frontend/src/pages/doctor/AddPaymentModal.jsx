@@ -3,16 +3,20 @@ import { useTranslation } from 'react-i18next'
 import Modal from '../../components/Modal'
 import MoneyField from '../../components/MoneyField'
 import SelectField from '../../components/form/SelectField'
-import { useAddPayment } from '../../hooks/useVisits'
+import { useStaffApi } from '../../staff/staffApi'
 import { useToast } from '../../toast/useToast'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
 import { formatDate, formatMoney } from '../../utils/format'
 import { PAYMENT_METHODS, toPiastres } from '../../utils/money'
 
-/** An installment on a visit (FR-D.6); the amount starts at what remains. */
-export default function AddPaymentModal({ visit, onClose }) {
+/**
+ * An installment on a visit (FR-D.6), or the assistant collecting at the desk
+ * (FR-I.4); the amount starts at what remains. `title` overrides the heading.
+ */
+export default function AddPaymentModal({ visit, onClose, title }) {
   const { t } = useTranslation()
   const toast = useToast()
+  const { useAddPayment } = useStaffApi()
   const add = useAddPayment()
   const [form, setForm] = useState({ amount: visit.remaining, method: 'cash' })
   const errors = fieldErrors(add.error)
@@ -37,7 +41,7 @@ export default function AddPaymentModal({ visit, onClose }) {
   }
 
   return (
-    <Modal open title={t('visits.addPaymentTitle', { date: formatDate(visit.visit_date) })} onClose={onClose}>
+    <Modal open title={title ?? t('visits.addPaymentTitle', { date: formatDate(visit.visit_date) })} onClose={onClose}>
       <form onSubmit={handleSubmit} noValidate className="space-y-3">
         {formError && (
           <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">

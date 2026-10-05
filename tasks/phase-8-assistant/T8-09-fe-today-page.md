@@ -4,10 +4,11 @@
 **Plan refs:** §7.2 · FR-I.4, FR-I.6
 
 ## Steps
-- [ ] Make `DayView` reusable: props for the API functions and to hide "Start visit".
-- [ ] Make `AddPaymentModal` take the payment mutation/API as a prop (the doctor keeps the current default).
-- [ ] `pages/assistant/Today.jsx`: today's queue card (Arrived / No-show / Cancel) + "Waiting to pay" card (patient, total, paid, remaining, Record payment). Refresh both after actions.
-- [ ] Empty, loading and error states via `QueryState`.
+- [x] Make `DayView` reusable: props for the API functions and to hide "Start visit".
+  Note: instead of props, shared screens read their hooks from `staff/staffApi.js` (`useStaffApi()`): the doctor by default, the assistant inside `AssistantApiProvider` (set by AssistantLayout). DayView hides Start visit when `canStartVisit` is false.
+- [x] Make `AddPaymentModal` take the payment mutation/API as a prop (the doctor keeps the current default).
+- [x] `pages/assistant/Today.jsx`: today's queue card (Arrived / No-show / Cancel) + "Waiting to pay" card (patient, total, paid, remaining, Record payment). Refresh both after actions.
+- [x] Empty, loading and error states via `QueryState`.
 
 ## Done when
-- [ ] Vitest: the queue renders, waiting-to-pay renders, recording a payment calls the assistant API and refreshes the list.
+- [x] Vitest: the queue renders, waiting-to-pay renders, recording a payment calls the assistant API and refreshes the list.

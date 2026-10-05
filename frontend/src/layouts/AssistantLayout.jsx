@@ -1,3 +1,4 @@
+import AssistantApiProvider from '../staff/AssistantApiProvider'
 import SidebarLayout from './SidebarLayout'
 
 const LINKS = [
@@ -6,7 +7,14 @@ const LINKS = [
   { to: '/assistant/schedule', label: 'nav.schedule' },
 ]
 
-/** Assistant (front desk) area: same sidebar as the doctor's, fewer links (Module I). */
+/**
+ * Assistant (front desk) area: same sidebar as the doctor's, fewer links; the
+ * shared screens inside call the /assistant API (Module I).
+ */
 export default function AssistantLayout() {
-  return <SidebarLayout id="assistant-sidebar" links={LINKS} />
+  return (
+    <AssistantApiProvider>
+      <SidebarLayout id="assistant-sidebar" links={LINKS} />
+    </AssistantApiProvider>
+  )
 }

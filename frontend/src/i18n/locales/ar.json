@@ -439,5 +439,18 @@
       "showTable": "عرض كجدول",
       "hideTable": "إخفاء الجدول"
     }
+  },
+  "desk": {
+    "queue": "طابور اليوم",
+    "openSchedule": "فتح جدول المواعيد",
+    "waitingToPay": "في انتظار الدفع",
+    "waitingHint": "زيارات اليوم التي عليها مبالغ متبقية. الطبيب يحدد الإجمالي، وأنت تسجّل ما يدفعه المريض.",
+    "noneWaiting": "لا يوجد أحد في انتظار الدفع.",
+    "waitingList": "زيارات في انتظار الدفع",
+    "total": "الإجمالي {{amount}}",
+    "paid": "المدفوع {{amount}}",
+    "remaining": "المتبقي",
+    "recordPayment": "تسجيل دفعة",
+    "recordPaymentTitle": "دفعة من {{name}}"
   }
 }

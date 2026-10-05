@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import ConfirmDialog from '../../../components/ConfirmDialog'
 import { LoadError, Loading } from '../../../components/QueryState'
 import StatusBadge from '../../../components/StatusBadge'
-import { useSchedule, useUpdateAppointmentStatus } from '../../../hooks/useSchedule'
+import { useStaffApi } from '../../../staff/staffApi'
 import { useToast } from '../../../toast/useToast'
 import { errorMessage } from '../../../utils/apiErrors'
 import { formatTime } from '../../../utils/format'
@@ -12,20 +12,23 @@ import { formatTime } from '../../../utils/format'
 /** No-show and Cancel ask first; Arrived is applied at once. */
 const NEEDS_CONFIRM = ['no_show', 'cancelled']
 
-function Actions({ appointment, onChange, busy }) {
+function Actions({ appointment, onChange, busy, canStartVisit }) {
   const { t } = useTranslation()
   if (appointment.status === 'checked_in') {
+    // The assistant has no Start visit: only the doctor writes the visit (FR-I.6).
     // The appointment travels with the link, so the form needs no extra request (FR-F.3).
     // Cancel covers a patient who arrived but left without a visit (§4.3).
     return (
       <div className="flex flex-wrap gap-2">
-        <Link
-          to={`/doctor/visits/new?appointment=${appointment.id}`}
-          state={{ appointment }}
-          className="rounded-lg bg-green-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-green-700"
-        >
-          {t('schedule.startVisit')}
-        </Link>
+        {canStartVisit && (
+          <Link
+            to={`/doctor/visits/new?appointment=${appointment.id}`}
+            state={{ appointment }}
+            className="rounded-lg bg-green-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-green-700"
+          >
+            {t('schedule.startVisit')}
+          </Link>
+        )}
         <button
           type="button"
           disabled={busy}
@@ -73,6 +76,7 @@ function Actions({ appointment, onChange, busy }) {
  * `compact` (the dashboard's queue) leaves out the phone numbers.
  */
 export default function DayView({ date, compact = false }) {
+  const { useSchedule, useUpdateAppointmentStatus, canStartVisit } = useStaffApi()
   const { t } = useTranslation()
   const toast = useToast()
   const { data, isPending, isError, refetch } = useSchedule({ from: date, to: date })
@@ -121,7 +125,7 @@ export default function DayView({ date, compact = false }) {
                 )}
               </div>
               <StatusBadge status={appointment.status} />
-              <Actions appointment={appointment} onChange={change} busy={updateStatus.isPending} />
+              <Actions appointment={appointment} onChange={change} busy={updateStatus.isPending} canStartVisit={canStartVisit} />
             </li>
           ))}
         </ul>
