@@ -8,7 +8,8 @@
     "retry": "Retry",
     "save": "Save",
     "saving": "Saving…",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "close": "Close"
   },
   "language": {
     "other": "العربية",
@@ -98,5 +99,44 @@
     "currentIllness": "Current illness",
     "noIllness": "Nothing recorded.",
     "history": "Medical history"
+  },
+  "table": {
+    "pagination": "Pages",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {{page}} of {{total}}"
+  },
+  "patientsList": {
+    "name": "Name",
+    "phone": "Phone",
+    "lastVisit": "Last visit",
+    "newPatient": "New patient",
+    "search": "Search patients",
+    "searchPlaceholder": "Search by name or phone",
+    "empty": "No patients yet.",
+    "noMatches": "No patients match “{{search}}”."
+  },
+  "patientForm": {
+    "name": "Full name",
+    "phone": "Phone",
+    "email": "Email (optional)",
+    "address": "Address",
+    "dateOfBirth": "Date of birth",
+    "gender": "Gender",
+    "genderUnset": "Not specified",
+    "female": "Female",
+    "male": "Male",
+    "currentIllness": "Current illness"
+  },
+  "newPatient": {
+    "title": "New patient",
+    "submit": "Create patient",
+    "createdTitle": "Patient created",
+    "created": "{{name}} can now log in.",
+    "passwordOnce": "Give the patient this password. It is shown only once.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "loginWith": "The patient logs in with the phone number",
+    "done": "Done"
   }
 }

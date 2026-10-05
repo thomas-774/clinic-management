@@ -8,7 +8,8 @@
     "retry": "إعادة المحاولة",
     "save": "حفظ",
     "saving": "جارٍ الحفظ…",
-    "cancel": "إلغاء"
+    "cancel": "إلغاء",
+    "close": "إغلاق"
   },
   "language": {
     "other": "English",
@@ -98,5 +99,44 @@
     "currentIllness": "الشكوى الحالية",
     "noIllness": "لا يوجد.",
     "history": "التاريخ المرضي"
+  },
+  "table": {
+    "pagination": "الصفحات",
+    "previous": "السابق",
+    "next": "التالي",
+    "pageOf": "صفحة {{page}} من {{total}}"
+  },
+  "patientsList": {
+    "name": "الاسم",
+    "phone": "رقم الهاتف",
+    "lastVisit": "آخر زيارة",
+    "newPatient": "مريض جديد",
+    "search": "البحث عن مريض",
+    "searchPlaceholder": "ابحث بالاسم أو رقم الهاتف",
+    "empty": "لا يوجد مرضى بعد.",
+    "noMatches": "لا يوجد مرضى مطابقون لـ «{{search}}»."
+  },
+  "patientForm": {
+    "name": "الاسم بالكامل",
+    "phone": "رقم الهاتف",
+    "email": "البريد الإلكتروني (اختياري)",
+    "address": "العنوان",
+    "dateOfBirth": "تاريخ الميلاد",
+    "gender": "النوع",
+    "genderUnset": "غير محدد",
+    "female": "أنثى",
+    "male": "ذكر",
+    "currentIllness": "الشكوى الحالية"
+  },
+  "newPatient": {
+    "title": "مريض جديد",
+    "submit": "إنشاء المريض",
+    "createdTitle": "تم إنشاء المريض",
+    "created": "يمكن لـ {{name}} تسجيل الدخول الآن.",
+    "passwordOnce": "أعطِ المريض كلمة المرور هذه. ستظهر مرة واحدة فقط.",
+    "copy": "نسخ",
+    "copied": "تم النسخ",
+    "loginWith": "يسجل المريض الدخول برقم الهاتف",
+    "done": "تم"
   }
 }
