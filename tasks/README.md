@@ -82,7 +82,7 @@ Backend
 - [x] [T3-06](phase-3-availability-slots/T3-06-slots-endpoint.md) GET /slots endpoint · S
 
 Frontend
-- [ ] [T3-07](phase-3-availability-slots/T3-07-fe-settings-hours-duration.md) Settings: weekly hours and duration · M
+- [x] [T3-07](phase-3-availability-slots/T3-07-fe-settings-hours-duration.md) Settings: weekly hours and duration · M
 - [ ] [T3-08](phase-3-availability-slots/T3-08-fe-blocked-dates.md) Blocked dates management · S
 - [ ] [T3-09](phase-3-availability-slots/T3-09-fe-slot-preview.md) Live slot preview · S
 

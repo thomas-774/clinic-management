@@ -165,5 +165,43 @@
     "details": "Details",
     "visible": "Visible to the patient",
     "visibleHint": "Shown in the patient's simple history. Leave unchecked for private notes."
+  },
+  "days": {
+    "0": "Sunday",
+    "1": "Monday",
+    "2": "Tuesday",
+    "3": "Wednesday",
+    "4": "Thursday",
+    "5": "Friday",
+    "6": "Saturday"
+  },
+  "settings": {
+    "booking": "Appointments",
+    "duration": "Appointment length",
+    "minutes_one": "{{count}} minute",
+    "minutes_other": "{{count}} minutes",
+    "custom": "Custom…",
+    "customDuration": "Length in minutes",
+    "bookingWindow": "Booking window (days)",
+    "bookingWindowHint": "How far ahead patients can book.",
+    "cancelCutoff": "Cancellation cut-off (hours)",
+    "cancelCutoffHint": "Patients can cancel until this many hours before the start.",
+    "saveBooking": "Save appointment settings",
+    "bookingSaved": "Appointment settings saved.",
+    "weeklyHours": "Weekly working hours",
+    "dayOff": "Day off",
+    "rangeStart": "{{day}} range {{n}} start",
+    "rangeEnd": "{{day}} range {{n}} end",
+    "remove": "Remove",
+    "removeRange": "Remove {{day}} range {{n}}",
+    "addRange": "+ Add range",
+    "addRangeFor": "Add range on {{day}}",
+    "saveHours": "Save working hours",
+    "hoursSaved": "Working hours saved.",
+    "fixErrors": "Please fix the highlighted fields.",
+    "minutes_zero": "{{count}} minutes",
+    "minutes_two": "{{count}} minutes",
+    "minutes_few": "{{count}} minutes",
+    "minutes_many": "{{count}} minutes"
   }
 }

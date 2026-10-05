@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, useLocation } from 'react-router-dom'
 import AppRoutes from '../AppRoutes'
 import { AuthProvider } from '../auth/AuthContext'
+import { ToastProvider } from '../toast/ToastProvider'
 
 function CurrentPath() {
   return <span data-testid="path">{useLocation().pathname}</span>
@@ -15,8 +16,10 @@ export function renderAppAt(path) {
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={[path]}>
         <AuthProvider>
-          <AppRoutes />
-          <CurrentPath />
+          <ToastProvider>
+            <AppRoutes />
+            <CurrentPath />
+          </ToastProvider>
         </AuthProvider>
       </MemoryRouter>
     </QueryClientProvider>,
