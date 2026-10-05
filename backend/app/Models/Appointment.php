@@ -85,6 +85,22 @@ class Appointment extends Model
      */
     public function cancel(): void
     {
-        $this->update(['status' => AppointmentStatus::Cancelled, 'cancelled_at' => now()]);
+        $this->transitionTo(AppointmentStatus::Cancelled);
+    }
+
+    /**
+     * Sets the status and its timestamp (checked_in_at / cancelled_at).
+     * Callers check AppointmentStatus::canTransitionTo() first (§4.3).
+     */
+    public function transitionTo(AppointmentStatus $to): void
+    {
+        $this->update([
+            'status' => $to,
+            ...match ($to) {
+                AppointmentStatus::CheckedIn => ['checked_in_at' => now()],
+                AppointmentStatus::Cancelled => ['cancelled_at' => now()],
+                default => [],
+            },
+        ]);
     }
 }
