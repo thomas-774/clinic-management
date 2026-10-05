@@ -13,3 +13,7 @@
 ## Done when
 - [x] All three endpoints return correct numbers for the seeded data.
   - Note: the seeders create no visits or payments yet (demo data is T7-04), so `ReportsTest` checks the numbers against its own fixed fixture (4 visits, 5 payments across day/week/month edges).
+
+## Change after review (2026-10-05)
+- [x] Client decision, replacing PR-4 / PR-5: a visit's money counts on the visit's date (all its payments, including installments paid later), and the cards count visits instead of distinct patients. A visit for an appointment takes the appointment's date; a walk-in takes today.
+  - `/summary` returns `visits` instead of `patients_seen`; `/payments` lists the payments of the visits dated in the range, newest visit first.

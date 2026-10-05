@@ -13,8 +13,9 @@ use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 
 /**
- * Dashboard and reports (Module H). Revenue is money received on the payment
- * date (PR-4); outstanding balances are always reported separately (FR-H.2).
+ * Dashboard and reports (Module H). A visit's money counts on the visit's
+ * date (client decision, see ReportService); outstanding balances are always
+ * reported separately (FR-H.2).
  */
 class ReportController extends Controller
 {
@@ -23,7 +24,8 @@ class ReportController extends Controller
     public function __construct(private readonly ReportService $reports) {}
 
     /**
-     * GET /doctor/reports/summary?period=day|week|month (FR-H.1, FR-H.2).
+     * GET /doctor/reports/summary?period=day|week|month (FR-H.1, FR-H.2):
+     * visits and revenue by visit date, plus outstanding.
      */
     public function summary(Request $request): JsonResponse
     {
@@ -38,7 +40,7 @@ class ReportController extends Controller
                 'period' => $validated['period'],
                 'from' => $from->toDateString(),
                 'to' => $to->toDateString(),
-                'patients_seen' => $this->reports->patientsSeen($from, $to),
+                'visits' => $this->reports->visitsCount($from, $to),
                 'revenue' => $this->reports->revenue($from, $to),
                 'outstanding' => $this->reports->outstanding(),
             ],
@@ -47,8 +49,9 @@ class ReportController extends Controller
     }
 
     /**
-     * GET /doctor/reports/payments?from=&to= — payments in the range, newest
-     * first, 20 per page, with the totals of the whole range in meta (FR-H.3).
+     * GET /doctor/reports/payments?from=&to= — payments of the visits dated
+     * in the range, newest visit first, 20 per page, with the totals of the
+     * whole range in meta (FR-H.3).
      * Both dates are inclusive; the default range is today.
      */
     public function payments(Request $request): ApiResourceCollection

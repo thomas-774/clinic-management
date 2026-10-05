@@ -13,7 +13,7 @@ const PERIODS = [
   { period: 'month', title: 'dashboard.thisMonth' },
 ]
 
-/** Today / this week / this month: patients seen and revenue (FR-H.1). */
+/** Today / this week / this month: number of visits and revenue by visit date (FR-H.1). */
 function PeriodGroup({ period, title }) {
   const { t } = useTranslation()
   const { data, isPending, isError, refetch } = useReportSummary(period)
@@ -25,7 +25,7 @@ function PeriodGroup({ period, title }) {
         <LoadError onRetry={refetch} />
       ) : (
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-1" aria-busy={isPending}>
-          <StatCard label={t('dashboard.patientsSeen')} value={isPending ? '…' : data.patients_seen} />
+          <StatCard label={t('dashboard.visits')} value={isPending ? '…' : data.visits} />
           <StatCard label={t('dashboard.revenue')} value={isPending ? '…' : formatMoney(data.revenue)} />
         </div>
       )}

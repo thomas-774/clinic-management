@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Appointment;
 use App\Models\Patient;
 use App\Models\Payment;
 use App\Models\User;
@@ -8,7 +9,8 @@ use Illuminate\Support\Carbon;
 
 /*
  * Report endpoints (T6-03). "Now" is Monday 2026-10-05 17:20 (Cairo), so the
- * week is Saturday 10-03 … Friday 10-09.
+ * week is Saturday 10-03 … Friday 10-09. Money counts on the visit's date and
+ * the cards count visits (client decision, 2026-10-05).
  *
  *   visit  patient  date   total  payments                  remaining
  *   v1     A        10-05  1500   1000 @ 10-05 17:00         500
@@ -43,19 +45,19 @@ beforeEach(function () {
 afterEach(fn () => Carbon::setTestNow());
 
 describe('GET /doctor/reports/summary', function () {
-    it('gives patients seen, revenue and outstanding for each period', function (string $period, string $from, string $to, int $seen, string $revenue) {
+    it('gives visits, revenue and outstanding for each period', function (string $period, string $from, string $to, int $visits, string $revenue) {
         $this->actingAs($this->doctor)->getJson("/api/v1/doctor/reports/summary?period={$period}")
             ->assertOk()
             ->assertExactJson(['data' => [
                 'period' => $period,
                 'from' => $from,
                 'to' => $to,
-                'patients_seen' => $seen,
+                'visits' => $visits,
                 'revenue' => $revenue,
                 'outstanding' => '1200.00',
             ], 'message' => null]);
     })->with([
-        'today' => ['day', '2026-10-05', '2026-10-05', 1, '1200.00'],
+        'today' => ['day', '2026-10-05', '2026-10-05', 1, '1000.00'],
         'this week' => ['week', '2026-10-03', '2026-10-09', 2, '1500.00'],
         'this month' => ['month', '2026-10-01', '2026-10-31', 3, '2100.00'],
     ]);
@@ -66,7 +68,7 @@ describe('GET /doctor/reports/summary', function () {
             ->assertCreated();
 
         $this->getJson('/api/v1/doctor/reports/summary?period=day')
-            ->assertJsonPath('data.revenue', '1450.00')
+            ->assertJsonPath('data.revenue', '1250.00')
             ->assertJsonPath('data.outstanding', '950.00');
     });
 
@@ -75,6 +77,24 @@ describe('GET /doctor/reports/summary', function () {
             ->assertUnprocessable()
             ->assertJsonValidationErrors('period');
     })->with(['', '?period=year', '?period=']);
+
+    it('counts a visit for a 24-10 appointment on 24-10, not on the day it was recorded', function () {
+        $appointment = Appointment::factory()->for($this->a)->checkedIn()->at('2026-10-24 17:45')->create();
+
+        $this->actingAs($this->doctor)->postJson('/api/v1/doctor/visits', [
+            'patient_id' => $this->a->id,
+            'appointment_id' => $appointment->id,
+            'work_done' => 'Filling',
+            'total_amount' => 5000,
+            'paid_now' => 5000,
+        ])->assertCreated()->assertJsonPath('data.visit_date', '2026-10-24');
+
+        $this->getJson('/api/v1/doctor/reports/summary?period=day')
+            ->assertJsonPath('data.revenue', '1000.00')
+            ->assertJsonPath('data.visits', 1);
+        $this->getJson('/api/v1/doctor/reports/daily-revenue?month=2026-10')
+            ->assertJsonPath('data.23', ['date' => '2026-10-24', 'revenue' => '5000.00']);
+    });
 });
 
 describe('GET /doctor/reports/payments', function () {
@@ -104,9 +124,9 @@ describe('GET /doctor/reports/payments', function () {
     it('defaults to today', function () {
         $this->actingAs($this->doctor)->getJson('/api/v1/doctor/reports/payments')
             ->assertOk()
-            ->assertJsonCount(2, 'data')
+            ->assertJsonCount(1, 'data')
             ->assertJsonPath('meta.range', ['from' => '2026-10-05', 'to' => '2026-10-05'])
-            ->assertJsonPath('meta.totals.paid', '1200.00');
+            ->assertJsonPath('meta.totals.paid', '1000.00');
     });
 
     it('includes both end dates', function () {
@@ -148,8 +168,8 @@ describe('GET /doctor/reports/daily-revenue', function () {
         $byDate = collect($res->json('data'))->pluck('revenue', 'date');
         expect($byDate['2026-10-01'])->toBe('600.00')
             ->and($byDate['2026-10-02'])->toBe('0.00')
-            ->and($byDate['2026-10-03'])->toBe('300.00')
-            ->and($byDate['2026-10-05'])->toBe('1200.00')
+            ->and($byDate['2026-10-03'])->toBe('500.00') // v2, including the 200 paid on 10-05
+            ->and($byDate['2026-10-05'])->toBe('1000.00')
             ->and($byDate->reduce(fn ($s, $r) => bcadd($s, $r, 2), '0.00'))->toBe('2100.00');
     });
 

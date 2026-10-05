@@ -62,7 +62,7 @@ export default function Reports() {
   const payments = useReportPayments({ from, to, page }, { enabled: validRange })
 
   const columns = [
-    { key: 'paid_at', header: t('reports.date'), render: (row) => formatDate(row.paid_at), className: 'whitespace-nowrap' },
+    { key: 'visit_date', header: t('reports.visitDate'), render: (row) => formatDate(row.visit_date), className: 'whitespace-nowrap' },
     {
       key: 'patient',
       header: t('reports.patient'),
@@ -73,7 +73,21 @@ export default function Reports() {
       ),
     },
     { key: 'visit_total', header: t('reports.visitTotal'), render: (row) => formatMoney(row.visit_total), className: 'whitespace-nowrap' },
-    { key: 'paid', header: t('reports.paid'), render: (row) => formatMoney(row.paid), className: 'whitespace-nowrap' },
+    {
+      key: 'paid',
+      header: t('reports.paid'),
+      className: 'whitespace-nowrap',
+      // Money counts on the visit date; show when it was actually paid if that was another day.
+      render: (row) => {
+        const paidOn = formatDate(row.paid_at)
+        return (
+          <>
+            {formatMoney(row.paid)}
+            {paidOn !== formatDate(row.visit_date) && <span className="block text-xs text-slate-500">{t('reports.paidOn', { date: paidOn })}</span>}
+          </>
+        )
+      },
+    },
     { key: 'remaining', header: t('reports.remaining'), render: (row) => formatMoney(row.remaining), className: 'whitespace-nowrap' },
   ]
 
@@ -131,7 +145,7 @@ export default function Reports() {
             emptyMessage={t('reports.empty')}
             pagination={{ page: payments.data.meta.current_page, lastPage: payments.data.meta.last_page, onPageChange: goToPage }}
             footer={{
-              paid_at: t('reports.totals'),
+              visit_date: t('reports.totals'),
               paid: formatMoney(totals.paid),
               remaining: formatMoney(totals.remaining),
             }}

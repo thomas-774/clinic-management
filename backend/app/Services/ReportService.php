@@ -13,33 +13,34 @@ use Illuminate\Support\Carbon;
  * Dashboard and report numbers (Module H). Periods come from Period::for()
  * and are inclusive: [from, to] with to = the last second of the period.
  * Amounts are EGP strings with two decimals, summed with bcmath (PR-6).
+ *
+ * Client decision (2026-10-05), replacing PR-4 / PR-5: a visit's money counts
+ * on the visit's date — all of its payments, including installments paid
+ * later — and the cards count visits, not distinct patients.
  */
 class ReportService
 {
     public function __construct(private readonly PaymentService $payments) {}
 
     /**
-     * PR-4: money actually received — payments whose paid_at is in the
-     * period, whatever the date of the visit they belong to.
+     * All payments of the visits dated in the period, whenever they were paid.
      */
     public function revenue(CarbonInterface $from, CarbonInterface $to): string
     {
-        return PaymentService::money($this->paymentsBetween($from, $to)->sum('amount'));
+        return PaymentService::money($this->paymentsOfVisitsBetween($from, $to)->sum('amount'));
     }
 
     /**
-     * PR-5: distinct patients with a visit in the period whose appointment is
-     * completed, plus walk-in visits (no appointment).
+     * Visits dated in the period whose appointment is completed, plus walk-in
+     * visits (no appointment). A patient seen twice counts twice.
      */
-    public function patientsSeen(CarbonInterface $from, CarbonInterface $to): int
+    public function visitsCount(CarbonInterface $from, CarbonInterface $to): int
     {
-        return Visit::query()
-            ->whereBetween('visit_date', [self::local($from)->format('Y-m-d'), self::local($to)->format('Y-m-d')])
+        return $this->visitsBetween($from, $to)
             ->where(fn (Builder $q) => $q
                 ->whereNull('appointment_id')
                 ->orWhereHas('appointment', fn (Builder $a) => $a->where('status', AppointmentStatus::Completed)))
-            ->distinct()
-            ->count('patient_id');
+            ->count();
     }
 
     /**
@@ -56,24 +57,25 @@ class ReportService
     }
 
     /**
-     * FR-H.3: payments in the period, newest first, with what the table needs
-     * loaded. Returned as a query so the caller can paginate; turn each model
-     * into a row with paymentRow().
+     * FR-H.3: the payments of the visits dated in the period, newest visit
+     * first, with what the table needs loaded. Returned as a query so the
+     * caller can paginate; turn each model into a row with paymentRow().
      *
      * @return Builder<Payment>
      */
     public function payments(CarbonInterface $from, CarbonInterface $to): Builder
     {
-        return $this->paymentsBetween($from, $to)
+        return $this->paymentsOfVisitsBetween($from, $to)
             ->with(['visit' => fn ($q) => $q->withPaid(), 'visit.patient.user:id,name'])
+            ->orderByDesc(Visit::query()->select('visit_date')->whereColumn('visits.id', 'payments.visit_id'))
             ->orderByDesc('paid_at')
             ->orderByDesc('id');
     }
 
     /**
      * The table's totals row over the whole period (not one page): paid = the
-     * period's revenue; remaining counts each visit once, however many of its
-     * payments fall in the period.
+     * period's revenue; remaining counts each visit once, however many
+     * payments it has.
      *
      * @return array{count: int, paid: string, remaining: string}
      */
@@ -81,11 +83,11 @@ class ReportService
     {
         $visits = Visit::query()
             ->withPaid()
-            ->whereIn('id', $this->paymentsBetween($from, $to)->select('visit_id'))
+            ->whereIn('id', $this->paymentsOfVisitsBetween($from, $to)->select('visit_id'))
             ->get();
 
         return [
-            'count' => $this->paymentsBetween($from, $to)->count(),
+            'count' => $this->paymentsOfVisitsBetween($from, $to)->count(),
             'paid' => $this->revenue($from, $to),
             'remaining' => $this->payments->sumRemaining($visits),
         ];
@@ -114,8 +116,8 @@ class ReportService
     }
 
     /**
-     * FR-H.4: revenue for every day of $month's month, 0.00 on days with no
-     * payments.
+     * FR-H.4: revenue for every day of $month's month by visit date, 0.00 on
+     * days with no paid visits.
      *
      * @return list<array{date: string, revenue: string}>
      */
@@ -125,9 +127,11 @@ class ReportService
         $from = $month->copy()->startOfMonth();
         $to = $month->copy()->endOfMonth();
 
-        $byDay = $this->paymentsBetween($from, $to)
-            ->selectRaw('DATE(paid_at) as day, SUM(amount) as revenue')
-            ->groupBy('day')
+        $byDay = Payment::query()
+            ->join('visits', 'visits.id', '=', 'payments.visit_id')
+            ->whereBetween('visits.visit_date', [$from->format('Y-m-d'), $to->format('Y-m-d')])
+            ->selectRaw('visits.visit_date as day, SUM(payments.amount) as revenue')
+            ->groupBy('visits.visit_date')
             ->pluck('revenue', 'day');
 
         $rows = [];
@@ -140,14 +144,22 @@ class ReportService
     }
 
     /**
+     * @return Builder<Visit>
+     */
+    private function visitsBetween(CarbonInterface $from, CarbonInterface $to): Builder
+    {
+        return Visit::query()->whereBetween('visit_date', [
+            self::local($from)->format('Y-m-d'),
+            self::local($to)->format('Y-m-d'),
+        ]);
+    }
+
+    /**
      * @return Builder<Payment>
      */
-    private function paymentsBetween(CarbonInterface $from, CarbonInterface $to): Builder
+    private function paymentsOfVisitsBetween(CarbonInterface $from, CarbonInterface $to): Builder
     {
-        return Payment::query()->whereBetween('paid_at', [
-            self::local($from)->format('Y-m-d H:i:s'),
-            self::local($to)->format('Y-m-d H:i:s'),
-        ]);
+        return Payment::query()->whereIn('visit_id', $this->visitsBetween($from, $to)->select('id'));
     }
 
     /**

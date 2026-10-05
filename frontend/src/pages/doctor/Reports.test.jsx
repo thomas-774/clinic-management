@@ -7,19 +7,19 @@ import * as patientsApi from '../../api/doctorPatients'
 import * as reportsApi from '../../api/reports'
 import { expectPath, renderAppAt } from '../../test/renderApp'
 
-// paid_at, patient, visit, visit total, paid, remaining (what the visit still owes now)
+// paid_at, patient, visit (and its date), visit total, paid, remaining (what the visit still owes now)
 const PAYMENTS = [
-  { id: 5, paid_at: '2026-10-05T17:00:00+03:00', patient_id: 1, patient_name: 'Mona Ali', visit_id: 1, visit_total: '1500.00', paid: '1000.00', remaining: '500.00' },
-  { id: 4, paid_at: '2026-10-05T09:00:00+03:00', patient_id: 2, patient_name: 'Ahmed Hassan', visit_id: 2, visit_total: '800.00', paid: '200.00', remaining: '300.00' },
-  { id: 3, paid_at: '2026-10-03T10:00:00+03:00', patient_id: 2, patient_name: 'Ahmed Hassan', visit_id: 2, visit_total: '800.00', paid: '300.00', remaining: '300.00' },
-  { id: 2, paid_at: '2026-10-01T12:00:00+03:00', patient_id: 3, patient_name: 'Sara Adel', visit_id: 3, visit_total: '600.00', paid: '600.00', remaining: '0.00' },
-  { id: 1, paid_at: '2026-09-28T12:00:00+03:00', patient_id: 3, patient_name: 'Sara Adel', visit_id: 4, visit_total: '400.00', paid: '100.00', remaining: '300.00' },
+  { id: 5, paid_at: '2026-10-05T17:00:00+03:00', patient_id: 1, patient_name: 'Mona Ali', visit_id: 1, visit_date: '2026-10-05', visit_total: '1500.00', paid: '1000.00', remaining: '500.00' },
+  { id: 4, paid_at: '2026-10-05T09:00:00+03:00', patient_id: 2, patient_name: 'Ahmed Hassan', visit_id: 2, visit_date: '2026-10-03', visit_total: '800.00', paid: '200.00', remaining: '300.00' },
+  { id: 3, paid_at: '2026-10-03T10:00:00+03:00', patient_id: 2, patient_name: 'Ahmed Hassan', visit_id: 2, visit_date: '2026-10-03', visit_total: '800.00', paid: '300.00', remaining: '300.00' },
+  { id: 2, paid_at: '2026-10-01T12:00:00+03:00', patient_id: 3, patient_name: 'Sara Adel', visit_id: 3, visit_date: '2026-10-01', visit_total: '600.00', paid: '600.00', remaining: '0.00' },
+  { id: 1, paid_at: '2026-09-28T12:00:00+03:00', patient_id: 3, patient_name: 'Sara Adel', visit_id: 4, visit_date: '2026-09-28', visit_total: '400.00', paid: '100.00', remaining: '300.00' },
 ]
 
-/** Filters like GET /doctor/reports/payments; totals count each visit's remaining once. */
+/** Filters by visit date like GET /doctor/reports/payments; totals count each visit's remaining once. */
 function fakePayments({ perPage = 20 } = {}) {
   return vi.spyOn(reportsApi, 'getReportPayments').mockImplementation(async ({ from, to, page = 1 }) => {
-    const rows = PAYMENTS.filter((p) => p.paid_at.slice(0, 10) >= from && p.paid_at.slice(0, 10) <= to)
+    const rows = PAYMENTS.filter((p) => p.visit_date >= from && p.visit_date <= to)
     const cents = (v) => Math.round(Number(v) * 100)
     const paid = rows.reduce((s, r) => s + cents(r.paid), 0)
     const visits = new Map(rows.map((r) => [r.visit_id, cents(r.remaining)]))
@@ -61,7 +61,7 @@ describe('Reports: payments table', () => {
 
   afterEach(() => vi.useRealTimers())
 
-  it("shows this month's payments by default with date, patient, visit total, paid and remaining", async () => {
+  it("shows this month's payments by default with visit date, patient, visit total, paid and remaining", async () => {
     const api = fakePayments()
     renderReports()
 
@@ -87,6 +87,17 @@ describe('Reports: payments table', () => {
     await expectPath('/doctor/patients/1')
   })
 
+  it('shows when an installment was paid on another day than the visit', async () => {
+    fakePayments()
+    renderReports()
+    await screen.findByRole('table')
+
+    const [mona, ahmedLater, ahmedSameDay] = bodyRows()
+    expect(cellTexts(ahmedLater)).toEqual(['3 Oct 2026', 'Ahmed Hassan', 'EGP 800.00', 'EGP 200.00paid on 5 Oct 2026', 'EGP 300.00'])
+    expect(within(mona).queryByText(/paid on/)).not.toBeInTheDocument()
+    expect(within(ahmedSameDay).queryByText(/paid on/)).not.toBeInTheDocument()
+  })
+
   it('ends with a totals row for the whole range', async () => {
     fakePayments()
     renderReports()
@@ -103,8 +114,8 @@ describe('Reports: payments table', () => {
     await userEvent.click(periodButton('Today'))
     expect(await screen.findByText('5 Oct 2026', { selector: 'p' })).toBeInTheDocument()
     expect(api).toHaveBeenLastCalledWith({ from: '2026-10-05', to: '2026-10-05', page: 1 })
-    expect(bodyRows()).toHaveLength(2)
-    expect(within(totalsRow()).getAllByRole('cell')[3]).toHaveTextContent('EGP 1,200.00')
+    expect(bodyRows()).toHaveLength(1)
+    expect(within(totalsRow()).getAllByRole('cell')[3]).toHaveTextContent('EGP 1,000.00')
 
     await userEvent.click(periodButton('This week'))
     expect(await screen.findByText('3 Oct 2026 – 9 Oct 2026')).toBeInTheDocument()

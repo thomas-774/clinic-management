@@ -13,3 +13,7 @@
 ## Done when
 - [x] Recording a payment updates today's revenue after a refresh.
   - Note: visit and payment mutations now also invalidate the `['doctor','reports']` queries, so the numbers are fresh even without a reload.
+
+## Change after review (2026-10-05)
+- [x] Client decision, replacing PR-4 / PR-5: a visit's money counts on the visit's date (all its payments, including installments paid later), and the cards count visits instead of distinct patients. A visit for an appointment takes the appointment's date; a walk-in takes today.
+  - The cards show "Visits"; the Reports table's first column is the visit date, with "paid on …" under an amount paid on another day.

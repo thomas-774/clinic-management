@@ -166,9 +166,10 @@ describe('PUT /doctor/visits/{id}', function () {
 
 describe('POST /doctor/visits/{id}/payments', function () {
     beforeEach(function () {
-        // An old visit from last month: 1500 total, 1000 paid then.
+        // An old walk-in visit from last month: 1500 total, 1000 paid then.
+        // (A visit for an appointment takes the appointment's date instead.)
         $this->travelTo('2026-09-10 18:00:00');
-        $this->visitId = postVisit(visitBody())->assertCreated()->json('data.id');
+        $this->visitId = postVisit(visitBody(['appointment_id' => null]))->assertCreated()->json('data.id');
         $this->travelTo('2026-10-05 17:20:00');
     });
 

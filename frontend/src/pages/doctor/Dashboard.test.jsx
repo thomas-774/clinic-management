@@ -24,9 +24,9 @@ const appt = (id, time, end, patient, status = 'booked') => ({
 /** Report numbers like the API; `pay()` records a payment today. */
 function fakeReports() {
   const state = {
-    day: { from: '2026-10-05', to: '2026-10-05', patients_seen: 1, revenue: '1200.00' },
-    week: { from: '2026-10-03', to: '2026-10-09', patients_seen: 2, revenue: '1500.00' },
-    month: { from: '2026-10-01', to: '2026-10-31', patients_seen: 3, revenue: '2100.00' },
+    day: { from: '2026-10-05', to: '2026-10-05', visits: 1, revenue: '1200.00' },
+    week: { from: '2026-10-03', to: '2026-10-09', visits: 2, revenue: '1500.00' },
+    month: { from: '2026-10-01', to: '2026-10-31', visits: 3, revenue: '2100.00' },
     outstanding: '1200.00',
   }
   const summary = vi
@@ -59,24 +59,24 @@ describe('Dashboard', () => {
 
   afterEach(() => vi.useRealTimers())
 
-  it('shows patients seen and revenue for today, this week and this month', async () => {
+  it('shows the number of visits and revenue for today, this week and this month', async () => {
     const { summary } = fakeReports()
     renderDashboard()
 
     const today = await findGroup('Today')
     expect([...new Set(summary.mock.calls.map(([period]) => period))].sort()).toEqual(['day', 'month', 'week'])
 
-    expect(stat(today, 'Patients seen')).toHaveTextContent('1')
+    expect(stat(today, 'Visits')).toHaveTextContent('1')
     expect(stat(today, 'Revenue')).toHaveTextContent('EGP 1,200.00')
     expect(today).toHaveTextContent('5 Oct 2026')
 
     const week = group('This week')
-    expect(stat(week, 'Patients seen')).toHaveTextContent('2')
+    expect(stat(week, 'Visits')).toHaveTextContent('2')
     expect(stat(week, 'Revenue')).toHaveTextContent('EGP 1,500.00')
     expect(week).toHaveTextContent('3 Oct 2026 – 9 Oct 2026')
 
     const month = group('This month')
-    expect(stat(month, 'Patients seen')).toHaveTextContent('3')
+    expect(stat(month, 'Visits')).toHaveTextContent('3')
     expect(stat(month, 'Revenue')).toHaveTextContent('EGP 2,100.00')
   })
 

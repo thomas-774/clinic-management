@@ -38,7 +38,8 @@ class VisitController extends Controller
                 $visit = Visit::create([
                     'patient_id' => $request->integer('patient_id'),
                     'appointment_id' => $appointment?->id,
-                    'visit_date' => today(),
+                    // The visit belongs to its appointment's day (reports count money by visit date).
+                    'visit_date' => $appointment ? $appointment->start_at->toDateString() : today(),
                     'work_done' => $request->validated('work_done'),
                     'total_amount' => PaymentService::money($request->validated('total_amount')),
                 ]);

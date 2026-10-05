@@ -15,3 +15,7 @@
 
 ## Done when
 - [x] ReportService tests pass.
+
+## Change after review (2026-10-05)
+- [x] Client decision, replacing PR-4 / PR-5: a visit's money counts on the visit's date (all its payments, including installments paid later), and the cards count visits instead of distinct patients. A visit for an appointment takes the appointment's date; a walk-in takes today.
+  - `revenue()`, `payments()`, `paymentTotals()` and `dailyRevenue()` now filter and group by `visits.visit_date`; `patientsSeen()` became `visitsCount()`.

@@ -2,7 +2,7 @@ import client from './client'
 
 const data = (res) => res.data.data
 
-/** period = day | week | month → { period, from, to, patients_seen, revenue, outstanding }. */
+/** period = day | week | month → { period, from, to, visits, revenue, outstanding }; money counts on the visit's date. */
 export const getReportSummary = (period) => client.get('/doctor/reports/summary', { params: { period } }).then(data)
 
 /**
