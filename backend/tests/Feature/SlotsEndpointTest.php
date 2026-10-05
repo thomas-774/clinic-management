@@ -51,3 +51,16 @@ it('requires a valid date', function (?string $query) {
 it('requires login', function () {
     $this->getJson('/api/v1/slots?date=2026-10-06')->assertUnauthorized();
 });
+
+it('returns no slots for a date the doctor blocks as a holiday (T3-08)', function () {
+    $doctor = User::clinicDoctor();
+    $this->actingAs($doctor)->getJson('/api/v1/slots?date=2026-10-06')->assertJsonCount(5, 'data');
+
+    $this->actingAs($doctor)->postJson('/api/v1/doctor/blocked-times', ['date' => '2026-10-06', 'reason' => 'Holiday'])
+        ->assertCreated();
+
+    app('auth')->forgetGuards();
+    $this->actingAs($this->patient->user)->getJson('/api/v1/slots?date=2026-10-06')
+        ->assertOk()
+        ->assertJsonPath('data', []);
+});

@@ -203,5 +203,23 @@
     "minutes_two": "دقيقتان",
     "minutes_few": "{{count}} دقائق",
     "minutes_many": "{{count}} دقيقة"
+  },
+  "blocked": {
+    "title": "الإجازات والأوقات المحجوبة",
+    "listLabel": "الحجب القادم",
+    "empty": "لا يوجد حجب قادم.",
+    "addTitle": "حجب يوم أو وقت",
+    "date": "التاريخ",
+    "reason": "السبب (اختياري)",
+    "reasonPlaceholder": "مثال: إجازة",
+    "wholeDay": "اليوم بالكامل",
+    "from": "من",
+    "to": "إلى",
+    "add": "إضافة الحجب",
+    "added": "تم حجب الوقت.",
+    "removed": "تم إلغاء الحجب.",
+    "deleteLabel": "حذف الحجب يوم {{date}}",
+    "deleteTitle": "إلغاء هذا الحجب؟",
+    "deleteMessage": "سيصبح {{date}} ({{when}}) متاحًا للحجز مرة أخرى."
   }
 }

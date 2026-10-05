@@ -203,5 +203,23 @@
     "minutes_two": "{{count}} minutes",
     "minutes_few": "{{count}} minutes",
     "minutes_many": "{{count}} minutes"
+  },
+  "blocked": {
+    "title": "Holidays and blocked times",
+    "listLabel": "Upcoming blocks",
+    "empty": "No upcoming blocks.",
+    "addTitle": "Block a date or time",
+    "date": "Date",
+    "reason": "Reason (optional)",
+    "reasonPlaceholder": "e.g. Holiday",
+    "wholeDay": "Whole day",
+    "from": "From",
+    "to": "To",
+    "add": "Add block",
+    "added": "Time blocked.",
+    "removed": "Block removed.",
+    "deleteLabel": "Delete block on {{date}}",
+    "deleteTitle": "Remove this block?",
+    "deleteMessage": "{{date}} ({{when}}) will be open for booking again."
   }
 }

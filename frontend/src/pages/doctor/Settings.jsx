@@ -4,6 +4,7 @@ import { LoadError, Loading } from '../../components/QueryState'
 import { useDoctorSettings, useUpdateSettings, useUpdateWorkingHours, useWorkingHours } from '../../hooks/useSettings'
 import { useToast } from '../../toast/useToast'
 import { errorMessage } from '../../utils/apiErrors'
+import BlockedTimesCard from './settings/BlockedTimesCard'
 import BookingSettingsForm from './settings/BookingSettingsForm'
 import WeeklyHoursForm from './settings/WeeklyHoursForm'
 
@@ -72,6 +73,7 @@ function SettingsEditor({ initialSettings, initialWeek }) {
         onSave={handleSaveHours}
         saving={saveHours.isPending}
       />
+      <BlockedTimesCard />
     </div>
   )
 }
