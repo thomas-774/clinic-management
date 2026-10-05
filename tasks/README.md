@@ -106,7 +106,7 @@ Frontend
 ## Phase 5 — Visits and payments (Module D)
 
 Backend
-- [ ] [T5-01](phase-5-visits-payments/T5-01-payment-service.md) PaymentService (balances and rules) · M
+- [x] [T5-01](phase-5-visits-payments/T5-01-payment-service.md) PaymentService (balances and rules) · M
 - [ ] [T5-02](phase-5-visits-payments/T5-02-payment-service-tests.md) Unit tests for PaymentService · S
 - [ ] [T5-03](phase-5-visits-payments/T5-03-create-visit-endpoint.md) POST /doctor/visits (visit + first payment) · M
 - [ ] [T5-04](phase-5-visits-payments/T5-04-update-visit-endpoint.md) PUT /doctor/visits/{id} · S

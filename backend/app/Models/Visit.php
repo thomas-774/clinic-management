@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\VisitFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -44,5 +45,14 @@ class Visit extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Adds payments_sum_amount in the same query, so PaymentService can give
+     * paid / remaining for a list of visits without one query each.
+     */
+    public function scopeWithPaid(Builder $query): void
+    {
+        $query->withSum('payments', 'amount');
     }
 }
