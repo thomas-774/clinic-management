@@ -170,6 +170,7 @@ return array_filter($slots, fn($s) => !$this->isTaken($s) && !$this->isBlocked($
 | Booked | Cancel (patient/doctor) | Cancelled |
 | Booked | Patient never came (doctor) | No-show |
 | Checked In | Visit saved (doctor) | Completed |
+| Checked In | Patient leaves without a visit (doctor) | Cancelled |
 
 ### 4.4 Payment rules
 

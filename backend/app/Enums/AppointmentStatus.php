@@ -27,13 +27,14 @@ enum AppointmentStatus: string
 
     /**
      * The lifecycle in §4.3: booked → checked_in / cancelled / no_show,
-     * checked_in → completed. Every other change is refused.
+     * checked_in → completed / cancelled (the patient left without a visit).
+     * Every other change is refused.
      */
     public function canTransitionTo(self $to): bool
     {
         return in_array($to, match ($this) {
             self::Booked => [self::CheckedIn, self::Cancelled, self::NoShow],
-            self::CheckedIn => [self::Completed],
+            self::CheckedIn => [self::Completed, self::Cancelled],
             self::Completed, self::Cancelled, self::NoShow => [],
         }, true);
     }

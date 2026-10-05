@@ -60,6 +60,19 @@ it('lets the doctor cancel at any time, even after the patient cut-off', functio
         ->assertJsonPath('data.cancelled_at', '2026-10-05T17:10:00+03:00');
 });
 
+it('cancels a checked-in appointment when the patient leaves without a visit', function () {
+    $appointment = withStatus($this->doctor, 'checked_in');
+
+    patchStatus($this->doctor, $appointment, 'cancelled')
+        ->assertOk()
+        ->assertJsonPath('data.status', 'cancelled')
+        ->assertJsonPath('data.cancelled_at', '2026-10-05T17:10:00+03:00');
+
+    // The slot is free again and the patient holds no active appointment.
+    expect(Appointment::query()->whereKey($appointment->id)->value('active_slot'))->toBeNull()
+        ->and($appointment->patient->nextAppointment())->toBeNull();
+});
+
 it('rejects a transition the lifecycle does not allow with 422', function (string $from, string $to) {
     $appointment = withStatus($this->doctor, $from);
 
@@ -70,7 +83,6 @@ it('rejects a transition the lifecycle does not allow with 422', function (strin
     expect($appointment->fresh()->status->value)->toBe($from);
 })->with([
     ['booked', 'completed'],
-    ['checked_in', 'cancelled'],
     ['checked_in', 'no_show'],
     ['checked_in', 'checked_in'],
     ['completed', 'cancelled'],

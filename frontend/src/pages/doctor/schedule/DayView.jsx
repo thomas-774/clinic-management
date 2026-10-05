@@ -16,14 +16,25 @@ function Actions({ appointment, onChange, busy }) {
   const { t } = useTranslation()
   if (appointment.status === 'checked_in') {
     // The appointment travels with the link, so the form needs no extra request (FR-F.3).
+    // Cancel covers a patient who arrived but left without a visit (§4.3).
     return (
-      <Link
-        to={`/doctor/visits/new?appointment=${appointment.id}`}
-        state={{ appointment }}
-        className="rounded-lg bg-green-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-green-700"
-      >
-        {t('schedule.startVisit')}
-      </Link>
+      <div className="flex flex-wrap gap-2">
+        <Link
+          to={`/doctor/visits/new?appointment=${appointment.id}`}
+          state={{ appointment }}
+          className="rounded-lg bg-green-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-green-700"
+        >
+          {t('schedule.startVisit')}
+        </Link>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => onChange(appointment, 'cancelled')}
+          className="rounded-lg px-3 py-1.5 text-sm text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50 disabled:opacity-60"
+        >
+          {t('schedule.cancel')}
+        </button>
+      </div>
     )
   }
   if (appointment.status !== 'booked') return null

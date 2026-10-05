@@ -107,16 +107,35 @@ describe('Schedule: day view', () => {
     expect(rows[1]).toHaveTextContent('Checked in')
   })
 
-  it('shows Arrived, No-show and Cancel only on booked appointments', async () => {
-    fakeServer([appt(1, '2026-10-05', '17:00', '17:45', MONA), appt(2, '2026-10-05', '18:30', '19:15', AHMED, 'checked_in')])
+  it('shows Arrived, No-show and Cancel on booked rows; Start visit and Cancel on checked-in rows', async () => {
+    fakeServer([
+      appt(1, '2026-10-05', '17:00', '17:45', MONA),
+      appt(2, '2026-10-05', '18:30', '19:15', AHMED, 'checked_in'),
+      appt(3, '2026-10-05', '19:15', '20:00', { id: 3, name: 'Sara Adel', phone: '01155556666' }, 'completed'),
+    ])
     renderSchedule()
 
     await screen.findByText('Mona Ali')
     expect(within(rowOf('Mona Ali')).getByRole('button', { name: 'Arrived' })).toBeInTheDocument()
     expect(within(rowOf('Mona Ali')).getByRole('button', { name: 'No-show' })).toBeInTheDocument()
     expect(within(rowOf('Mona Ali')).getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
-    expect(within(rowOf('Ahmed Hassan')).queryByRole('button')).not.toBeInTheDocument()
+    expect(within(rowOf('Ahmed Hassan')).getAllByRole('button').map((b) => b.textContent)).toEqual(['Cancel'])
     expect(within(rowOf('Ahmed Hassan')).getByRole('link', { name: 'Start visit' })).toHaveAttribute('href', '/doctor/visits/new?appointment=2')
+    expect(within(rowOf('Sara Adel')).queryByRole('button')).not.toBeInTheDocument()
+    expect(within(rowOf('Sara Adel')).queryByRole('link')).not.toBeInTheDocument()
+  })
+
+  it('cancels a checked-in appointment when the patient leaves without a visit', async () => {
+    const server = fakeServer([appt(2, '2026-10-05', '18:30', '19:15', AHMED, 'checked_in')])
+    renderSchedule()
+
+    await userEvent.click(within(await screen.findByText('Ahmed Hassan').then((el) => el.closest('li'))).getByRole('button', { name: 'Cancel' }))
+    const dialog = screen.getByRole('dialog', { name: 'Cancel this appointment?' })
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Yes, cancel it' }))
+
+    expect(server.updateStatus).toHaveBeenCalledWith(2, 'cancelled')
+    expect(await within(rowOf('Ahmed Hassan')).findByText('Cancelled')).toBeInTheDocument()
+    expect(within(rowOf('Ahmed Hassan')).queryByRole('link', { name: 'Start visit' })).not.toBeInTheDocument()
   })
 
   it('checks a patient in and the badge turns blue', async () => {

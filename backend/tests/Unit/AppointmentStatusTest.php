@@ -11,6 +11,7 @@ $allowed = [
     'booked → cancelled' => [S::Booked, S::Cancelled],
     'booked → no_show' => [S::Booked, S::NoShow],
     'checked_in → completed' => [S::CheckedIn, S::Completed],
+    'checked_in → cancelled' => [S::CheckedIn, S::Cancelled], // left without a visit
 ];
 
 $forbidden = [];
@@ -33,5 +34,5 @@ it('forbids', function (S $from, S $to) {
 
 it('covers all 25 pairs', function () use ($allowed, $forbidden) {
     expect(count($allowed) + count($forbidden))->toBe(25)
-        ->and($forbidden)->toHaveCount(21);
+        ->and($forbidden)->toHaveCount(20);
 });
