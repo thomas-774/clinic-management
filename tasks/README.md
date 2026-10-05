@@ -45,7 +45,7 @@ Backend
 - [x] [T1-04](phase-1-database-auth/T1-04-migration-appointments.md) Migration: appointments (with active_slot) · M
 - [x] [T1-05](phase-1-database-auth/T1-05-migration-visits-payments.md) Migrations: visits and payments · S
 - [x] [T1-06](phase-1-database-auth/T1-06-enums-and-models.md) Enums and Eloquent models · M
-- [ ] [T1-07](phase-1-database-auth/T1-07-factories-and-seeders.md) Factories and seeders · M
+- [x] [T1-07](phase-1-database-auth/T1-07-factories-and-seeders.md) Factories and seeders · M
 - [ ] [T1-08](phase-1-database-auth/T1-08-api-response-conventions.md) API response and error conventions · S
 - [ ] [T1-09](phase-1-database-auth/T1-09-auth-endpoints.md) Auth endpoints (register, login, logout, me) · M
 - [ ] [T1-10](phase-1-database-auth/T1-10-role-middleware.md) EnsureRole middleware and route groups · S
