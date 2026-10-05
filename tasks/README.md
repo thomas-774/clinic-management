@@ -93,7 +93,7 @@ Backend
 - [x] [T4-02](phase-4-booking-schedule/T4-02-patient-appointment-endpoints.md) Patient appointment endpoints · M
 - [x] [T4-03](phase-4-booking-schedule/T4-03-doctor-appointment-endpoints.md) Doctor appointment endpoints · S
 - [x] [T4-04](phase-4-booking-schedule/T4-04-appointment-status-transitions.md) Appointment status transitions · M
-- [ ] [T4-05](phase-4-booking-schedule/T4-05-booking-tests.md) Tests: booking rules and double booking · M
+- [x] [T4-05](phase-4-booking-schedule/T4-05-booking-tests.md) Tests: booking rules and double booking · M
 
 Frontend
 - [ ] [T4-06](phase-4-booking-schedule/T4-06-fe-slot-grid.md) SlotGrid component and useSlots hook · S
