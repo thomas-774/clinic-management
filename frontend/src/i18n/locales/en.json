@@ -3,7 +3,12 @@
     "appName": "Clinic",
     "loading": "Loading…",
     "logout": "Log out",
-    "networkError": "Could not reach the server. Please try again."
+    "networkError": "Could not reach the server. Please try again.",
+    "loadError": "Something went wrong while loading.",
+    "retry": "Retry",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel"
   },
   "language": {
     "other": "العربية",
@@ -65,5 +70,33 @@
     "unreachable": "Cannot reach the API",
     "retry": "Retry",
     "serverTime": "Server time: {{time}}"
+  },
+  "history": {
+    "empty": "No history recorded yet.",
+    "private": "Private",
+    "types": {
+      "condition": "Condition",
+      "allergy": "Allergy",
+      "surgery": "Surgery",
+      "medication": "Medication",
+      "note": "Note"
+    }
+  },
+  "patientHome": {
+    "greeting": "Hello, {{name}}",
+    "nextAppointment": "Next appointment",
+    "noAppointment": "You have no upcoming appointment.",
+    "bookNow": "Book an appointment",
+    "balance": "Remaining balance",
+    "nothingDue": "Nothing to pay.",
+    "personalInfo": "Personal information",
+    "editContact": "Edit contact info",
+    "contactSaved": "Contact info saved.",
+    "name": "Name",
+    "phone": "Phone",
+    "address": "Address",
+    "currentIllness": "Current illness",
+    "noIllness": "Nothing recorded.",
+    "history": "Medical history"
   }
 }

@@ -3,7 +3,12 @@
     "appName": "العيادة",
     "loading": "جارٍ التحميل…",
     "logout": "تسجيل الخروج",
-    "networkError": "تعذّر الاتصال بالخادم. يرجى المحاولة مرة أخرى."
+    "networkError": "تعذّر الاتصال بالخادم. يرجى المحاولة مرة أخرى.",
+    "loadError": "حدث خطأ أثناء التحميل.",
+    "retry": "إعادة المحاولة",
+    "save": "حفظ",
+    "saving": "جارٍ الحفظ…",
+    "cancel": "إلغاء"
   },
   "language": {
     "other": "English",
@@ -65,5 +70,33 @@
     "unreachable": "تعذّر الوصول إلى الخادم",
     "retry": "إعادة المحاولة",
     "serverTime": "وقت الخادم: {{time}}"
+  },
+  "history": {
+    "empty": "لا يوجد سجل طبي بعد.",
+    "private": "خاص",
+    "types": {
+      "condition": "مرض مزمن",
+      "allergy": "حساسية",
+      "surgery": "عملية جراحية",
+      "medication": "دواء",
+      "note": "ملاحظة"
+    }
+  },
+  "patientHome": {
+    "greeting": "أهلًا، {{name}}",
+    "nextAppointment": "الموعد القادم",
+    "noAppointment": "لا يوجد لديك موعد قادم.",
+    "bookNow": "احجز موعدًا",
+    "balance": "المبلغ المتبقي",
+    "nothingDue": "لا توجد مبالغ مستحقة.",
+    "personalInfo": "البيانات الشخصية",
+    "editContact": "تعديل بيانات التواصل",
+    "contactSaved": "تم حفظ بيانات التواصل.",
+    "name": "الاسم",
+    "phone": "رقم الهاتف",
+    "address": "العنوان",
+    "currentIllness": "الشكوى الحالية",
+    "noIllness": "لا يوجد.",
+    "history": "التاريخ المرضي"
   }
 }

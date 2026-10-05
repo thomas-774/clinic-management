@@ -24,7 +24,7 @@ describe('route guards', () => {
 
     renderAt('/doctor')
 
-    expect(await screen.findByRole('heading', { name: 'My profile' })).toBeInTheDocument()
+    expect(await screen.findByRole('link', { name: 'My appointments' })).toBeInTheDocument()
     await expectPath('/patient')
   })
 
@@ -67,7 +67,7 @@ describe('route guards', () => {
 
     expect(screen.getByRole('status')).toBeInTheDocument()
     resolve(patient)
-    expect(await screen.findByRole('heading', { name: 'My profile' })).toBeInTheDocument()
+    expect(await screen.findByRole('link', { name: 'My appointments' })).toBeInTheDocument()
   })
 
   it('treats a rejected stored token as logged out', async () => {
