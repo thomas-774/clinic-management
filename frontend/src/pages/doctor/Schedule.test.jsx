@@ -1,0 +1,220 @@
+import { fireEvent, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { AxiosError } from 'axios'
+import { vi } from 'vitest'
+import * as appointmentsApi from '../../api/appointments'
+import * as authApi from '../../api/auth'
+import { tokenStorage } from '../../api/client'
+import * as patientsApi from '../../api/doctorPatients'
+import * as slotsApi from '../../api/slots'
+import { renderAppAt } from '../../test/renderApp'
+
+const MONA = { id: 1, name: 'Mona Ali', phone: '01011112222' }
+const AHMED = { id: 2, name: 'Ahmed Hassan', phone: '01233334444' }
+
+const appt = (id, date, time, end, patient, status = 'booked') => ({
+  id,
+  start_at: `${date}T${time}:00+03:00`,
+  end_at: `${date}T${end}:00+03:00`,
+  status,
+  checked_in_at: null,
+  cancelled_at: null,
+  patient,
+})
+
+/** In-memory schedule; status changes and bookings update it like the API. */
+function fakeServer(rows = []) {
+  let appointments = [...rows]
+  let nextId = 100
+  const getSchedule = vi
+    .spyOn(appointmentsApi, 'getSchedule')
+    .mockImplementation(async ({ from, to }) =>
+      appointments.filter((a) => a.start_at.slice(0, 10) >= from && a.start_at.slice(0, 10) <= to).sort((a, b) => a.start_at.localeCompare(b.start_at)),
+    )
+  const updateStatus = vi.spyOn(appointmentsApi, 'updateAppointmentStatus').mockImplementation(async (id, status) => {
+    appointments = appointments.map((a) => (a.id === id ? { ...a, status } : a))
+    return appointments.find((a) => a.id === id)
+  })
+  vi.spyOn(patientsApi, 'listPatients').mockImplementation(async ({ search = '' }) => ({
+    data: [MONA, AHMED].filter((p) => !search || p.name.toLowerCase().includes(search.toLowerCase())),
+    meta: { current_page: 1, last_page: 1, total: 2 },
+  }))
+  vi.spyOn(slotsApi, 'getSlots').mockImplementation(async (date) => ({
+    data: [{ start_at: `${date}T18:30:00+03:00`, end_at: `${date}T19:15:00+03:00` }],
+    meta: { date, duration: 45, booking_window_days: 30 },
+  }))
+  const book = vi.spyOn(appointmentsApi, 'bookForPatient').mockImplementation(async ({ patient_id, start_at }) => {
+    const patient = [MONA, AHMED].find((p) => p.id === patient_id)
+    const created = { ...appt(nextId++, start_at.slice(0, 10), start_at.slice(11, 16), '19:15', patient) }
+    appointments = [...appointments, created]
+    return created
+  })
+  return { getSchedule, updateStatus, book }
+}
+
+function renderSchedule(path = '/doctor/schedule') {
+  tokenStorage.set('t')
+  vi.spyOn(authApi, 'me').mockResolvedValue({ id: 1, name: 'Dr. Doctor', role: 'doctor' })
+  return renderAppAt(path)
+}
+
+const rowOf = (name) => screen.getByText(name).closest('li')
+
+describe('Schedule: day view', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-10-05T05:00:00Z')) // Monday 08:00 in Cairo
+  })
+
+  afterEach(() => vi.useRealTimers())
+
+  it("lists today's appointments by time with name, phone and status", async () => {
+    const server = fakeServer([
+      appt(2, '2026-10-05', '18:30', '19:15', AHMED, 'checked_in'),
+      appt(1, '2026-10-05', '17:00', '17:45', MONA),
+      appt(3, '2026-10-06', '17:00', '17:45', MONA),
+    ])
+    renderSchedule()
+
+    const list = await screen.findByRole('list', { name: 'Appointments' })
+    const rows = within(list).getAllByRole('listitem')
+    expect(server.getSchedule).toHaveBeenCalledWith({ from: '2026-10-05', to: '2026-10-05' })
+    expect(screen.getByRole('heading', { name: 'Monday · 5 Oct 2026' })).toBeInTheDocument()
+    expect(rows).toHaveLength(2)
+    expect(rows[0]).toHaveTextContent('17:00 – 17:45')
+    expect(rows[0]).toHaveTextContent('Mona Ali')
+    expect(rows[0]).toHaveTextContent('01011112222')
+    expect(rows[0]).toHaveTextContent('Booked')
+    expect(rows[1]).toHaveTextContent('Checked in')
+  })
+
+  it('shows Arrived, No-show and Cancel only on booked appointments', async () => {
+    fakeServer([appt(1, '2026-10-05', '17:00', '17:45', MONA), appt(2, '2026-10-05', '18:30', '19:15', AHMED, 'checked_in')])
+    renderSchedule()
+
+    await screen.findByText('Mona Ali')
+    expect(within(rowOf('Mona Ali')).getByRole('button', { name: 'Arrived' })).toBeInTheDocument()
+    expect(within(rowOf('Mona Ali')).getByRole('button', { name: 'No-show' })).toBeInTheDocument()
+    expect(within(rowOf('Mona Ali')).getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+    expect(within(rowOf('Ahmed Hassan')).queryByRole('button')).not.toBeInTheDocument()
+  })
+
+  it('checks a patient in and the badge turns blue', async () => {
+    const server = fakeServer([appt(1, '2026-10-05', '17:00', '17:45', MONA)])
+    renderSchedule()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Arrived' }))
+
+    expect(server.updateStatus).toHaveBeenCalledWith(1, 'checked_in')
+    expect(await screen.findByText('Mona Ali checked in.')).toBeInTheDocument()
+    const badge = await within(rowOf('Mona Ali')).findByText('Checked in')
+    expect(badge).toHaveAttribute('data-status', 'checked_in')
+    expect(badge.className).toContain('bg-blue-100')
+    expect(within(rowOf('Mona Ali')).queryByRole('button', { name: 'Arrived' })).not.toBeInTheDocument()
+  })
+
+  it('asks before marking a no-show or cancelling', async () => {
+    const server = fakeServer([appt(1, '2026-10-05', '17:00', '17:45', MONA), appt(2, '2026-10-05', '18:30', '19:15', AHMED)])
+    renderSchedule()
+
+    await userEvent.click(within(await screen.findByText('Mona Ali').then((el) => el.closest('li'))).getByRole('button', { name: 'No-show' }))
+    let dialog = screen.getByRole('dialog', { name: 'Mark as no-show?' })
+    expect(dialog).toHaveTextContent('Mona Ali (17:00)')
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Yes, no-show' }))
+    expect(server.updateStatus).toHaveBeenCalledWith(1, 'no_show')
+    expect(await within(rowOf('Mona Ali')).findByText('No-show')).toHaveAttribute('data-status', 'no_show')
+
+    await userEvent.click(within(rowOf('Ahmed Hassan')).getByRole('button', { name: 'Cancel' }))
+    dialog = screen.getByRole('dialog', { name: 'Cancel this appointment?' })
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }))
+    expect(server.updateStatus).toHaveBeenCalledTimes(1)
+
+    await userEvent.click(within(rowOf('Ahmed Hassan')).getByRole('button', { name: 'Cancel' }))
+    await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Yes, cancel it' }))
+    expect(server.updateStatus).toHaveBeenLastCalledWith(2, 'cancelled')
+    expect(await within(rowOf('Ahmed Hassan')).findByText('Cancelled')).toBeInTheDocument()
+  })
+
+  it('shows the server message when a change is refused', async () => {
+    const server = fakeServer([appt(1, '2026-10-05', '17:00', '17:45', MONA)])
+    server.updateStatus.mockRejectedValue(
+      new AxiosError('x', 'ERR', undefined, undefined, { status: 422, data: { message: 'This status change is not allowed.' } }),
+    )
+    renderSchedule()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Arrived' }))
+
+    expect(await screen.findByText('This status change is not allowed.')).toBeInTheDocument()
+  })
+
+  it('moves between days and back to today', async () => {
+    const server = fakeServer([appt(3, '2026-10-06', '17:00', '17:45', MONA)])
+    renderSchedule()
+
+    expect(await screen.findByText('No appointments on this day.')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Next day' }))
+    expect(await screen.findByText('Mona Ali')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Tuesday · 6 Oct 2026' })).toBeInTheDocument()
+    expect(screen.getByTestId('path')).toHaveTextContent('/doctor/schedule')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Previous day' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Previous day' }))
+    expect(server.getSchedule).toHaveBeenLastCalledWith({ from: '2026-10-04', to: '2026-10-04' })
+    await userEvent.click(screen.getByRole('button', { name: 'Today' }))
+    expect(await screen.findByRole('heading', { name: 'Monday · 5 Oct 2026' })).toBeInTheDocument()
+  })
+
+  it('opens a day from ?date=', async () => {
+    fakeServer([appt(3, '2026-10-06', '17:00', '17:45', MONA)])
+    renderSchedule('/doctor/schedule?date=2026-10-06')
+
+    expect(await screen.findByText('Mona Ali')).toBeInTheDocument()
+  })
+
+  it('books a slot for a patient', async () => {
+    const server = fakeServer()
+    renderSchedule()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Book for patient' }))
+    const dialog = screen.getByRole('dialog', { name: 'Book for patient' })
+    expect(within(dialog).getByRole('button', { name: 'Book' })).toBeDisabled()
+
+    await userEvent.type(within(dialog).getByLabelText('Patient'), 'ahm')
+    await userEvent.click(await within(dialog).findByRole('button', { name: /Ahmed Hassan/ }))
+    fireEvent.change(within(dialog).getByLabelText('Date'), { target: { value: '2026-10-05' } })
+    await userEvent.click(await within(dialog).findByRole('button', { name: '18:30' }))
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Book' }))
+
+    expect(server.book).toHaveBeenCalledWith({ patient_id: 2, start_at: '2026-10-05T18:30:00+03:00' })
+    expect(await screen.findByText('Appointment booked for Ahmed Hassan.')).toBeInTheDocument()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(await screen.findByText('Ahmed Hassan')).toBeInTheDocument()
+  })
+})
+
+describe('Schedule: auto-refresh', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+  })
+
+  afterEach(() => vi.useRealTimers())
+
+  it('refetches the day every 60 seconds', async () => {
+    // Only the interval is faked; React and the first load use real timers.
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'Date'] })
+    vi.setSystemTime(new Date('2026-10-05T05:00:00Z'))
+    const server = fakeServer([appt(1, '2026-10-05', '17:00', '17:45', MONA)])
+    renderSchedule()
+
+    await screen.findByText('Mona Ali')
+    expect(server.getSchedule).toHaveBeenCalledTimes(1)
+
+    await vi.advanceTimersByTimeAsync(59_000)
+    expect(server.getSchedule).toHaveBeenCalledTimes(1)
+    await vi.advanceTimersByTimeAsync(1_000)
+    await vi.waitFor(() => expect(server.getSchedule).toHaveBeenCalledTimes(2))
+  })
+})

@@ -271,5 +271,40 @@
     "cancelMessage": "سيتم إلغاء موعدك يوم {{date}} الساعة {{time}} وسيصبح الوقت متاحًا لغيرك.",
     "confirmCancel": "نعم، ألغِ الموعد",
     "cancelled": "تم إلغاء الموعد."
+  },
+  "schedule": {
+    "appointments": "المواعيد",
+    "emptyDay": "لا توجد مواعيد في هذا اليوم.",
+    "previousDay": "اليوم السابق",
+    "nextDay": "اليوم التالي",
+    "today": "اليوم",
+    "arrived": "حضر",
+    "noShow": "لم يحضر",
+    "cancel": "إلغاء",
+    "done": {
+      "checked_in": "تم تسجيل حضور {{name}}.",
+      "no_show": "تم تسجيل عدم حضور {{name}}.",
+      "cancelled": "تم إلغاء موعد {{name}}.",
+      "completed": "تم إنهاء موعد {{name}}."
+    },
+    "confirm": {
+      "no_show": {
+        "title": "تسجيل عدم الحضور؟",
+        "message": "سيتم تسجيل {{name}} (الساعة {{time}}) كغائب.",
+        "action": "نعم، لم يحضر"
+      },
+      "cancelled": {
+        "title": "إلغاء الموعد؟",
+        "message": "سيتم إلغاء موعد {{name}} الساعة {{time}} وسيصبح الوقت متاحًا للحجز.",
+        "action": "نعم، ألغِ الموعد"
+      }
+    },
+    "bookForPatient": "حجز لمريض",
+    "patient": "المريض",
+    "matchingPatients": "المرضى المطابقون",
+    "noPatientMatch": "لا يوجد مريض مطابق.",
+    "changePatient": "تغيير",
+    "book": "حجز",
+    "bookedFor": "تم حجز موعد لـ {{name}}."
   }
 }

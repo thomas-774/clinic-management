@@ -271,5 +271,40 @@
     "cancelMessage": "Your appointment on {{date}} at {{time}} will be cancelled and the time freed for others.",
     "confirmCancel": "Yes, cancel it",
     "cancelled": "Appointment cancelled."
+  },
+  "schedule": {
+    "appointments": "Appointments",
+    "emptyDay": "No appointments on this day.",
+    "previousDay": "Previous day",
+    "nextDay": "Next day",
+    "today": "Today",
+    "arrived": "Arrived",
+    "noShow": "No-show",
+    "cancel": "Cancel",
+    "done": {
+      "checked_in": "{{name}} checked in.",
+      "no_show": "{{name}} marked as no-show.",
+      "cancelled": "Appointment for {{name}} cancelled.",
+      "completed": "Appointment for {{name}} completed."
+    },
+    "confirm": {
+      "no_show": {
+        "title": "Mark as no-show?",
+        "message": "{{name}} ({{time}}) will be marked as not having come.",
+        "action": "Yes, no-show"
+      },
+      "cancelled": {
+        "title": "Cancel this appointment?",
+        "message": "The appointment of {{name}} at {{time}} will be cancelled and the time freed.",
+        "action": "Yes, cancel it"
+      }
+    },
+    "bookForPatient": "Book for patient",
+    "patient": "Patient",
+    "matchingPatients": "Matching patients",
+    "noPatientMatch": "No matching patient.",
+    "changePatient": "Change",
+    "book": "Book",
+    "bookedFor": "Appointment booked for {{name}}."
   }
 }
