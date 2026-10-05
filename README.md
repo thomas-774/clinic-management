@@ -20,7 +20,7 @@ Needs PHP 8.3+, Composer, MySQL 8 and Node 20+. Details: [backend/README.md](bac
 ```bash
 # terminal 1 — API on http://localhost:8000
 cd backend && composer install && cp .env.example .env && php artisan key:generate
-php artisan migrate && php artisan serve
+php artisan migrate --seed && php artisan serve   # set DOCTOR_* in .env first
 
 # terminal 2 — React app on http://localhost:5173
 cd frontend && npm install && cp .env.example .env && npm run dev
