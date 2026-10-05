@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\Doctor\MedicalHistoryController;
 use App\Http\Controllers\Api\V1\Doctor\PatientController;
 use App\Http\Controllers\Api\V1\Doctor\SettingsController;
+use App\Http\Controllers\Api\V1\Doctor\WorkingHoursController;
 use App\Http\Controllers\Api\V1\Patient\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,5 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/settings', [SettingsController::class, 'show'])->name('settings.show');
         Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+        Route::get('/working-hours', [WorkingHoursController::class, 'index'])->name('working-hours.index');
+        Route::put('/working-hours', [WorkingHoursController::class, 'update'])->name('working-hours.update');
     });
 });
