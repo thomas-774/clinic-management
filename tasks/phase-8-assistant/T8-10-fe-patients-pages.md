@@ -4,8 +4,10 @@
 **Plan refs:** §7.2 · FR-I.2, FR-I.3, FR-I.4, FR-I.6
 
 ## Steps
-- [ ] `pages/assistant/PatientsList.jsx`: search (`useDebouncedValue`), `DataTable`, "New patient" reusing `NewPatientModal` with a `hideMedical` prop (no current illness) and the assistant API; the initial password is shown once.
-- [ ] `pages/assistant/PatientPage.jsx`: contact info with edit, outstanding balance, visits money table (`PaymentStatusBadge`, Record payment), "Book appointment" reusing `BookForPatientModal` + `SlotGrid`.
+- [x] `pages/assistant/PatientsList.jsx`: search (`useDebouncedValue`), `DataTable`, "New patient" reusing `NewPatientModal` with a `hideMedical` prop (no current illness) and the assistant API; the initial password is shown once.
+  Note: no separate page — the doctor's PatientsList, NewPatientModal and EditPatientModal read `useStaffApi()`, so under /assistant they call the assistant API, link to /assistant/patients/:id and hide the illness field (`showIllness`).
+- [x] `pages/assistant/PatientPage.jsx`: contact info with edit, outstanding balance, visits money table (`PaymentStatusBadge`, Record payment), "Book appointment" reusing `BookForPatientModal` + `SlotGrid`.
+  Note: reuses VisitTimeline (no Edit without `onEdit`, no work-done line when absent, payments show "by <name>") and BookForPatientModal with the new `initialPatient`; also shows the next appointment.
 
 ## Done when
-- [ ] Vitest: the new-patient form has no illness field; the patient page shows money but no work done; recording a payment works.
+- [x] Vitest: the new-patient form has no illness field; the patient page shows money but no work done; recording a payment works.

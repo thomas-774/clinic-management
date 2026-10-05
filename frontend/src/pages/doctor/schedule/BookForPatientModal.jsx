@@ -5,23 +5,24 @@ import Modal from '../../../components/Modal'
 import SlotGrid from '../../../components/SlotGrid'
 import TextField from '../../../components/form/TextField'
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue'
-import { usePatients } from '../../../hooks/usePatients'
-import { useBookForPatient } from '../../../hooks/useSchedule'
 import { useSlots } from '../../../hooks/useSlots'
+import { useStaffApi } from '../../../staff/staffApi'
 import { useToast } from '../../../toast/useToast'
 import { errorMessage } from '../../../utils/apiErrors'
 import { todayInClinic } from '../../../utils/format'
 
 /**
- * The doctor picks a patient and a free slot (§6.3 POST /doctor/appointments).
- * Mounted only while open, so every opening starts empty.
+ * The doctor or the assistant picks a patient and a free slot (§6.3, FR-I.6).
+ * Mounted only while open, so every opening starts empty, or with
+ * `initialPatient` ({ id, name, phone }) chosen from a patient page.
  */
-export default function BookForPatientModal({ initialDate, onClose }) {
+export default function BookForPatientModal({ initialDate, initialPatient = null, onClose }) {
   const { t } = useTranslation()
   const toast = useToast()
   const queryClient = useQueryClient()
+  const { usePatients, useBookForPatient } = useStaffApi()
   const [search, setSearch] = useState('')
-  const [patient, setPatient] = useState(null)
+  const [patient, setPatient] = useState(initialPatient)
   const [date, setDate] = useState(initialDate)
   const [slot, setSlot] = useState(null)
   const [formError, setFormError] = useState('')

@@ -4,7 +4,7 @@ import Modal from '../../components/Modal'
 import SelectField from '../../components/form/SelectField'
 import TextAreaField from '../../components/form/TextAreaField'
 import TextField from '../../components/form/TextField'
-import { useUpdatePatient } from '../../hooks/usePatient'
+import { useStaffApi } from '../../staff/staffApi'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
 
 const fromPatient = (patient) => ({
@@ -16,9 +16,13 @@ const fromPatient = (patient) => ({
   current_illness: patient.current_illness ?? '',
 })
 
-/** Rendered only while open, so it always starts from the latest data. */
+/**
+ * Rendered only while open, so it always starts from the latest data. The
+ * assistant edits contact info only (FR-I.3).
+ */
 export default function EditPatientModal({ patient, onClose }) {
   const { t } = useTranslation()
+  const { useUpdatePatient, showIllness } = useStaffApi()
   const update = useUpdatePatient(patient.id)
   const [form, setForm] = useState(() => fromPatient(patient))
   const errors = fieldErrors(update.error)
@@ -28,7 +32,8 @@ export default function EditPatientModal({ patient, onClose }) {
 
   function handleSubmit(event) {
     event.preventDefault()
-    const payload = Object.fromEntries(Object.entries(form).map(([key, value]) => [key, value.trim() === '' ? null : value]))
+    const fields = Object.entries(form).filter(([key]) => showIllness || key !== 'current_illness')
+    const payload = Object.fromEntries(fields.map(([key, value]) => [key, value.trim() === '' ? null : value]))
     update.mutate(payload, { onSuccess: onClose })
   }
 
@@ -57,7 +62,9 @@ export default function EditPatientModal({ patient, onClose }) {
             { value: 'male', label: t('patientForm.male') },
           ]}
         />
-        <TextAreaField label={t('patientForm.currentIllness')} value={form.current_illness} onChange={set('current_illness')} error={errors.current_illness} />
+        {showIllness && (
+          <TextAreaField label={t('patientForm.currentIllness')} value={form.current_illness} onChange={set('current_illness')} error={errors.current_illness} />
+        )}
         <div className="flex justify-end gap-2 pt-2">
           <button type="button" onClick={onClose} className="rounded-lg px-4 py-2 text-sm text-slate-600 hover:bg-slate-100">
             {t('common.cancel')}

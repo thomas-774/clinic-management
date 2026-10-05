@@ -384,7 +384,8 @@
     "paymentSaved": "تم تسجيل الدفعة. المتبقي: {{remaining}}",
     "editTitle": "تعديل زيارة {{date}}",
     "belowPaid": "لا يمكن أن يقل الإجمالي عن المدفوع ({{amount}}).",
-    "alreadyPaid": "المدفوع حتى الآن: {{amount}}"
+    "alreadyPaid": "المدفوع حتى الآن: {{amount}}",
+    "recordedBy": "بواسطة {{name}}"
   },
   "dashboard": {
     "today": "اليوم",
@@ -451,6 +452,9 @@
     "paid": "المدفوع {{amount}}",
     "remaining": "المتبقي",
     "recordPayment": "تسجيل دفعة",
-    "recordPaymentTitle": "دفعة من {{name}}"
+    "recordPaymentTitle": "دفعة من {{name}}",
+    "nextAppointment": "الموعد القادم",
+    "bookAppointment": "حجز موعد",
+    "noAppointment": "لا يوجد موعد قادم."
   }
 }

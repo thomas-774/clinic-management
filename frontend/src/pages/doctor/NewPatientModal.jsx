@@ -4,7 +4,7 @@ import Modal from '../../components/Modal'
 import SelectField from '../../components/form/SelectField'
 import TextAreaField from '../../components/form/TextAreaField'
 import TextField from '../../components/form/TextField'
-import { useCreatePatient } from '../../hooks/usePatients'
+import { useStaffApi } from '../../staff/staffApi'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
 
 const EMPTY = { name: '', phone: '', address: '', email: '', date_of_birth: '', gender: '', current_illness: '' }
@@ -47,8 +47,10 @@ function CreatedStep({ patient, onClose }) {
   )
 }
 
+/** The assistant's form has no current illness: that is medical data (FR-I.2). */
 export default function NewPatientModal({ open, onClose }) {
   const { t } = useTranslation()
+  const { useCreatePatient, showIllness } = useStaffApi()
   const create = useCreatePatient()
   const [form, setForm] = useState(EMPTY)
   const errors = fieldErrors(create.error)
@@ -65,7 +67,8 @@ export default function NewPatientModal({ open, onClose }) {
   function handleSubmit(event) {
     event.preventDefault()
     // Empty optional fields are sent as null so the API treats them as "not given".
-    const payload = Object.fromEntries(Object.entries(form).map(([key, value]) => [key, value.trim() === '' ? null : value]))
+    const fields = Object.entries(form).filter(([key]) => showIllness || key !== 'current_illness')
+    const payload = Object.fromEntries(fields.map(([key, value]) => [key, value.trim() === '' ? null : value]))
     create.mutate(payload)
   }
 
@@ -100,7 +103,9 @@ export default function NewPatientModal({ open, onClose }) {
               ]}
             />
           </div>
-          <TextAreaField label={t('patientForm.currentIllness')} value={form.current_illness} onChange={set('current_illness')} error={errors.current_illness} />
+          {showIllness && (
+            <TextAreaField label={t('patientForm.currentIllness')} value={form.current_illness} onChange={set('current_illness')} error={errors.current_illness} />
+          )}
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" onClick={close} className="rounded-lg px-4 py-2 text-sm text-slate-600 hover:bg-slate-100">
               {t('common.cancel')}

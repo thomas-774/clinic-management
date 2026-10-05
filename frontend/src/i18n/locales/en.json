@@ -384,7 +384,8 @@
     "paymentSaved": "Payment recorded. Remaining: {{remaining}}",
     "editTitle": "Edit visit of {{date}}",
     "belowPaid": "The total cannot be lower than the {{amount}} already paid.",
-    "alreadyPaid": "Paid so far: {{amount}}"
+    "alreadyPaid": "Paid so far: {{amount}}",
+    "recordedBy": "by {{name}}"
   },
   "dashboard": {
     "today": "Today",
@@ -451,6 +452,9 @@
     "paid": "Paid {{amount}}",
     "remaining": "Remaining",
     "recordPayment": "Record payment",
-    "recordPaymentTitle": "Payment from {{name}}"
+    "recordPaymentTitle": "Payment from {{name}}",
+    "nextAppointment": "Next appointment",
+    "bookAppointment": "Book appointment",
+    "noAppointment": "No upcoming appointment."
   }
 }

@@ -6,7 +6,9 @@ import {
   useAssistantPatients,
   useAssistantSchedule,
   useAssistantUpdateAppointmentStatus,
+  useAssistantUpdatePatient,
 } from '../hooks/useAssistant'
+import { useUpdatePatient } from '../hooks/usePatient'
 import { useCreatePatient, usePatients } from '../hooks/usePatients'
 import { useBookForPatient, useSchedule, useUpdateAppointmentStatus } from '../hooks/useSchedule'
 import { useAddPayment } from '../hooks/useVisits'
@@ -25,6 +27,7 @@ const DOCTOR = {
   useBookForPatient,
   usePatients,
   useCreatePatient,
+  useUpdatePatient,
   useAddPayment,
 }
 
@@ -37,6 +40,7 @@ export const ASSISTANT = {
   useBookForPatient: useAssistantBookForPatient,
   usePatients: useAssistantPatients,
   useCreatePatient: useAssistantCreatePatient,
+  useUpdatePatient: useAssistantUpdatePatient,
   useAddPayment: useAssistantAddPayment,
 }
 

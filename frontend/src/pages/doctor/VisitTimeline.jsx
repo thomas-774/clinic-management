@@ -28,9 +28,11 @@ function VisitItem({ visit, onAddPayment, onEdit }) {
         <PaymentStatusBadge status={visit.payment_status} />
         {owes && <span className="rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white">{t('visits.unpaidBalance')}</span>}
         <div className="ms-auto flex gap-1">
-          <button type="button" onClick={() => onEdit(visit)} className={`${smallButton} text-sky-700`}>
-            {t('visits.edit')}
-          </button>
+          {onEdit && (
+            <button type="button" onClick={() => onEdit(visit)} className={`${smallButton} text-sky-700`}>
+              {t('visits.edit')}
+            </button>
+          )}
           {owes && (
             <button type="button" onClick={() => onAddPayment(visit)} className={`${smallButton} text-green-700`}>
               {t('visits.addPayment')}
@@ -38,7 +40,7 @@ function VisitItem({ visit, onAddPayment, onEdit }) {
           )}
         </div>
       </div>
-      <p className="mt-1 whitespace-pre-line text-slate-700">{visit.work_done}</p>
+      {visit.work_done && <p className="mt-1 whitespace-pre-line text-slate-700">{visit.work_done}</p>}
       <dl className="mt-2 grid grid-cols-3 gap-2 text-sm">
         <Amount label={t('visits.total')}>{formatMoney(visit.total_amount)}</Amount>
         <Amount label={t('visits.paid')}>{formatMoney(visit.paid)}</Amount>
@@ -63,6 +65,7 @@ function VisitItem({ visit, onAddPayment, onEdit }) {
                 <li key={payment.id} className="flex flex-wrap justify-between gap-2 px-3 py-1.5">
                   <span>
                     {formatDate(payment.paid_at)} · <span dir="ltr">{formatTime(payment.paid_at)}</span> · {t(`paymentMethod.${payment.method}`)}
+                    {payment.recorded_by_name && <> · {t('visits.recordedBy', { name: payment.recorded_by_name })}</>}
                   </span>
                   <span className="font-semibold">{formatMoney(payment.amount)}</span>
                 </li>

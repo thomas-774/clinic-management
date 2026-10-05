@@ -4,12 +4,14 @@ import { useSearchParams } from 'react-router-dom'
 import DataTable from '../../components/DataTable'
 import { LoadError, Loading } from '../../components/QueryState'
 import { useDebouncedValue } from '../../hooks/useDebouncedValue'
-import { usePatients } from '../../hooks/usePatients'
+import { useStaffApi } from '../../staff/staffApi'
 import { formatDate } from '../../utils/format'
 import NewPatientModal from './NewPatientModal'
 
+/** Search and "New patient" (FR-C.1, FR-C.6); the assistant uses the same page (FR-I.2). */
 export default function PatientsList() {
   const { t } = useTranslation()
+  const { area, usePatients } = useStaffApi()
   const [params, setParams] = useSearchParams()
   const urlSearch = params.get('search') ?? ''
   const page = Math.max(1, Number(params.get('page')) || 1)
@@ -84,7 +86,7 @@ export default function PatientsList() {
         <DataTable
           columns={columns}
           rows={data.data}
-          rowHref={(row) => `/doctor/patients/${row.id}`}
+          rowHref={(row) => `/${area}/patients/${row.id}`}
           emptyMessage={urlSearch ? t('patientsList.noMatches', { search: urlSearch }) : t('patientsList.empty')}
           pagination={{ page: data.meta.current_page, lastPage: data.meta.last_page, onPageChange: goToPage }}
         />
