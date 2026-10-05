@@ -14,6 +14,3 @@ export const updateWorkingHours = (days) => client.put('/doctor/working-hours', 
 export const getBlockedTimes = (params = {}) => client.get('/doctor/blocked-times', { params }).then(data)
 export const addBlockedTime = (fields) => client.post('/doctor/blocked-times', fields).then(data)
 export const deleteBlockedTime = (id) => client.delete(`/doctor/blocked-times/${id}`).then((res) => res.data)
-
-/** Free slots: { data: [{ start_at, end_at }], meta: { date, duration } } */
-export const getSlots = (date) => client.get('/slots', { params: { date } }).then((res) => res.data)

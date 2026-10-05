@@ -96,7 +96,7 @@ Backend
 - [x] [T4-05](phase-4-booking-schedule/T4-05-booking-tests.md) Tests: booking rules and double booking · M
 
 Frontend
-- [ ] [T4-06](phase-4-booking-schedule/T4-06-fe-slot-grid.md) SlotGrid component and useSlots hook · S
+- [x] [T4-06](phase-4-booking-schedule/T4-06-fe-slot-grid.md) SlotGrid component and useSlots hook · S
 - [ ] [T4-07](phase-4-booking-schedule/T4-07-fe-book-appointment.md) BookAppointment page · M
 - [ ] [T4-08](phase-4-booking-schedule/T4-08-fe-my-appointments.md) MyAppointments page · S
 - [ ] [T4-09](phase-4-booking-schedule/T4-09-fe-schedule-day-view.md) Schedule day view with status actions · M

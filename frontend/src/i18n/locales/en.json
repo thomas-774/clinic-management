@@ -228,5 +228,9 @@
     "deleteLabel": "Delete block on {{date}}",
     "deleteTitle": "Remove this block?",
     "deleteMessage": "{{date}} ({{when}}) will be open for booking again."
+  },
+  "slots": {
+    "label": "Free times",
+    "empty": "No free slots on this day."
   }
 }
