@@ -70,6 +70,22 @@ it('does not duplicate the doctor when run twice', function () {
     expect($doctor->workingHours)->toHaveCount(6);
 });
 
+it('fills the demo prescription header without overwriting edits (T9-06)', function () {
+    $this->seed(DoctorSeeder::class);
+
+    $settings = User::where('role', UserRole::Doctor)->sole()->doctorSetting;
+    expect($settings->only(array_keys(DoctorSeeder::DEMO_PRINT_HEADER)))->toBe(DoctorSeeder::DEMO_PRINT_HEADER)
+        ->and($settings->prescription_paper)->toBe('A5');
+
+    $settings->update(['clinic_name' => 'My Clinic', 'prescription_paper' => 'A4']);
+    $this->seed(DoctorSeeder::class);
+
+    expect($settings->refresh())
+        ->clinic_name->toBe('My Clinic')
+        ->prescription_paper->toBe('A4')
+        ->doctor_title->toBe(DoctorSeeder::DEMO_PRINT_HEADER['doctor_title']);
+});
+
 it('refuses to seed without doctor credentials', function () {
     config()->set('clinic.doctor.phone', null);
 

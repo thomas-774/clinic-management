@@ -15,6 +15,17 @@ class DoctorSeeder extends Seeder
     public const WORKING_DAYS = [6, 0, 1, 2, 3, 4];
 
     /**
+     * Demo print header for prescriptions (FR-J.5); the doctor edits it in Settings → Prescription.
+     */
+    public const DEMO_PRINT_HEADER = [
+        'clinic_name' => 'عيادة الابتسامة لطب الأسنان',
+        'doctor_title' => 'أخصائي طب وجراحة الفم والأسنان',
+        'clinic_address' => '12 شارع التحرير، الدقي، الجيزة',
+        'clinic_phone' => '01000000000',
+        'prescription_footer' => 'مواعيد العمل: السبت – الخميس، 5 – 9 مساءً',
+    ];
+
+    /**
      * Create the doctor account with default settings and working hours.
      * Running it again updates the account instead of duplicating it.
      */
@@ -36,11 +47,19 @@ class DoctorSeeder extends Seeder
             ],
         );
 
-        $doctor->doctorSetting()->firstOrCreate([], [
+        $settings = $doctor->doctorSetting()->firstOrCreate([], [
             'slot_duration_minutes' => 45,
             'booking_window_days' => 30,
             'cancel_cutoff_hours' => 2,
         ]);
+
+        // Demo prescription header; only blank fields are filled, so the doctor's edits survive re-seeding.
+        foreach (self::DEMO_PRINT_HEADER as $field => $value) {
+            if (blank($settings->{$field})) {
+                $settings->{$field} = $value;
+            }
+        }
+        $settings->save();
 
         if ($doctor->workingHours()->doesntExist()) {
             foreach (self::WORKING_DAYS as $day) {
