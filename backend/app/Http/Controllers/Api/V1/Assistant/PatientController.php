@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Doctor;
+namespace App\Http\Controllers\Api\V1\Assistant;
 
+use App\Http\Controllers\Api\V1\Doctor\PatientController as DoctorPatientController;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Doctor\StorePatientRequest;
-use App\Http\Requests\Doctor\UpdatePatientRequest;
+use App\Http\Requests\Assistant\StorePatientRequest;
+use App\Http\Requests\Assistant\UpdatePatientRequest;
 use App\Http\Resources\ApiResourceCollection;
-use App\Http\Resources\PatientDetailResource;
+use App\Http\Resources\AssistantPatientResource;
 use App\Http\Resources\PatientListItemResource;
-use App\Http\Resources\PatientResource;
 use App\Models\Patient;
 use App\Services\PatientAccountService;
 use Illuminate\Http\JsonResponse;
@@ -16,30 +16,29 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
+/**
+ * The front desk's patients (FR-I.2, FR-I.3): contact info and money only.
+ */
 class PatientController extends Controller
 {
-    public const PER_PAGE = 20;
-
     /**
-     * GET /doctor/patients?search= — search by name or phone, sorted by name (FR-C.1).
+     * GET /assistant/patients?search= — same list and search as the doctor's.
      */
     public function index(Request $request): ApiResourceCollection
     {
         Gate::authorize('viewAny', Patient::class);
 
-        $search = trim((string) $request->query('search', ''));
-
         $patients = Patient::query()
-            ->forList($search)
-            ->paginate(self::PER_PAGE)
+            ->forList(trim((string) $request->query('search', '')))
+            ->paginate(DoctorPatientController::PER_PAGE)
             ->withQueryString();
 
         return PatientListItemResource::collection($patients);
     }
 
     /**
-     * POST /doctor/patients — create the account; the initial password is
-     * returned in this response only and stored hashed (FR-C.6).
+     * POST /assistant/patients — a patient who does not exist yet; the initial
+     * password is returned in this response only.
      */
     public function store(StorePatientRequest $request, PatientAccountService $accounts): JsonResponse
     {
@@ -47,10 +46,10 @@ class PatientController extends Controller
 
         [$patient, $password] = $accounts->create(
             $request->safe()->only(['name', 'phone', 'email']),
-            $request->safe()->only(['address', 'date_of_birth', 'gender', 'current_illness']),
+            $request->safe()->only(['address', 'date_of_birth', 'gender']),
         );
 
-        return PatientResource::make($patient)
+        return AssistantPatientResource::make($patient)
             ->additional(['data' => ['initial_password' => $password]])
             ->withMessage(__('Patient account created.'))
             ->response()
@@ -58,28 +57,28 @@ class PatientController extends Controller
     }
 
     /**
-     * GET /doctor/patients/{patient} — full profile with detailed history (FR-C.2, C.3).
+     * GET /assistant/patients/{patient} — contact info, visits' money, balance.
      */
-    public function show(Patient $patient): PatientDetailResource
+    public function show(Patient $patient): AssistantPatientResource
     {
         Gate::authorize('view', $patient);
 
-        return PatientDetailResource::make($patient->load('user'));
+        return AssistantPatientResource::make($patient->load('user'));
     }
 
     /**
-     * PUT /doctor/patients/{patient} — info and current illness (FR-C.2).
+     * PUT /assistant/patients/{patient} — contact info only.
      */
-    public function update(UpdatePatientRequest $request, Patient $patient): PatientDetailResource
+    public function update(UpdatePatientRequest $request, Patient $patient): AssistantPatientResource
     {
         Gate::authorize('update', $patient);
 
         DB::transaction(function () use ($request, $patient) {
             $patient->user->update($request->safe()->only(['name', 'phone']));
-            $patient->update($request->safe()->only(['address', 'date_of_birth', 'gender', 'current_illness']));
+            $patient->update($request->safe()->only(['address', 'date_of_birth', 'gender']));
         });
 
-        return PatientDetailResource::make($patient->refresh()->load('user'))
+        return AssistantPatientResource::make($patient->refresh()->load('user'))
             ->withMessage(__('Patient updated.'));
     }
 }

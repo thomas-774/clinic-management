@@ -22,6 +22,7 @@ class PaymentResource extends ApiResource
             'amount' => $this->amount,
             'method' => $this->method,
             'paid_at' => $this->paid_at,
+            'recorded_by_name' => $this->whenLoaded('recordedBy', fn () => $this->recordedBy?->name),
         ];
     }
 }

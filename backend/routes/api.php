@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Assistant\PatientController as AssistantPatientController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\Doctor\BlockedTimeController;
 use App\Http\Controllers\Api\V1\Doctor\MedicalHistoryController;
@@ -77,5 +78,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/reports/payments', [ReportController::class, 'payments'])->name('reports.payments');
         Route::get('/reports/outstanding', [ReportController::class, 'outstanding'])->name('reports.outstanding');
         Route::get('/reports/daily-revenue', [ReportController::class, 'dailyRevenue'])->name('reports.daily-revenue');
+    });
+
+    // Assistant (front desk) area: /api/v1/assistant/* — contact info and money only (Module I).
+    Route::prefix('assistant')->middleware('role:assistant')->name('assistant.')->group(function () {
+        Route::get('/patients', [AssistantPatientController::class, 'index'])->name('patients.index');
+        Route::post('/patients', [AssistantPatientController::class, 'store'])->name('patients.store');
+        Route::get('/patients/{patient}', [AssistantPatientController::class, 'show'])->name('patients.show');
+        Route::put('/patients/{patient}', [AssistantPatientController::class, 'update'])->name('patients.update');
     });
 });

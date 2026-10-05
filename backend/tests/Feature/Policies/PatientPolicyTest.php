@@ -42,6 +42,16 @@ describe('PatientPolicy', function () {
             ->and($gate->allows('update', $this->otherPatient))->toBeTrue()
             ->and($gate->allows('manageHistory', $this->otherPatient))->toBeTrue();
     });
+
+    it('lets the assistant list, create, view and update any patient but not manage history', function () {
+        $gate = Gate::forUser(User::factory()->assistant()->create());
+
+        expect($gate->allows('viewAny', Patient::class))->toBeTrue()
+            ->and($gate->allows('create', Patient::class))->toBeTrue()
+            ->and($gate->allows('view', $this->otherPatient))->toBeTrue()
+            ->and($gate->allows('update', $this->otherPatient))->toBeTrue()
+            ->and($gate->allows('manageHistory', $this->otherPatient))->toBeFalse();
+    });
 });
 
 describe('patient and history resources', function () {

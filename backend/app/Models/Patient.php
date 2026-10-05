@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\AppointmentStatus;
 use Database\Factories\PatientFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,6 +28,27 @@ class Patient extends Model
         return [
             'date_of_birth' => 'date:Y-m-d',
         ];
+    }
+
+    /**
+     * The patient list (FR-C.1, FR-I.2): search by part of the name or phone,
+     * sorted by name, with the last visit date.
+     */
+    public function scopeForList(Builder $query, string $search = ''): void
+    {
+        $query
+            ->select('patients.*')
+            ->join('users', 'users.id', '=', 'patients.user_id')
+            ->with('user')
+            ->withMax('visits', 'visit_date')
+            ->when($search !== '', function ($query) use ($search) {
+                $like = '%'.addcslashes($search, '\\%_').'%';
+                $query->where(fn ($q) => $q
+                    ->where('users.name', 'like', $like)
+                    ->orWhere('users.phone', 'like', $like));
+            })
+            ->orderBy('users.name')
+            ->orderBy('patients.id');
     }
 
     public function user(): BelongsTo
