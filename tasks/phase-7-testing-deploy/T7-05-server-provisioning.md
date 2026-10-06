@@ -6,6 +6,7 @@
 ## Steps
 - [ ] VPS (DigitalOcean / Hostinger) or Laravel Forge.
 - [ ] Nginx, PHP-FPM 8.3, MySQL 8, Composer, Node (for builds).
+- [ ] PHP extensions for the visit files (Phase 10, mPDF and PHPWord): mbstring, gd, zip, xml, dom; `storage/app/mpdf` writable by PHP-FPM.
 - [ ] Domain + HTTPS (Let's Encrypt); force HTTPS redirects.
 - [ ] Firewall: only 22 / 80 / 443 open; MySQL not public.
 - [ ] Separate staging and production databases.
