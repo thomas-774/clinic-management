@@ -185,7 +185,7 @@ Built before Phase 7. When the doctor saves a visit, the system can also save it
 Backend
 - [x] [T10-01](phase-10-visit-report/T10-01-install-pdf-word-libraries.md) Install mPDF and PHPWord, bundle the Arabic font · S
 - [x] [T10-02](phase-10-visit-report/T10-02-visit-report-service.md) VisitReportService (the file's data) · M
-- [ ] [T10-03](phase-10-visit-report/T10-03-pdf-renderer.md) PDF renderer (mPDF, A4, RTL) · M
+- [x] [T10-03](phase-10-visit-report/T10-03-pdf-renderer.md) PDF renderer (mPDF, A4, RTL) · M
 - [ ] [T10-04](phase-10-visit-report/T10-04-word-renderer.md) Word renderer (PHPWord, .docx) · M
 - [ ] [T10-05](phase-10-visit-report/T10-05-export-endpoint.md) GET /doctor/visits/{id}/export?format=pdf|docx · S
 - [ ] [T10-06](phase-10-visit-report/T10-06-export-permission-tests.md) Tests: visit file permissions and contents · M

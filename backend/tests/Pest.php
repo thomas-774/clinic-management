@@ -11,6 +11,7 @@ use App\Models\PrescriptionItem;
 use App\Models\User;
 use App\Models\Visit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Smalot\PdfParser\Parser;
 use Tests\TestCase;
 
 /*
@@ -105,4 +106,23 @@ function visitReportFixture(): array
     PrescriptionItem::factory()->for($otherRx)->create(['drug_name' => 'SECRET-OTHER-DRUG Flagyl', 'position' => 1]);
 
     return compact('doctor', 'assistant', 'patient', 'visit', 'otherVisit', 'drug');
+}
+
+/**
+ * The text of a PDF, NFKC-normalized so Arabic presentation forms become
+ * plain letters. mPDF writes Arabic in visual order, so look for an Arabic
+ * phrase with pdfArabic().
+ */
+function pdfText(string $pdf): string
+{
+    return Normalizer::normalize((new Parser)->parseContent($pdf)->getText(), Normalizer::FORM_KC);
+}
+
+/**
+ * An Arabic phrase as it appears in pdfText() (visual, right-to-left order).
+ * Only for phrases without a lam-alef ligature.
+ */
+function pdfArabic(string $phrase): string
+{
+    return implode('', array_reverse(mb_str_split($phrase)));
 }

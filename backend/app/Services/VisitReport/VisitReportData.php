@@ -38,6 +38,16 @@ final readonly class VisitReportData
     ) {}
 
     /**
+     * Direction of a free text (names, work done, instructions) from its first
+     * letter, as HTML's dir="auto" — so an English line in the Arabic file, or
+     * an Arabic one in the English file, keeps its own order (VR-4).
+     */
+    public static function textDir(?string $text): string
+    {
+        return preg_match('/^[^\p{L}]*\p{Arabic}/u', (string) $text) ? 'rtl' : 'ltr';
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function toArray(): array
