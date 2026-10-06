@@ -25,9 +25,10 @@ Each task is one file: what to build, which plan section it comes from, the step
 | 7 | [phase-7-testing-deploy](phase-7-testing-deploy/) | 9 | Live v1 |
 | 8 | [phase-8-assistant](phase-8-assistant/) | 13 | Assistant registers patients, records payments, runs the queue |
 | 9 | [phase-9-prescriptions](phase-9-prescriptions/) | 14 | Doctor writes a prescription with drug search and side notes and prints it |
-| | **Total** | **102** | |
+| 10 | [phase-10-visit-report](phase-10-visit-report/) | 10 | Saving a visit can also save its details as a PDF or Word file |
+| | **Total** | **112** | |
 
-Phase order: 0 → 1 → (2 and 3 in parallel) → 4 → 5 → 6 → 8 → 9 → 7. Phase 5 needs both 2 and 4. Phases 8 and 9 were added after Phase 6 and are built before Phase 7, so the assistant and prescriptions are tested and deployed with v1.
+Phase order: 0 → 1 → (2 and 3 in parallel) → 4 → 5 → 6 → 8 → 9 → 10 → 7. Phase 5 needs both 2 and 4. Phases 8, 9 and 10 were added after Phase 6 and are built before Phase 7, so the assistant, prescriptions and visit files are tested and deployed with v1.
 
 ## Phase 0 — Setup
 
@@ -177,6 +178,24 @@ Frontend
 - [x] [T9-13](phase-9-prescriptions/T9-13-fe-settings-drugs-and-header.md) Settings → Drugs and Prescription · M
 - [x] [T9-14](phase-9-prescriptions/T9-14-printer-setup-and-walkthrough.md) Clinic printer setup and walkthrough · S
 
+## Phase 10 — Visit report file (Module K)
+
+Built before Phase 7. When the doctor saves a visit, the system can also save its details — work done, total, paid, remaining, payments, overall balance and the visit's prescriptions — as a PDF or a Word file, whichever the doctor picks. Any visit can be downloaded again later. Doctor only; generated on request, not stored on the server.
+
+Backend
+- [ ] [T10-01](phase-10-visit-report/T10-01-install-pdf-word-libraries.md) Install mPDF and PHPWord, bundle the Arabic font · S
+- [ ] [T10-02](phase-10-visit-report/T10-02-visit-report-service.md) VisitReportService (the file's data) · M
+- [ ] [T10-03](phase-10-visit-report/T10-03-pdf-renderer.md) PDF renderer (mPDF, A4, RTL) · M
+- [ ] [T10-04](phase-10-visit-report/T10-04-word-renderer.md) Word renderer (PHPWord, .docx) · M
+- [ ] [T10-05](phase-10-visit-report/T10-05-export-endpoint.md) GET /doctor/visits/{id}/export?format=pdf|docx · S
+- [ ] [T10-06](phase-10-visit-report/T10-06-export-permission-tests.md) Tests: visit file permissions and contents · M
+
+Frontend
+- [ ] [T10-07](phase-10-visit-report/T10-07-fe-download-helper.md) Download helper and useVisitExport · S
+- [ ] [T10-08](phase-10-visit-report/T10-08-fe-visit-form-save-as.md) "Also save as: None · PDF · Word" on the visit form · M
+- [ ] [T10-09](phase-10-visit-report/T10-09-fe-timeline-download-buttons.md) PDF / Word buttons on the visit timeline · S
+- [ ] [T10-10](phase-10-visit-report/T10-10-walkthrough.md) Walkthrough and docs · S
+
 ## Phase 7 — Testing, polish and deployment
 
 - [ ] [T7-01](phase-7-testing-deploy/T7-01-permission-feature-tests.md) Feature tests: permissions on every endpoint · M
@@ -203,3 +222,4 @@ Frontend
 | H — Dashboard and reports | FR-H.1 – H.4 | T6-01 … T6-06 |
 | I — Assistant (front desk) | FR-I.1 – I.6 | T8-01 … T8-13 |
 | J — Prescriptions | FR-J.1 – J.7 | T9-01 … T9-14 |
+| K — Visit report file | FR-K.1 – K.6 | T10-01 … T10-10 |

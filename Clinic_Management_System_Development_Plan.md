@@ -27,6 +27,7 @@ Version 1 is a single-clinic web app with three roles (patient, doctor and front
 
 - Assistant (front desk): registers new patients, records what the patient pays, runs today's queue and books appointments (Module I, added in Phase 8).
 - Prescriptions: the doctor writes a prescription with live search over a drug catalogue taken from the *Drugs for Dentistry* PDF, sees a side note for each drug (uses, who must not take it, ingredients, suggested dose) and prints it on the clinic printer (Module J, added in Phase 9).
+- Visit report file: when saving a visit the doctor can also save its details (work done, total, paid, remaining, payments, overall balance) as a PDF or Word file, and download it again later (Module K, added in Phase 10).
 
 **Out of scope for v1** (can be added later): multiple doctors or clinics, SMS/WhatsApp reminders, online payment, file uploads (X-rays, lab results), drug prices, automatic drug–drug interaction checking.
 
@@ -51,12 +52,13 @@ There are three roles; every API route checks the role, and a patient can only e
 | Revenue and patient-count dashboard | No | Yes | No |
 | Manage assistant accounts | No | Yes | No |
 | Write, print and reprint prescriptions; manage the drug catalogue | No | Yes | No |
+| Download a visit as PDF / Word | No | Yes | No |
 
 **Simple vs detailed history.** Each history entry has a `visibility` flag: `patient_visible` entries appear on the patient page as the simple history; all entries (including private clinical notes) appear for the doctor.
 
 ## 3. Functional Requirements by Module
 
-The system is split into ten modules (A–J); each requirement has an ID (FR-x.y) so it can be traced to tasks and tests.
+The system is split into eleven modules (A–K); each requirement has an ID (FR-x.y) so it can be traced to tasks and tests.
 
 ### Module A — Authentication
 
@@ -143,6 +145,17 @@ Added in Phase 9. The source is `Drugs-for-Dentistry.pdf` (repo root): 11 sectio
 - **FR-J.6** The doctor manages the catalogue in Settings → Drugs: search, add a drug, edit any field, and hide a drug (hidden drugs are not suggested but stay on old prescriptions). The doctor also edits the print header and paper size (A5 default, or A4) in Settings → Prescription.
 - **FR-J.7** The patient's prescriptions are listed on the doctor's patient page (date, drugs, open, reprint). Patients and the assistant never see the drug catalogue or prescriptions in v1.
 
+### Module K — Visit report file (PDF / Word, doctor view)
+
+Added in Phase 10. When the doctor saves a visit, the system can save the visit's details as a file on the doctor's computer, in the format the doctor chooses.
+
+- **FR-K.1** Next to **Save** on the visit form the doctor picks **Also save as: None · PDF · Word**. The choice is remembered on that computer. After the visit is saved, the file is generated and downloaded straight away; if the download fails, the visit stays saved and the file can be downloaded again later (FR-K.4).
+- **FR-K.2** The file holds **all the visit's information**: clinic header (clinic name, doctor name and title, address, phone — the same fields as the prescription header), patient name, phone and age, visit date (with the appointment time, or "walk-in"), **work done today**, the visit's **total cost**, **amount paid** and **remaining**, its payment status, every payment of the visit (date, amount, method, who recorded it), the patient's **overall outstanding balance** across all visits, the prescriptions written for this visit (drug name, form, instructions), the date and time the file was generated and a signature line.
+- **FR-K.3** The file never contains the medical history, private clinical notes, drug side notes or warnings, or the app's menus.
+- **FR-K.4** Every visit on the doctor's patient page has **PDF** and **Word** buttons, so the doctor can download the file again at any time — for example after an installment, when the paid and remaining amounts have changed.
+- **FR-K.5** The file is written in the interface language: Arabic (right-to-left, default) or English. PDF is A4 portrait; Word is an editable `.docx` that opens in Microsoft Word and LibreOffice.
+- **FR-K.6** Only the doctor can generate visit files (they contain the work done). Patients and the assistant get 403.
+
 ## 4. Business Rules
 
 Slots are never stored in advance; they are calculated on request from the doctor's working hours and duration, minus anything already booked or blocked.
@@ -216,6 +229,14 @@ return array_filter($slots, fn($s) => !$this->isTaken($s) && !$this->isBlocked($
 - **RX-3** Hidden drugs (`is_active = false`) are never suggested by the search, but stay readable on old prescriptions.
 - **RX-4** The printed page contains only what the patient needs (header, patient, date, lines, notes, signature); side notes, warnings, ingredients and prices are never printed.
 - **RX-5** If a prescription is linked to a visit, the visit must belong to the same patient.
+
+### 4.6 Visit report rules (Phase 10)
+
+- **VR-1** The file is generated on request from the database at the moment it is downloaded; it is not stored on the server. Amounts are therefore always the current ones (PR-1), and a file downloaded later shows later installments.
+- **VR-2** All amounts come from the server (`PaymentService`), formatted as EGP with two decimals, never recalculated in the file or the browser.
+- **VR-3** The PDF and the Word file hold exactly the same sections and values (FR-K.2); only the format differs.
+- **VR-4** Arabic text is shaped and joined correctly and laid out right-to-left; phone numbers, amounts and drug names stay left-to-right inside it.
+- **VR-5** The file name is `visit-<YYYY-MM-DD>-<visit id>.pdf|docx`, plain ASCII so it works on every system (the patient's name is inside the file, not in its name).
 
 ## 5. Database Design (MySQL)
 
@@ -390,7 +411,8 @@ backend/app/
 │   │   ├── Doctor/SettingsController.php
 │   │   ├── Doctor/ReportController.php
 │   │   ├── Doctor/DrugController.php           (Phase 9)
-│   │   └── Doctor/PrescriptionController.php   (Phase 9)
+│   │   ├── Doctor/PrescriptionController.php   (Phase 9)
+│   │   └── Doctor/VisitExportController.php    (Phase 10)
 │   ├── Middleware/EnsureRole.php
 │   ├── Requests/        (one Form Request per write endpoint)
 │   └── Resources/       (PatientResource, AppointmentResource, VisitResource …)
@@ -399,7 +421,8 @@ backend/app/
 │   ├── SlotService.php        (generate + validate slots)
 │   ├── BookingService.php     (transactional booking)
 │   ├── PaymentService.php     (balances, payment rules)
-│   └── ReportService.php      (daily/weekly/monthly aggregates)
+│   ├── ReportService.php      (daily/weekly/monthly aggregates)
+│   └── VisitReport/           (Phase 10: VisitReportService builds the data; PdfVisitReport (mPDF) and WordVisitReport (PHPWord) render it)
 ├── Policies/            (PatientPolicy, AppointmentPolicy)
 └── Enums/               (AppointmentStatus, UserRole)
 ```
@@ -460,6 +483,7 @@ backend/app/
 | POST / PUT | /doctor/drugs[/{id}] | doctor | Add / edit a drug, hide with `is_active: false` | J.6 |
 | GET / POST | /doctor/patients/{id}/prescriptions | doctor | Patient's prescriptions / write one `{ visit_id?, issued_on?, notes?, items: [{ drug_id?, drug_name?, instructions }] }` | J.4, J.7 |
 | GET / PUT / DELETE | /doctor/prescriptions/{id} | doctor | Open (with patient name, age and print header) / edit / delete | J.4, J.5 |
+| GET | /doctor/visits/{id}/export?format=pdf\|docx | doctor | The visit report as a file download (language from `Accept-Language`) | K.1–K.6 |
 
 ### 6.4 Key request example — create visit with payment
 
@@ -509,7 +533,7 @@ frontend/src/
 | /doctor/schedule | Schedule | Day/week list, Arrived, Start visit, No-show | /doctor/appointments, PATCH status |
 | /doctor/patients | PatientsList | Search table, "New patient" form | GET / POST /doctor/patients |
 | /doctor/patients/:id | PatientDetails | Info, detailed history (add/edit), visit timeline with balances | GET /doctor/patients/{id}, history CRUD |
-| /doctor/visits/new?appointment=:id | VisitForm | Work done, total, paid now, live remaining | POST /doctor/visits |
+| /doctor/visits/new?appointment=:id | VisitForm | Work done, total, paid now, live remaining; "Also save as: None · PDF · Word" next to Save (Phase 10) | POST /doctor/visits, GET /doctor/visits/{id}/export |
 | /doctor/settings | Settings | Weekly hours grid (several ranges per day), slot duration, cancellation cut-off, blocked dates, live slot preview | /doctor/settings, /working-hours, /blocked-times |
 | /doctor/reports | Reports | Period filter, payments table, daily revenue chart | /doctor/reports/* |
 | /assistant | Today | Today's queue (Arrived / No-show / Cancel) and "Waiting to pay" with Record payment | /assistant/appointments, /assistant/visits/* |
@@ -530,6 +554,7 @@ frontend/src/
 - **Language:** Arabic (RTL) is the default and English is the second language, switchable from both layouts and remembered in localStorage. All text goes through react-i18next; `<html dir>` and `lang` follow the active language; layouts use Tailwind logical classes (`ms-`, `me-`, `ps-`, `pe-`) so they flip correctly.
 - **DrugSearch (Phase 9):** a combobox that queries `/doctor/drugs/search` 250 ms after the last keystroke (from 2 characters), highlights the matching part, moves with ↑ ↓, picks with Enter, closes with Esc, and offers "use '…' as written" when nothing matches. The highlighted result already fills the side note, so the doctor can read it before choosing.
 - **Printing (Phase 9):** the print page uses a `@media print` stylesheet with `@page { size: A5 }` (or A4 from settings), hides all app chrome and prints in the page's language direction (Arabic RTL; drug names and instructions stay LTR inside). Print calls `window.print()`, which sends the page to the printer chosen in the browser. For true one-click printing on the clinic PC, the browser is started with `--kiosk-printing`, which prints straight to the Windows default printer with no dialog (documented in T9-14).
+- **Visit files (Phase 10):** the file is fetched with the Axios client (so the token is sent) as a `blob`, then saved through a temporary object URL and `<a download>`; the file name comes from the response's `Content-Disposition`. The browser saves it to the doctor's Downloads folder (or asks where, if the browser is set to ask). The format choice on the visit form is kept in localStorage (`clinic.visitFile`).
 
 ## 8. Development Phases (in build order)
 
@@ -547,6 +572,7 @@ Build in eight phases of roughly one week each; every phase ends with something 
 | 7 | Testing, polish, deploy | all | Live v1 |
 | 8 | Assistant (front desk) | 5, 6 | Assistant registers patients, records payments, runs the queue — build before the deploy tasks of Phase 7 (T7-05 onwards) |
 | 9 | Prescriptions | 2, 5, 8 | Doctor writes a prescription with drug search and side notes and prints it — build before Phase 7 |
+| 10 | Visit report file (PDF / Word) | 5, 9 | Saving a visit can also save its details as a PDF or Word file; any visit can be downloaded again — build before Phase 7 |
 
 ### Phase 0 — Project setup
 
@@ -621,6 +647,13 @@ Build in eight phases of roughly one week each; every phase ends with something 
 - [x] Frontend: DrugSearch, DrugInfoPanel side note, PrescriptionForm, print page (A5/A4), prescriptions on PatientDetails, Settings → Drugs and Prescription.
 - [ ] **Test:** search ranking and hidden drugs; patient and assistant get 403 on every drug and prescription route; editing a drug never changes an issued prescription; the printed page holds only header, patient, lines, notes and signature; walkthrough visit → prescription → print on the clinic printer.
 
+### Phase 10 — Visit report file (Module K)
+
+- [ ] Install mPDF (PDF with proper Arabic shaping and RTL) and PHPWord (`.docx`); bundle the app's Cairo font for the PDF.
+- [ ] `VisitReportService` builds one data object per visit (header, patient, visit, work done, amounts, payments, overall balance, linked prescriptions); `PdfVisitReport` and `WordVisitReport` render it; `GET /doctor/visits/{id}/export?format=pdf|docx`.
+- [ ] Frontend: "Also save as: None · PDF · Word" next to Save on the visit form; PDF / Word buttons on every visit in the patient's timeline.
+- [ ] **Test:** both formats hold the same values as the API (after an installment too); patient and assistant get 403; unknown format → 422; the file never holds medical history; Arabic is joined and RTL; walkthrough save visit → file opens in Word and a PDF reader, in ar and en.
+
 ## 9. Testing, Security and Deployment
 
 The three areas that must be tested hardest are slot generation, double booking and balance calculation, because errors there directly cost the clinic time or money.
@@ -682,3 +715,13 @@ The plan assumes one doctor in one clinic; the questions below should be confirm
 | Print with the dialog or straight to the printer? | Print button opens the browser print dialog; the clinic PC can be set up for **one-click silent printing** with `--kiosk-printing`. | §7.3 · T9-11, T9-14 |
 | Translate the PDF's Arabic drug notes into English? | **No**; shown as written in both interface languages. | FR-J.1 · T9-02 |
 | The PDF is from 2014 — are any products discontinued? | Everything is imported; the doctor hides what is no longer sold (FR-J.6). | T9-02, T9-13 |
+
+**Visit report file (Phase 10) — defaults used until the client says otherwise (raised Oct 7, 2026)**
+
+| Question | Default in the plan | Affects |
+| --- | --- | --- |
+| Should the server also keep a copy of every file? | **No.** The file is generated from the database when downloaded (VR-1) and saved on the doctor's computer; the database stays the record. Storing copies can be added later. | VR-1 · T10-05 |
+| Should the assistant or the patient get the file (e.g. a receipt)? | **No**, doctor only — the file contains the work done (FR-K.6). A money-only receipt for the assistant can be added later. | FR-K.6 · T10-06 |
+| Default format on a new computer? | **None** (just save), until the doctor picks PDF or Word once. | FR-K.1 · T10-08 |
+| Paper size? | **A4 portrait** for the PDF (the prescription keeps its own A5/A4 setting). | FR-K.5 · T10-03 |
+| Show the prescriptions of the visit in the file? | **Yes**, drug name, form and instructions only (no side notes, RX-4). | FR-K.2 · T10-02 |
