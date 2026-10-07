@@ -658,12 +658,12 @@ Build in eight phases of roughly one week each; every phase ends with something 
 
 ### Phase 11 — Non-functional hardening (§11)
 
-- [ ] Security and privacy: security headers and `no-store` on API responses, rate limits on every write and search route, composer/npm audit clean, audit log of who read or changed medical and money records (doctor sees it in Settings), medical text fields encrypted at rest, OWASP ASVS Level 1 review.
-- [ ] Performance: missing indexes, no N+1 queries (lazy loading blocked outside production), a 5-year demo dataset with measured p95 API times, and the frontend split into lazy-loaded chunks per role.
-- [ ] Quality: coverage thresholds and zero-warning lint gates, run by one `check` command per app and a pre-commit hook.
-- [ ] Usability: WCAG 2.1 AA in Arabic and English; patient pages built mobile-first for 360 px with Lighthouse ≥ 90.
-- [ ] SaaS readiness: one `ClinicContext` resolves the clinic's doctor; an architecture test keeps it that way; an ADR describes the future multi-clinic model.
-- [ ] **Test:** every NFR in §11.2 has a recorded measurement that meets its target (T11-16).
+- [x] Security and privacy: security headers and `no-store` on API responses, rate limits on every write and search route, composer/npm audit clean, audit log of who read or changed medical and money records (doctor sees it in Settings), medical text fields encrypted at rest, OWASP ASVS Level 1 review.
+- [x] Performance: missing indexes, no N+1 queries (lazy loading blocked outside production), a 5-year demo dataset with measured p95 API times, and the frontend split into lazy-loaded chunks per role.
+- [x] Quality: coverage thresholds and zero-warning lint gates, run by one `check` command per app and a pre-commit hook.
+- [x] Usability: WCAG 2.1 AA in Arabic and English; patient pages built mobile-first for 360 px with Lighthouse ≥ 90.
+- [x] SaaS readiness: one `ClinicContext` resolves the clinic's doctor; an architecture test keeps it that way; an ADR describes the future multi-clinic model.
+- [x] **Test:** every NFR in §11.2 has a recorded measurement that meets its target (T11-16).
 
 ## 9. Testing, Security and Deployment
 
@@ -753,52 +753,52 @@ Added Oct 7, 2026. Phases 0–10 cover what the system does; this section sets h
 
 ### 11.2 Requirements and targets
 
-The baseline measured on Oct 7, 2026 is shown where one exists, so the gain can be checked.
+The baseline measured on Oct 7, 2026 is shown where one exists, so the gain can be checked. The **Measured** column holds the final measurement of T11-16 (Oct 7, 2026); how each number was taken is in [T11-16](tasks/phase-11-nfr/T11-16-measure-and-docs.md). A target met with an exception points to §11.3.
 
 **Security and privacy (NFR-S)**
 
-| ID | Requirement | Target / check | Baseline | Task |
-| --- | --- | --- | --- | --- |
-| NFR-S.1 | Security headers on every response | API: `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, `Cache-Control: no-store` on authenticated responses; HSTS outside local. SPA (Nginx): a CSP without `unsafe-eval`. A feature test checks the API headers. | none | T11-01 |
-| NFR-S.2 | Rate limits beyond login | Every write route ≤ 60/min per user, search routes ≤ 120/min, register ≤ 5/min per IP; a 429 comes back as `{ message }` in the request language. | login only | T11-02 |
-| NFR-S.3 | No known vulnerable dependencies | `composer audit` and `npm audit --omit=dev --audit-level=high` report nothing; both are part of `check` (T11-11) and of CI (T7-08). | not run | T11-03 |
-| NFR-S.4 | Audit log of medical and money records | Every read of a patient's doctor page, history, visit, prescription or visit file, and every create / update / delete of those and of payments, writes one row: who, role, action, record, patient, time, IP, and the **names** of changed fields (never their values). Rows cannot be edited or deleted through the app. | none | T11-04 |
-| NFR-S.5 | Doctor can review the audit log | Settings → Activity: filter by patient, user, action and date; paginated; rows kept 5 years, then pruned by a scheduled command. | none | T11-05 |
-| NFR-S.6 | Medical text encrypted at rest | `patients.current_illness`, `medical_history_entries.title` and `details`, `visits.work_done`, `prescriptions.notes`, `prescription_items.instructions` use Laravel's encrypted cast (AES-256 with `APP_KEY`). A raw `SELECT` shows only ciphertext. Existing rows are encrypted by a reversible migration. `APP_KEY` is kept in the password manager and the backup runbook (T7-07); key rotation via `APP_PREVIOUS_KEYS`. | plain text | T11-06 |
-| NFR-S.7 | OWASP ASVS Level 1 | Every applicable L1 item checked and the result recorded in `docs/security/asvs-l1.md`; every fail fixed or accepted in writing. Includes: no stack traces with `APP_DEBUG=false`, no mass assignment, an IDOR sweep over every `{id}` route. | not done | T11-07 |
+| ID | Requirement | Target / check | Baseline | Measured (Oct 7, 2026) | Task |
+| --- | --- | --- | --- | --- | --- |
+| NFR-S.1 | Security headers on every response | API: `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, `Cache-Control: no-store` on authenticated responses; HSTS outside local. SPA (Nginx): a CSP without `unsafe-eval`. A feature test checks the API headers. | none | Met. API: `SecurityHeadersTest` (7 cases, headers on guest, logged-in, error and file responses; HSTS outside local). SPA: 0 CSP violations on 46 page runs and 4 dialogs (`npm run a11y:audit`, the `vite preview` CSP = Nginx's, no `unsafe-eval`) | T11-01 |
+| NFR-S.2 | Rate limits beyond login | Every write route ≤ 60/min per user, search routes ≤ 120/min, register ≤ 5/min per IP; a 429 comes back as `{ message }` in the request language. | login only | Met. `RateLimitsTest` (7 cases): the 61st write → 429 with `Retry-After` and a translated `{ message }`; every write route and the search routes throttled; register 5/min per IP | T11-02 |
+| NFR-S.3 | No known vulnerable dependencies | `composer audit` and `npm audit --omit=dev --audit-level=high` report nothing; both are part of `check` (T11-11) and of CI (T7-08). | not run | Met. `composer audit`: no advisories; `npm audit --omit=dev --audit-level=high`: 0 vulnerabilities | T11-03 |
+| NFR-S.4 | Audit log of medical and money records | Every read of a patient's doctor page, history, visit, prescription or visit file, and every create / update / delete of those and of payments, writes one row: who, role, action, record, patient, time, IP, and the **names** of changed fields (never their values). Rows cannot be edited or deleted through the app. | none | Met. `AuditLogTest` (19 cases): one row per read / create / update / delete, field names only, rows refuse update and delete, the write rolls back with the audit row | T11-04 |
+| NFR-S.5 | Doctor can review the audit log | Settings → Activity: filter by patient, user, action and date; paginated; rows kept 5 years, then pruned by a scheduled command. | none | Met. `Doctor/AuditLogsTest` (12 cases): filters, 50 per page, doctor only; `audit:prune` runs daily and keeps 5 years | T11-05 |
+| NFR-S.6 | Medical text encrypted at rest | `patients.current_illness`, `medical_history_entries.title` and `details`, `visits.work_done`, `prescriptions.notes`, `prescription_items.instructions` use Laravel's encrypted cast (AES-256 with `APP_KEY`). A raw `SELECT` shows only ciphertext. Existing rows are encrypted by a reversible migration. `APP_KEY` is kept in the password manager and the backup runbook (T7-07); key rotation via `APP_PREVIOUS_KEYS`. | plain text | Met. `EncryptMedicalFieldsTest` + migration test (9 cases): raw `SELECT` shows only ciphertext on all six columns; migration reversible; `clinic:reencrypt` for rotation | T11-06 |
+| NFR-S.7 | OWASP ASVS Level 1 | Every applicable L1 item checked and the result recorded in `docs/security/asvs-l1.md`; every fail fixed or accepted in writing. Includes: no stack traces with `APP_DEBUG=false`, no mass assignment, an IDOR sweep over every `{id}` route. | not done | Met. 120 L1 items: 71 Pass (5 fixed in T11-07), 7 Deploy (T7-05), 28 N/A, 14 Accepted (A-1 … A-5, §11.3); no open fail. IDOR / mass-assignment / error tests: 46 cases | T11-07 |
 
 **Performance (NFR-P)**: measured on the 5-year demo dataset (T11-09), server-side time, warm cache.
 
-| ID | Requirement | Target / check | Baseline | Task |
-| --- | --- | --- | --- | --- |
-| NFR-P.1 | API response time | p95 < 300 ms and p99 < 800 ms for every list, detail, slot and report endpoint; visit file export p95 < 1.5 s. | not measured | T11-09 |
-| NFR-P.2 | No N+1 queries | `Model::preventLazyLoading()` outside production; each list endpoint runs a fixed number of queries whatever the page size (query-count test). | not enforced | T11-08 |
-| NFR-P.3 | Indexes for every hot filter | `visits.visit_date` (reports filter on it since the revenue-by-visit-date change), plus any index `EXPLAIN` shows missing on the measured endpoints; no full table scan on them. | `visit_date` unindexed | T11-08 |
-| NFR-P.4 | Frontend first load | Patient pages: initial JS ≤ 200 kB gzip; no chunk > 500 kB minified; Recharts loaded only on Dashboard / Reports. A build-size check fails `npm run check` when the budget is broken. | one 959 kB chunk (283 kB gzip) | T11-10 |
-| NFR-P.5 | Perceived speed | Lighthouse mobile (Slow 4G, mid-range phone) on the patient pages: LCP < 2.5 s, CLS < 0.1, Performance ≥ 90. | not measured | T11-14 |
+| ID | Requirement | Target / check | Baseline | Measured (Oct 7, 2026) | Task |
+| --- | --- | --- | --- | --- | --- |
+| NFR-P.1 | API response time | p95 < 300 ms and p99 < 800 ms for every list, detail, slot and report endpoint; visit file export p95 < 1.5 s. | not measured | Met. Slowest: report outstanding p95 148.8 / p99 155.2 ms; every other endpoint p95 ≤ 22.6 ms; export PDF p95 68.7 ms, Word 47.6 ms (`clinic:bench`, 20 endpoints × 100 calls) | T11-09 |
+| NFR-P.2 | No N+1 queries | `Model::preventLazyLoading()` outside production; each list endpoint runs a fixed number of queries whatever the page size (query-count test). | not enforced | Met. `QueryCountTest`: 23 endpoints run the same number of queries with 5 and 50 rows; lazy loading throws outside production | T11-08 |
+| NFR-P.3 | Indexes for every hot filter | `visits.visit_date` (reports filter on it since the revenue-by-visit-date change), plus any index `EXPLAIN` shows missing on the measured endpoints; no full table scan on them. | `visit_date` unindexed | Met, one exception. EXPLAIN of the 105 distinct queries behind the benchmarked endpoints: index lookups, except drug search (128-row catalogue that does not grow) and patient search (`users` scan, §11.3) | T11-08 |
+| NFR-P.4 | Frontend first load | Patient pages: initial JS ≤ 200 kB gzip; no chunk > 500 kB minified; Recharts loaded only on Dashboard / Reports. A build-size check fails `npm run check` when the budget is broken. | one 959 kB chunk (283 kB gzip) | Met. Patient pages 162.6 kB gzip (19 files); largest chunk `Reports` 363.3 kB; Recharts only in `Reports` | T11-10 |
+| NFR-P.5 | Perceived speed | Lighthouse mobile (Slow 4G, mid-range phone) on the patient pages: LCP < 2.5 s, CLS < 0.1, Performance ≥ 90. | not measured | Met. 5 pages × ar / en: Performance 98, LCP 1.89 – 2.10 s, CLS ≤ 0.003 | T11-14 |
 
 **Quality (NFR-Q)**
 
-| ID | Requirement | Target / check | Baseline | Task |
-| --- | --- | --- | --- | --- |
-| NFR-Q.1 | Backend coverage | Line coverage ≥ 80 % overall and ≥ 95 % on `app/Services` (`pest --coverage --min=80`, PCOV driver). | no coverage driver | T11-11 |
-| NFR-Q.2 | Frontend coverage | Vitest (V8) thresholds: lines ≥ 70 %, branches ≥ 60 %; `src/utils` and `src/hooks` ≥ 85 %. | not measured | T11-11 |
-| NFR-Q.3 | Lint and style | `pint --test` clean on the whole backend; oxlint with **zero** warnings, jsx-a11y plugin on. | Pint fails on `HealthTest.php` | T11-11, T11-12 |
-| NFR-Q.4 | One gate | `composer check` and `npm run check` run lint, tests, coverage, audit and the size budget; a versioned pre-commit hook runs the fast part (lint + related tests). | none | T11-11 |
+| ID | Requirement | Target / check | Baseline | Measured (Oct 7, 2026) | Task |
+| --- | --- | --- | --- | --- | --- |
+| NFR-Q.1 | Backend coverage | Line coverage ≥ 80 % overall and ≥ 95 % on `app/Services` (`pest --coverage --min=80`, PCOV driver). | no coverage driver | Met. 98.9 % overall, `app/Services` 99.2 % (792 tests) | T11-11 |
+| NFR-Q.2 | Frontend coverage | Vitest (V8) thresholds: lines ≥ 70 %, branches ≥ 60 %; `src/utils` and `src/hooks` ≥ 85 %. | not measured | Met. Lines 95.97 %, branches 87.69 %; `src/utils` 100 % / 88.33 %, `src/hooks` 98.24 % / 95.65 % (313 tests) | T11-11 |
+| NFR-Q.3 | Lint and style | `pint --test` clean on the whole backend; oxlint with **zero** warnings, jsx-a11y plugin on. | Pint fails on `HealthTest.php` | Met. `pint --test` clean on the whole backend; oxlint 0 warnings, 0 errors (jsx-a11y on) | T11-11, T11-12 |
+| NFR-Q.4 | One gate | `composer check` and `npm run check` run lint, tests, coverage, audit and the size budget; a versioned pre-commit hook runs the fast part (lint + related tests). | none | Met. `composer check` and `npm run check` exit 0; the pre-commit hook runs Pint, oxlint and related tests | T11-11 |
 
 **Usability and accessibility (NFR-U)**
 
-| ID | Requirement | Target / check | Baseline | Task |
-| --- | --- | --- | --- | --- |
-| NFR-U.1 | WCAG 2.1 AA | Every page passes axe-core with no serious or critical issues in Arabic (RTL) and English; full keyboard use (visible focus, no traps, skip link); text contrast ≥ 4.5:1; form errors tied to their fields; toasts announced (`aria-live`). Manual pass with NVDA on the main flows. | not checked | T11-12, T11-13 |
-| NFR-U.2 | Mobile-first patient pages | Login, Register, Home, Book and My appointments designed at 360 px first: no horizontal scroll, tap targets ≥ 44 × 44 px, inputs ≥ 16 px (no zoom on iOS), the right mobile keyboards (`tel`, `numeric`). Lighthouse mobile Accessibility and Best Practices ≥ 90. | partly (T7-03 check) | T11-14 |
+| ID | Requirement | Target / check | Baseline | Measured (Oct 7, 2026) | Task |
+| --- | --- | --- | --- | --- | --- |
+| NFR-U.1 | WCAG 2.1 AA | Every page passes axe-core with no serious or critical issues in Arabic (RTL) and English; full keyboard use (visible focus, no traps, skip link); text contrast ≥ 4.5:1; form errors tied to their fields; toasts announced (`aria-live`). Manual pass with NVDA on the main flows. | not checked | Met, one check open. axe: 0 violations of any impact on 23 pages × ar / en and 4 dialogs; no sideways scroll at 320 / 640 px; every Tab stop has a visible ring; `check:contrast` passes. NVDA pass not done yet (§11.3) | T11-12, T11-13 |
+| NFR-U.2 | Mobile-first patient pages | Login, Register, Home, Book and My appointments designed at 360 px first: no horizontal scroll, tap targets ≥ 44 × 44 px, inputs ≥ 16 px (no zoom on iOS), the right mobile keyboards (`tel`, `numeric`). Lighthouse mobile Accessibility and Best Practices ≥ 90. | partly (T7-03 check) | Met. 5 pages × ar / en at 360 px: no sideways scroll, no tap target < 44 px, no input < 16 px; Lighthouse Accessibility 100, Best Practices 100 | T11-14 |
 
 **SaaS readiness (NFR-T)**
 
-| ID | Requirement | Target / check | Baseline | Task |
-| --- | --- | --- | --- | --- |
-| NFR-T.1 | One place resolves "the clinic" | A `ClinicContext` service is the only code that finds the clinic's doctor; `User::clinicDoctor()` (5 callers today) is called only there. A Pest architecture test fails on any new caller. | 5 callers | T11-15 |
-| NFR-T.2 | Future tenancy model written down | ADR [`docs/adr/0001-multi-clinic-tenancy.md`](docs/adr/0001-multi-clinic-tenancy.md): single database, `clinic_id` on the tables it lists, a global scope, and how today's data migrates. | none | T11-15 |
+| ID | Requirement | Target / check | Baseline | Measured (Oct 7, 2026) | Task |
+| --- | --- | --- | --- | --- | --- |
+| NFR-T.1 | One place resolves "the clinic" | A `ClinicContext` service is the only code that finds the clinic's doctor; `User::clinicDoctor()` (5 callers today) is called only there. A Pest architecture test fails on any new caller. | 5 callers | Met. One caller (`ClinicContext`); the architecture test fails on a caller added back | T11-15 |
+| NFR-T.2 | Future tenancy model written down | ADR [`docs/adr/0001-multi-clinic-tenancy.md`](docs/adr/0001-multi-clinic-tenancy.md): single database, `clinic_id` on the tables it lists, a global scope, and how today's data migrates. | none | Met. ADR 0001 written (T11-15) | T11-15 |
 
 ### 11.3 Not in Phase 11 (deferred on purpose)
 
@@ -806,6 +806,8 @@ The baseline measured on Oct 7, 2026 is shown where one exists, so the gain can 
 - **Slow or flaky internet handling** (offline banner, retries, drafts on every form) beyond what T7-03 covers.
 - **Reliability and operations**: monitoring, uptime, backups, zero-downtime deploys and CI stay in Phase 7.
 - **Search inside encrypted fields**: after NFR-S.6, `current_illness`, history and `work_done` cannot be searched or sorted in SQL. Nothing does that today; a future search over them needs its own design.
+- **Patient search reads every user row (NFR-P.3 exception, T11-16)**: the doctor's and the assistant's patient search is `LIKE '%term%'` on `users.name` and `users.phone`, so the user can type any part of a name or number; no B-tree index serves a leading `%`. On the 10,000-patient dataset it is p95 22.6 ms against the 300 ms budget. When it grows close to the budget: a prefix-only search, or a FULLTEXT (ngram) index on name and phone.
+- **NVDA pass (NFR-U.1, T11-13)**: the manual screen-reader pass on the main flows (patient books; doctor records a visit with payment and prescription; assistant collects a payment) needs a person and was not run; every automated U.1 check passes. It is part of the UAT in T7-09; what to listen for is in `docs/a11y/wcag-aa-audit.md` ("Not covered").
 - **ASVS Level 1 items accepted in the T11-07 review** (`docs/security/asvs-l1.md`, Oct 7, 2026); each one fails today on purpose:
   - **A-1 Password rules** (ASVS 2.1.1, 2.1.7, 2.1.8): minimum 8 characters, not 12; no breached-password check (it would call the Have I Been Pwned API on every sign-up) and no strength meter. 8 is the NIST SP 800-63B floor and login is rate-limited (5/min).
   - **A-2 bcrypt's 72-byte limit** (2.1.3): §9.2 chose bcrypt, which ignores everything after 72 bytes (about 36 Arabic letters). Switching to Argon2id would remove it.

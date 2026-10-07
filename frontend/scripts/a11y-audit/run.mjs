@@ -5,6 +5,9 @@
 //     the page must not scroll sideways,
 //   - a keyboard pass: Tab through the page; every stop must show a focus
 //     indicator and sit on a visible element.
+//   - CSP (NFR-S.1): `vite preview` sends the same Content-Security-Policy as
+//     Nginx (vite.config.js); every `securitypolicyviolation` on the page or
+//     in its dialogs fails the run (the browser's own extensions excepted).
 // The app is the production build served by `vite preview`; every API call is
 // answered from fixtures.json (captured from the fake PerformanceSeeder data)
 // inside the browser, so no backend and no real account is involved.
@@ -214,7 +217,10 @@ async function main() {
         role = pageRole
         const token = pageRole === 'public' ? 'null' : "'a11y-audit'"
         const { identifier } = await send('Page.addScriptToEvaluateOnNewDocument', {
-          source: `localStorage.setItem('clinic.lang', '${language}'); ${token === 'null' ? "localStorage.removeItem('clinic.token')" : `localStorage.setItem('clinic.token', ${token})`}; window.print = () => {};`,
+          source:
+            `localStorage.setItem('clinic.lang', '${language}'); ${token === 'null' ? "localStorage.removeItem('clinic.token')" : `localStorage.setItem('clinic.token', ${token})`}; window.print = () => {};` +
+            // Edge's own component extensions run an eval in some pages; they are not the app.
+            ` window.__csp = []; document.addEventListener('securitypolicyviolation', (e) => { if (!/^(chrome|edge)-extension/.test(e.sourceFile)) window.__csp.push(e.effectiveDirective + ' ' + (e.blockedURI || 'inline')) });`,
         })
         await viewport(1280)
         await send('Page.navigate', { url: ORIGIN + path })
@@ -233,13 +239,15 @@ async function main() {
           const hasDialog = opened && (await evaluate(`!!document.querySelector('[role=dialog]')`))
           entry.dialogs.push({ name: action.name, opened: hasDialog, axe: hasDialog ? await runAxe() : [] })
         }
+        entry.csp = await evaluate('window.__csp ?? []')
         await send('Page.removeScriptToEvaluateOnNewDocument', { identifier })
         results.push(entry)
         const serious = [...entry.axe, ...entry.dialogs.flatMap((d) => d.axe)].filter((v) => ['serious', 'critical'].includes(v.impact)).length
         console.log(
           `${loaded ? ' ' : '!'} ${language} ${name.padEnd(26)} axe ${String(entry.axe.length).padStart(2)} (serious/critical ${serious})` +
             ` · reflow 320 ${entry.reflow320.extra}px 640 ${entry.reflow640.extra}px · tab stops ${entry.keyboard.stops}, no ring ${entry.keyboard.noRing.length}, hidden ${entry.keyboard.hidden.length}` +
-            entry.dialogs.map((d) => ` · ${d.name} ${d.opened ? `axe ${d.axe.length}` : 'NOT OPENED'}`).join(''),
+            entry.dialogs.map((d) => ` · ${d.name} ${d.opened ? `axe ${d.axe.length}` : 'NOT OPENED'}`).join('') +
+            ` · CSP ${entry.csp.length}${entry.csp.length ? ` (${[...new Set(entry.csp)].join(', ')})` : ''}`,
         )
       }
     }
@@ -266,7 +274,7 @@ async function main() {
   writeFileSync(out, JSON.stringify(results, null, 1))
   console.log(`\nResults: ${out}`)
   const blocking = results.flatMap((r) => [...r.axe, ...r.dialogs.flatMap((d) => d.axe)]).filter((v) => ['serious', 'critical'].includes(v.impact))
-  process.exitCode = blocking.length || results.some((r) => !r.loaded) ? 1 : 0
+  process.exitCode = blocking.length || results.some((r) => !r.loaded || r.csp.length) ? 1 : 0
 }
 
 if (fileURLToPath(import.meta.url) === process.argv[1]) main()

@@ -202,6 +202,8 @@ Frontend
 
 Built before Phase 7. Measurable targets for security and privacy, performance, quality and accessibility, plus guardrails so a multi-clinic (SaaS) version can be added later. Reliability and operations stay in Phase 7.
 
+**Status (Oct 7, 2026): done.** Every NFR in plan §11.2 has a measured value that meets its target; the two exceptions are written in §11.3 (T11-16). T11-01 and T11-05 stay open for one in-browser check each (the visit-file download under the CSP, the Activity walkthrough), which need a logged-in person and are part of the UAT in T7-09.
+
 Security and privacy
 - [ ] [T11-01](phase-11-nfr/T11-01-security-headers.md) Security headers and `no-store` on API responses · S
 - [x] [T11-02](phase-11-nfr/T11-02-rate-limits.md) Rate limits on writes, search and register · S
@@ -224,7 +226,7 @@ Quality and usability
 
 SaaS readiness and close-out
 - [x] [T11-15](phase-11-nfr/T11-15-tenancy-guardrails.md) SaaS guardrails: ClinicContext and tenancy ADR · M
-- [ ] [T11-16](phase-11-nfr/T11-16-measure-and-docs.md) Measure every NFR and update the docs · S
+- [x] [T11-16](phase-11-nfr/T11-16-measure-and-docs.md) Measure every NFR and update the docs · S
 
 ## Phase 7 — Testing, polish and deployment
 
