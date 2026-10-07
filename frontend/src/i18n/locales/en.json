@@ -394,6 +394,11 @@
     "alreadyPaid": "Paid so far: {{amount}}",
     "recordedBy": "by {{name}}"
   },
+  "visitFile": {
+    "pdfSaved": "PDF saved.",
+    "docxSaved": "Word file saved.",
+    "failed": "The file could not be downloaded. Please try again."
+  },
   "dashboard": {
     "today": "Today",
     "thisWeek": "This week",

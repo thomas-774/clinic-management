@@ -394,6 +394,11 @@
     "alreadyPaid": "المدفوع حتى الآن: {{amount}}",
     "recordedBy": "بواسطة {{name}}"
   },
+  "visitFile": {
+    "pdfSaved": "تم حفظ ملف PDF.",
+    "docxSaved": "تم حفظ ملف Word.",
+    "failed": "تعذّر تنزيل الملف. حاول مرة أخرى."
+  },
   "dashboard": {
     "today": "اليوم",
     "thisWeek": "هذا الأسبوع",

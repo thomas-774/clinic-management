@@ -1,5 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { addPayment, createVisit, updateVisit } from '../api/visits'
+import { useTranslation } from 'react-i18next'
+import { addPayment, createVisit, exportVisit, updateVisit } from '../api/visits'
+import { useToast } from '../toast/useToast'
+import { errorMessage } from '../utils/apiErrors'
+import { fileNameFrom, parseBlobError, saveBlob } from '../utils/download'
 import { patientsKey } from './usePatients'
 import { reportsKey } from './useReports'
 import { scheduleKey } from './useSchedule'
@@ -25,4 +29,26 @@ export function useUpdateVisit() {
 
 export function useAddPayment() {
   return useMutation({ mutationFn: ({ visitId, ...fields }) => addPayment(visitId, fields), onSuccess: useRefreshAfterVisit() })
+}
+
+/**
+ * Downloads a visit's file: `mutate({ id, format })` with format 'pdf' | 'docx'.
+ * Fetched fresh each time, so it always shows the current balance (FR-K.4).
+ */
+export function useVisitExport() {
+  const { t } = useTranslation()
+  const toast = useToast()
+  return useMutation({
+    mutationFn: async ({ id, format }) => {
+      try {
+        const response = await exportVisit(id, format)
+        saveBlob(response.data, fileNameFrom(response.headers, `visit-${id}.${format}`))
+        return format
+      } catch (error) {
+        throw await parseBlobError(error)
+      }
+    },
+    onSuccess: (format) => toast.success(t(format === 'docx' ? 'visitFile.docxSaved' : 'visitFile.pdfSaved')),
+    onError: (error) => toast.error(errorMessage(error, t('visitFile.failed'))),
+  })
 }

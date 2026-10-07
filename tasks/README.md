@@ -191,7 +191,7 @@ Backend
 - [x] [T10-06](phase-10-visit-report/T10-06-export-permission-tests.md) Tests: visit file permissions and contents · M
 
 Frontend
-- [ ] [T10-07](phase-10-visit-report/T10-07-fe-download-helper.md) Download helper and useVisitExport · S
+- [x] [T10-07](phase-10-visit-report/T10-07-fe-download-helper.md) Download helper and useVisitExport · S
 - [ ] [T10-08](phase-10-visit-report/T10-08-fe-visit-form-save-as.md) "Also save as: None · PDF · Word" on the visit form · M
 - [ ] [T10-09](phase-10-visit-report/T10-09-fe-timeline-download-buttons.md) PDF / Word buttons on the visit timeline · S
 - [ ] [T10-10](phase-10-visit-report/T10-10-walkthrough.md) Walkthrough and docs · S

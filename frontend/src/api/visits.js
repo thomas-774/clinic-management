@@ -13,3 +13,9 @@ export const updateVisit = (id, fields) => client.put(`/doctor/visits/${id}`, fi
 
 /** An installment: { amount, method, paid_at? } → the visit with its new balance. */
 export const addPayment = (visitId, fields) => client.post(`/doctor/visits/${visitId}/payments`, fields).then(data)
+
+/**
+ * The visit file, format 'pdf' | 'docx', as a Blob (the whole axios response, so the
+ * caller can read the file name from Content-Disposition). Written in the interface language.
+ */
+export const exportVisit = (id, format) => client.get(`/doctor/visits/${id}/export`, { params: { format }, responseType: 'blob' })
