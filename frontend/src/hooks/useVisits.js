@@ -34,8 +34,9 @@ export function useAddPayment() {
 /**
  * Downloads a visit's file: `mutate({ id, format })` with format 'pdf' | 'docx'.
  * Fetched fresh each time, so it always shows the current balance (FR-K.4).
+ * `showErrors: false` leaves the failure message to the caller (the visit form shows its own).
  */
-export function useVisitExport() {
+export function useVisitExport({ showErrors = true } = {}) {
   const { t } = useTranslation()
   const toast = useToast()
   return useMutation({
@@ -49,6 +50,8 @@ export function useVisitExport() {
       }
     },
     onSuccess: (format) => toast.success(t(format === 'docx' ? 'visitFile.docxSaved' : 'visitFile.pdfSaved')),
-    onError: (error) => toast.error(errorMessage(error, t('visitFile.failed'))),
+    onError: (error) => {
+      if (showErrors) toast.error(errorMessage(error, t('visitFile.failed')))
+    },
   })
 }

@@ -357,7 +357,16 @@
     "remaining": "Remaining",
     "overpaid": "The amount paid cannot be more than the total.",
     "save": "Save visit",
-    "saved": "Visit saved. Remaining: {{remaining}}"
+    "saved": "Visit saved. Remaining: {{remaining}}",
+    "saveAs": "Also save as",
+    "file": {
+      "none": "None",
+      "pdf": "PDF",
+      "docx": "Word"
+    },
+    "save_pdf": "Save visit + PDF",
+    "save_docx": "Save visit + Word",
+    "fileFailed": "Visit saved, but the file could not be downloaded — use the PDF / Word buttons on the visit."
   },
   "paymentStatus": {
     "paid": "Paid",

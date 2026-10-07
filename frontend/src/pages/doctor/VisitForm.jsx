@@ -8,7 +8,7 @@ import SelectField from '../../components/form/SelectField'
 import TextAreaField from '../../components/form/TextAreaField'
 import { usePatient } from '../../hooks/usePatient'
 import { useSchedule } from '../../hooks/useSchedule'
-import { useCreateVisit } from '../../hooks/useVisits'
+import { useCreateVisit, useVisitExport } from '../../hooks/useVisits'
 import { useToast } from '../../toast/useToast'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
 import { formatDate, formatMoney, formatTime, todayInClinic } from '../../utils/format'
@@ -48,6 +48,30 @@ function useVisitContext() {
   }
 }
 
+const FILE_KEY = 'clinic.visitFile'
+const FILE_CHOICES = ['none', 'pdf', 'docx']
+
+/** "Also save as" (FR-K.1), remembered on this computer; storage can throw, so fall back to None. */
+function useFileChoice() {
+  const [choice, setChoice] = useState(() => {
+    try {
+      const stored = localStorage.getItem(FILE_KEY)
+      return FILE_CHOICES.includes(stored) ? stored : 'none'
+    } catch {
+      return 'none'
+    }
+  })
+  function choose(value) {
+    setChoice(value)
+    try {
+      localStorage.setItem(FILE_KEY, value)
+    } catch {
+      // ignore: the choice then lasts until the page is left
+    }
+  }
+  return [choice, choose]
+}
+
 /** Today's visit (FR-D.1 – D.4): work done, total, paid now and a live remaining. */
 export default function VisitForm() {
   const { t } = useTranslation()
@@ -55,6 +79,8 @@ export default function VisitForm() {
   const navigate = useNavigate()
   const { appointment, patient, isPending, isError, refetch } = useVisitContext()
   const create = useCreateVisit()
+  const exportFile = useVisitExport({ showErrors: false })
+  const [fileChoice, chooseFile] = useFileChoice()
   const [form, setForm] = useState({ work_done: '', total_amount: '', paid_now: '', method: 'cash' })
 
   if (isPending) return <Loading />
@@ -81,7 +107,7 @@ export default function VisitForm() {
 
   const serverErrors = fieldErrors(create.error)
   const formError = create.error && !Object.keys(serverErrors).length ? errorMessage(create.error, t('common.networkError')) : ''
-  const canSave = form.work_done.trim() !== '' && !Number.isNaN(total) && !Number.isNaN(paid) && !overpaid && !create.isPending
+  const canSave = form.work_done.trim() !== '' && !Number.isNaN(total) && !Number.isNaN(paid) && !overpaid && !create.isPending && !exportFile.isPending
 
   function submit(event) {
     event.preventDefault()
@@ -96,8 +122,12 @@ export default function VisitForm() {
         method: form.method,
       },
       {
-        onSuccess: (visit) => {
+        onSuccess: async (visit) => {
           toast.success(t('visitForm.saved', { remaining: formatMoney(visit.remaining) }))
+          if (fileChoice !== 'none') {
+            // The visit is saved either way; the file can be downloaded again from the visit (FR-K.4).
+            await exportFile.mutateAsync({ id: visit.id, format: fileChoice }).catch(() => toast.error(t('visitForm.fileFailed')))
+          }
           // The patient page then offers to write this visit's prescription (FR-J.7).
           navigate(`/doctor/patients/${patient.id}`, { state: { savedVisitId: visit.id } })
         },
@@ -178,7 +208,27 @@ export default function VisitForm() {
         </div>
       </Card>
 
-      <div className="flex justify-end gap-2">
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        <fieldset className="me-auto flex flex-wrap items-center gap-2">
+          <legend className="float-start me-2 text-sm text-slate-600">{t('visitForm.saveAs')}</legend>
+          <div className="flex rounded-lg bg-slate-100 p-0.5">
+            {FILE_CHOICES.map((option) => (
+              <label key={option} className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="visit-file"
+                  value={option}
+                  checked={fileChoice === option}
+                  onChange={() => chooseFile(option)}
+                  className="peer sr-only"
+                />
+                <span className="block rounded-md px-3 py-1 text-sm font-semibold text-slate-600 peer-checked:bg-white peer-checked:text-slate-900 peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-sky-600">
+                  {t(`visitForm.file.${option}`)}
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
         <button type="button" onClick={() => navigate(-1)} className="rounded-lg px-4 py-2 text-sm text-slate-600 hover:bg-slate-100">
           {t('common.cancel')}
         </button>
@@ -187,7 +237,7 @@ export default function VisitForm() {
           disabled={!canSave}
           className="rounded-lg bg-sky-700 px-5 py-2 text-sm font-semibold text-white hover:bg-sky-800 disabled:opacity-60"
         >
-          {create.isPending ? t('common.saving') : t('visitForm.save')}
+          {create.isPending || exportFile.isPending ? t('common.saving') : t('visitForm.save', { context: fileChoice === 'none' ? undefined : fileChoice })}
         </button>
       </div>
     </form>
