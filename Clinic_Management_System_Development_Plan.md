@@ -649,10 +649,10 @@ Build in eight phases of roughly one week each; every phase ends with something 
 
 ### Phase 10 — Visit report file (Module K)
 
-- [ ] Install mPDF (PDF with proper Arabic shaping and RTL) and PHPWord (`.docx`); bundle the app's Cairo font for the PDF.
-- [ ] `VisitReportService` builds one data object per visit (header, patient, visit, work done, amounts, payments, overall balance, linked prescriptions); `PdfVisitReport` and `WordVisitReport` render it; `GET /doctor/visits/{id}/export?format=pdf|docx`.
-- [ ] Frontend: "Also save as: None · PDF · Word" next to Save on the visit form; PDF / Word buttons on every visit in the patient's timeline.
-- [ ] **Test:** both formats hold the same values as the API (after an installment too); patient and assistant get 403; unknown format → 422; the file never holds medical history; Arabic is joined and RTL; walkthrough save visit → file opens in Word and a PDF reader, in ar and en.
+- [x] Install mPDF (PDF with proper Arabic shaping and RTL) and PHPWord (`.docx`); bundle the app's Cairo font for the PDF.
+- [x] `VisitReportService` builds one data object per visit (header, patient, visit, work done, amounts, payments, overall balance, linked prescriptions); `PdfVisitReport` and `WordVisitReport` render it; `GET /doctor/visits/{id}/export?format=pdf|docx`.
+- [x] Frontend: "Also save as: None · PDF · Word" next to Save on the visit form; PDF / Word buttons on every visit in the patient's timeline.
+- [x] **Test:** both formats hold the same values as the API (after an installment too); patient and assistant get 403; unknown format → 422; the file never holds medical history; Arabic is joined and RTL; walkthrough save visit → file opens in Word and a PDF reader, in ar and en.
 
 ## 9. Testing, Security and Deployment
 

@@ -65,6 +65,17 @@ Chrome or Edge started with `--kiosk-printing` prints straight to the Windows de
 
 If the dialog still appears, a window of the same browser was still open. If a URL or date prints on the edges, "Headers and footers" is still on. If the page comes out on two sheets, the paper size in the printer and in Settings → Prescription do not match.
 
+## Visit files (PDF / Word)
+
+The doctor can save a visit as a file to print or send: an A4 **PDF**, or an editable **Word** (`.docx`) file. It holds the clinic header, the patient, the work done, the visit's total / paid / remaining with its payments, the patient's overall outstanding balance, the visit's prescriptions and a signature line, never the medical history. It is written in the language the app is shown in (Arabic or English). Only the doctor can make it.
+
+- **When saving a visit:** next to **Save visit**, pick **Also save as: None · PDF · Word**. The choice is remembered on that computer; the button then reads "Save visit + PDF" or "Save visit + Word". If the file cannot be downloaded, the visit is still saved.
+- **Any time later:** every visit on the patient page has **PDF** and **Word** buttons. The file is made fresh each time, so after an installment it shows the new paid and remaining amounts.
+
+The file is named `visit-<date>-<visit number>.pdf` (or `.docx`) and goes to the browser's **Downloads** folder. To choose the folder each time, turn on Chrome: Settings → Downloads → "Ask where to save each file before downloading", or Edge: Settings → Downloads → "Ask me what to do with each download". Nothing is stored on the server.
+
+**Server:** the files are made by mPDF and PHPWord, which need the PHP extensions `mbstring`, `gd`, `zip`, `xml` and `dom`. The Arabic font (Cairo) ships with the app in `backend/resources/fonts`. If the browser cannot read the file name in development, check that `Content-Disposition` is in `exposed_headers` in `backend/config/cors.php`.
+
 ## Tests
 
 | App | Command | Tooling |
