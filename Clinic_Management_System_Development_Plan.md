@@ -573,6 +573,7 @@ Build in eight phases of roughly one week each; every phase ends with something 
 | 8 | Assistant (front desk) | 5, 6 | Assistant registers patients, records payments, runs the queue — build before the deploy tasks of Phase 7 (T7-05 onwards) |
 | 9 | Prescriptions | 2, 5, 8 | Doctor writes a prescription with drug search and side notes and prints it — build before Phase 7 |
 | 10 | Visit report file (PDF / Word) | 5, 9 | Saving a visit can also save its details as a PDF or Word file; any visit can be downloaded again — build before Phase 7 |
+| 11 | Non-functional hardening | 8, 9, 10 | Security, privacy, performance, quality and accessibility targets of §11 met and measured — build before Phase 7 |
 
 ### Phase 0 — Project setup
 
@@ -654,6 +655,15 @@ Build in eight phases of roughly one week each; every phase ends with something 
 - [x] Frontend: "Also save as: None · PDF · Word" next to Save on the visit form; PDF / Word buttons on every visit in the patient's timeline.
 - [x] **Test:** both formats hold the same values as the API (after an installment too); patient and assistant get 403; unknown format → 422; the file never holds medical history; Arabic is joined and RTL; walkthrough save visit → file opens in Word and a PDF reader, in ar and en.
 
+### Phase 11 — Non-functional hardening (§11)
+
+- [ ] Security and privacy: security headers and `no-store` on API responses, rate limits on every write and search route, composer/npm audit clean, audit log of who read or changed medical and money records (doctor sees it in Settings), medical text fields encrypted at rest, OWASP ASVS Level 1 review.
+- [ ] Performance: missing indexes, no N+1 queries (lazy loading blocked outside production), a 5-year demo dataset with measured p95 API times, and the frontend split into lazy-loaded chunks per role.
+- [ ] Quality: coverage thresholds and zero-warning lint gates, run by one `check` command per app and a pre-commit hook.
+- [ ] Usability: WCAG 2.1 AA in Arabic and English; patient pages built mobile-first for 360 px with Lighthouse ≥ 90.
+- [ ] SaaS readiness: one `ClinicContext` resolves the clinic's doctor; an architecture test keeps it that way; an ADR describes the future multi-clinic model.
+- [ ] **Test:** every NFR in §11.2 has a recorded measurement that meets its target (T11-16).
+
 ## 9. Testing, Security and Deployment
 
 The three areas that must be tested hardest are slot generation, double booking and balance calculation, because errors there directly cost the clinic time or money.
@@ -725,3 +735,73 @@ The plan assumes one doctor in one clinic; the questions below should be confirm
 | Default format on a new computer? | **None** (just save), until the doctor picks PDF or Word once. | FR-K.1 · T10-08 |
 | Paper size? | **A4 portrait** for the PDF (the prescription keeps its own A5/A4 setting). | FR-K.5 · T10-03 |
 | Show the prescriptions of the visit in the file? | **Yes**, drug name, form and instructions only (no side notes, RX-4). | FR-K.2 · T10-02 |
+
+## 11. Non-functional requirements (Phase 11)
+
+Added Oct 7, 2026. Phases 0–10 cover what the system does; this section sets how well it must do it: how safe the medical data is, how fast it responds, and how the code and the screens are held to a bar. Each requirement has an ID (NFR-x.y), a number that can be measured, and the task that delivers it. Phase 11 is built **before Phase 7**, so v1 is deployed already hardened and Phase 7 tests what ships.
+
+### 11.1 Decisions (Oct 7, 2026)
+
+| Question | Decision | Affects |
+| --- | --- | --- |
+| One clinic or SaaS? | **One clinic now, SaaS later.** No `clinic_id` column yet, but nothing built now may block adding one (guardrails only). | NFR-T · T11-15 |
+| What load do the targets assume? | **Small clinic:** up to 50 visits a day, about 10,000 patients and 5 years of visits, at most 5 people using it at once. | NFR-P · T11-09 |
+| Which areas? | Security and privacy, performance, quality, usability. Reliability and operations (backups, monitoring, deploys, CI) stay in Phase 7 (T7-05 … T7-08). | Phases 7, 11 |
+| Security scope? | Audit log, encryption of medical text at rest, security headers + rate limits + dependency audit + ASVS L1 review. | NFR-S |
+| Usability and quality scope? | WCAG 2.1 AA, mobile-first patient pages, coverage and lint gates. | NFR-U, NFR-Q |
+
+### 11.2 Requirements and targets
+
+The baseline measured on Oct 7, 2026 is shown where one exists, so the gain can be checked.
+
+**Security and privacy (NFR-S)**
+
+| ID | Requirement | Target / check | Baseline | Task |
+| --- | --- | --- | --- | --- |
+| NFR-S.1 | Security headers on every response | API: `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, `Cache-Control: no-store` on authenticated responses; HSTS outside local. SPA (Nginx): a CSP without `unsafe-eval`. A feature test checks the API headers. | none | T11-01 |
+| NFR-S.2 | Rate limits beyond login | Every write route ≤ 60/min per user, search routes ≤ 120/min, register ≤ 5/min per IP; a 429 comes back as `{ message }` in the request language. | login only | T11-02 |
+| NFR-S.3 | No known vulnerable dependencies | `composer audit` and `npm audit --omit=dev --audit-level=high` report nothing; both are part of `check` (T11-11) and of CI (T7-08). | not run | T11-03 |
+| NFR-S.4 | Audit log of medical and money records | Every read of a patient's doctor page, history, visit, prescription or visit file, and every create / update / delete of those and of payments, writes one row: who, role, action, record, patient, time, IP, and the **names** of changed fields (never their values). Rows cannot be edited or deleted through the app. | none | T11-04 |
+| NFR-S.5 | Doctor can review the audit log | Settings → Activity: filter by patient, user, action and date; paginated; rows kept 5 years, then pruned by a scheduled command. | none | T11-05 |
+| NFR-S.6 | Medical text encrypted at rest | `patients.current_illness`, `medical_history_entries.title` and `details`, `visits.work_done`, `prescriptions.notes`, `prescription_items.instructions` use Laravel's encrypted cast (AES-256 with `APP_KEY`). A raw `SELECT` shows only ciphertext. Existing rows are encrypted by a reversible migration. `APP_KEY` is kept in the password manager and the backup runbook (T7-07); key rotation via `APP_PREVIOUS_KEYS`. | plain text | T11-06 |
+| NFR-S.7 | OWASP ASVS Level 1 | Every applicable L1 item checked and the result recorded in `docs/security/asvs-l1.md`; every fail fixed or accepted in writing. Includes: no stack traces with `APP_DEBUG=false`, no mass assignment, an IDOR sweep over every `{id}` route. | not done | T11-07 |
+
+**Performance (NFR-P)**: measured on the 5-year demo dataset (T11-09), server-side time, warm cache.
+
+| ID | Requirement | Target / check | Baseline | Task |
+| --- | --- | --- | --- | --- |
+| NFR-P.1 | API response time | p95 < 300 ms and p99 < 800 ms for every list, detail, slot and report endpoint; visit file export p95 < 1.5 s. | not measured | T11-09 |
+| NFR-P.2 | No N+1 queries | `Model::preventLazyLoading()` outside production; each list endpoint runs a fixed number of queries whatever the page size (query-count test). | not enforced | T11-08 |
+| NFR-P.3 | Indexes for every hot filter | `visits.visit_date` (reports filter on it since the revenue-by-visit-date change), plus any index `EXPLAIN` shows missing on the measured endpoints; no full table scan on them. | `visit_date` unindexed | T11-08 |
+| NFR-P.4 | Frontend first load | Patient pages: initial JS ≤ 200 kB gzip; no chunk > 500 kB minified; Recharts loaded only on Dashboard / Reports. A build-size check fails `npm run check` when the budget is broken. | one 959 kB chunk (283 kB gzip) | T11-10 |
+| NFR-P.5 | Perceived speed | Lighthouse mobile (Slow 4G, mid-range phone) on the patient pages: LCP < 2.5 s, CLS < 0.1, Performance ≥ 90. | not measured | T11-14 |
+
+**Quality (NFR-Q)**
+
+| ID | Requirement | Target / check | Baseline | Task |
+| --- | --- | --- | --- | --- |
+| NFR-Q.1 | Backend coverage | Line coverage ≥ 80 % overall and ≥ 95 % on `app/Services` (`pest --coverage --min=80`, PCOV driver). | no coverage driver | T11-11 |
+| NFR-Q.2 | Frontend coverage | Vitest (V8) thresholds: lines ≥ 70 %, branches ≥ 60 %; `src/utils` and `src/hooks` ≥ 85 %. | not measured | T11-11 |
+| NFR-Q.3 | Lint and style | `pint --test` clean on the whole backend; oxlint with **zero** warnings, jsx-a11y plugin on. | Pint fails on `HealthTest.php` | T11-11, T11-12 |
+| NFR-Q.4 | One gate | `composer check` and `npm run check` run lint, tests, coverage, audit and the size budget; a versioned pre-commit hook runs the fast part (lint + related tests). | none | T11-11 |
+
+**Usability and accessibility (NFR-U)**
+
+| ID | Requirement | Target / check | Baseline | Task |
+| --- | --- | --- | --- | --- |
+| NFR-U.1 | WCAG 2.1 AA | Every page passes axe-core with no serious or critical issues in Arabic (RTL) and English; full keyboard use (visible focus, no traps, skip link); text contrast ≥ 4.5:1; form errors tied to their fields; toasts announced (`aria-live`). Manual pass with NVDA on the main flows. | not checked | T11-12, T11-13 |
+| NFR-U.2 | Mobile-first patient pages | Login, Register, Home, Book and My appointments designed at 360 px first: no horizontal scroll, tap targets ≥ 44 × 44 px, inputs ≥ 16 px (no zoom on iOS), the right mobile keyboards (`tel`, `numeric`). Lighthouse mobile Accessibility and Best Practices ≥ 90. | partly (T7-03 check) | T11-14 |
+
+**SaaS readiness (NFR-T)**
+
+| ID | Requirement | Target / check | Baseline | Task |
+| --- | --- | --- | --- | --- |
+| NFR-T.1 | One place resolves "the clinic" | A `ClinicContext` service is the only code that finds the clinic's doctor; `User::clinicDoctor()` (5 callers today) is called only there. A Pest architecture test fails on any new caller. | 5 callers | T11-15 |
+| NFR-T.2 | Future tenancy model written down | ADR `docs/adr/0001-multi-clinic-tenancy.md`: single database, `clinic_id` on the tables it lists, a global scope, and how today's data migrates. | none | T11-15 |
+
+### 11.3 Not in Phase 11 (deferred on purpose)
+
+- **Session and token hardening** (token expiry, idle logout on the shared clinic PC, revoking tokens on password change). Not chosen for now. Known risk: Sanctum tokens never expire today (`sanctum.expiration = null`), so a token left in a shared browser stays valid until logout.
+- **Slow or flaky internet handling** (offline banner, retries, drafts on every form) beyond what T7-03 covers.
+- **Reliability and operations**: monitoring, uptime, backups, zero-downtime deploys and CI stay in Phase 7.
+- **Search inside encrypted fields**: after NFR-S.6, `current_illness`, history and `work_done` cannot be searched or sorted in SQL. Nothing does that today; a future search over them needs its own design.

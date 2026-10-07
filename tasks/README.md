@@ -26,9 +26,10 @@ Each task is one file: what to build, which plan section it comes from, the step
 | 8 | [phase-8-assistant](phase-8-assistant/) | 13 | Assistant registers patients, records payments, runs the queue |
 | 9 | [phase-9-prescriptions](phase-9-prescriptions/) | 14 | Doctor writes a prescription with drug search and side notes and prints it |
 | 10 | [phase-10-visit-report](phase-10-visit-report/) | 10 | Saving a visit can also save its details as a PDF or Word file |
-| | **Total** | **112** | |
+| 11 | [phase-11-nfr](phase-11-nfr/) | 16 | Security, privacy, performance, quality and accessibility targets met and measured |
+| | **Total** | **128** | |
 
-Phase order: 0 → 1 → (2 and 3 in parallel) → 4 → 5 → 6 → 8 → 9 → 10 → 7. Phase 5 needs both 2 and 4. Phases 8, 9 and 10 were added after Phase 6 and are built before Phase 7, so the assistant, prescriptions and visit files are tested and deployed with v1.
+Phase order: 0 → 1 → (2 and 3 in parallel) → 4 → 5 → 6 → 8 → 9 → 10 → 11 → 7. Phase 5 needs both 2 and 4. Phases 8, 9 and 10 were added after Phase 6 and are built before Phase 7, so the assistant, prescriptions and visit files are tested and deployed with v1. Phase 11 (non-functional hardening, plan §11) is also built before Phase 7, so v1 goes live already hardened.
 
 ## Phase 0 — Setup
 
@@ -196,6 +197,34 @@ Frontend
 - [x] [T10-09](phase-10-visit-report/T10-09-fe-timeline-download-buttons.md) PDF / Word buttons on the visit timeline · S
 - [x] [T10-10](phase-10-visit-report/T10-10-walkthrough.md) Walkthrough and docs · S
 
+## Phase 11 — Non-functional hardening (plan §11)
+
+Built before Phase 7. Measurable targets for security and privacy, performance, quality and accessibility, plus guardrails so a multi-clinic (SaaS) version can be added later. Reliability and operations stay in Phase 7.
+
+Security and privacy
+- [ ] [T11-01](phase-11-nfr/T11-01-security-headers.md) Security headers and `no-store` on API responses · S
+- [ ] [T11-02](phase-11-nfr/T11-02-rate-limits.md) Rate limits on writes, search and register · S
+- [ ] [T11-03](phase-11-nfr/T11-03-dependency-audit.md) Dependency audit (composer + npm) · S
+- [ ] [T11-04](phase-11-nfr/T11-04-audit-log.md) Audit log of medical and money records · L
+- [ ] [T11-05](phase-11-nfr/T11-05-audit-log-page.md) Activity log: API, Settings page and pruning · M
+- [ ] [T11-06](phase-11-nfr/T11-06-encrypt-medical-fields.md) Encrypt medical text at rest · L
+- [ ] [T11-07](phase-11-nfr/T11-07-asvs-l1-review.md) OWASP ASVS Level 1 review · M
+
+Performance
+- [ ] [T11-08](phase-11-nfr/T11-08-indexes-and-n-plus-one.md) Indexes and N+1 guard · M
+- [ ] [T11-09](phase-11-nfr/T11-09-performance-budget.md) 5-year dataset and API response-time budget · M
+- [ ] [T11-10](phase-11-nfr/T11-10-fe-code-splitting.md) Code splitting and bundle budget · M
+
+Quality and usability
+- [ ] [T11-11](phase-11-nfr/T11-11-coverage-and-lint-gates.md) Coverage and lint gates, one `check` command · M
+- [ ] [T11-12](phase-11-nfr/T11-12-a11y-foundation.md) Accessibility foundation · M
+- [ ] [T11-13](phase-11-nfr/T11-13-wcag-aa-audit.md) WCAG 2.1 AA audit of every page · L
+- [ ] [T11-14](phase-11-nfr/T11-14-mobile-first-patient-pages.md) Mobile-first patient pages · M
+
+SaaS readiness and close-out
+- [ ] [T11-15](phase-11-nfr/T11-15-tenancy-guardrails.md) SaaS guardrails: ClinicContext and tenancy ADR · M
+- [ ] [T11-16](phase-11-nfr/T11-16-measure-and-docs.md) Measure every NFR and update the docs · S
+
 ## Phase 7 — Testing, polish and deployment
 
 - [ ] [T7-01](phase-7-testing-deploy/T7-01-permission-feature-tests.md) Feature tests: permissions on every endpoint · M
@@ -223,3 +252,4 @@ Frontend
 | I — Assistant (front desk) | FR-I.1 – I.6 | T8-01 … T8-13 |
 | J — Prescriptions | FR-J.1 – J.7 | T9-01 … T9-14 |
 | K — Visit report file | FR-K.1 – K.6 | T10-01 … T10-10 |
+| Non-functional (§11) | NFR-S, P, Q, U, T | T11-01 … T11-16 |
