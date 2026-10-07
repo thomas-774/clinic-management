@@ -32,6 +32,8 @@ class Visit extends Model
         return [
             'visit_date' => 'date:Y-m-d',
             'total_amount' => 'decimal:2',
+            // Encrypted at rest with APP_KEY (NFR-S.6): never filter or sort on it in SQL.
+            'work_done' => 'encrypted',
         ];
     }
 

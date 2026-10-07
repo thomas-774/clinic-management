@@ -20,6 +20,7 @@
   add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
   ```
   `connect-src 'self'` assumes the API is served on the same domain (`/api/v1`); if it gets its own subdomain, add that origin. `frontend/vite.config.js` holds the same policy for `npm run preview`.
+- [ ] Generate `APP_KEY` once per environment (`php artisan key:generate --show`, set it in `.env`) and store production's in the password manager before any patient data is entered: the medical text is encrypted with it (T11-06, NFR-S.6) and is lost without it. Staging gets its own key. Never regenerate it on a server that has data — rotate instead (T7-07).
 - [ ] Hide the PHP version: `expose_php = Off` in the FPM `php.ini` (no `X-Powered-By` header) and `server_tokens off;` in Nginx.
 
 ## Done when

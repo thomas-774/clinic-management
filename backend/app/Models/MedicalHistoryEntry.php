@@ -39,6 +39,9 @@ class MedicalHistoryEntry extends Model
             'type' => HistoryType::class,
             'patient_visible' => 'boolean',
             'recorded_on' => 'date:Y-m-d',
+            // Encrypted at rest with APP_KEY (NFR-S.6): never filter or sort on it in SQL.
+            'title' => 'encrypted',
+            'details' => 'encrypted',
         ];
     }
 

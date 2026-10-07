@@ -10,6 +10,7 @@ use App\Models\Prescription;
 use App\Models\PrescriptionItem;
 use App\Models\User;
 use App\Models\Visit;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Smalot\PdfParser\Parser;
 use Tests\TestCase;
@@ -28,6 +29,12 @@ use Tests\TestCase;
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
     ->in('Feature');
+
+// Migrations that change column types (MySQL commits those at once, so a
+// wrapping transaction cannot undo them): a freshly migrated database per test.
+pest()->extend(TestCase::class)
+    ->use(DatabaseMigrations::class)
+    ->in('Migrations');
 
 /*
 |--------------------------------------------------------------------------

@@ -207,7 +207,7 @@ Security and privacy
 - [x] [T11-03](phase-11-nfr/T11-03-dependency-audit.md) Dependency audit (composer + npm) · S
 - [x] [T11-04](phase-11-nfr/T11-04-audit-log.md) Audit log of medical and money records · L
 - [ ] [T11-05](phase-11-nfr/T11-05-audit-log-page.md) Activity log: API, Settings page and pruning · M
-- [ ] [T11-06](phase-11-nfr/T11-06-encrypt-medical-fields.md) Encrypt medical text at rest · L
+- [x] [T11-06](phase-11-nfr/T11-06-encrypt-medical-fields.md) Encrypt medical text at rest · L
 - [ ] [T11-07](phase-11-nfr/T11-07-asvs-l1-review.md) OWASP ASVS Level 1 review · M
 
 Performance

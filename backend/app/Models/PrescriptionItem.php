@@ -30,6 +30,8 @@ class PrescriptionItem extends Model
     {
         return [
             'position' => 'integer',
+            // Encrypted at rest with APP_KEY (NFR-S.6): never filter or sort on it in SQL.
+            'instructions' => 'encrypted',
         ];
     }
 

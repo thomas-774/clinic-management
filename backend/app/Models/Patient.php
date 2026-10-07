@@ -30,6 +30,8 @@ class Patient extends Model
     {
         return [
             'date_of_birth' => 'date:Y-m-d',
+            // Encrypted at rest with APP_KEY (NFR-S.6): never filter or sort on it in SQL.
+            'current_illness' => 'encrypted',
         ];
     }
 

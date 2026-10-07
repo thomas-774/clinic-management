@@ -30,6 +30,8 @@ class Prescription extends Model
     {
         return [
             'issued_on' => 'date:Y-m-d',
+            // Encrypted at rest with APP_KEY (NFR-S.6): never filter or sort on it in SQL.
+            'notes' => 'encrypted',
         ];
     }
 

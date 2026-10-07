@@ -57,7 +57,8 @@ describe('private history entries', function () {
     });
 
     it('hides an entry from the patient as soon as the doctor makes it private', function () {
-        $entry = $this->patientA->medicalHistoryEntries()->where('title', 'Asthma')->sole();
+        // The title is encrypted at rest (NFR-S.6), so it is matched in PHP, not SQL.
+        $entry = $this->patientA->medicalHistoryEntries()->get()->sole(fn ($entry) => $entry->title === 'Asthma');
 
         $this->actingAs($this->doctor)->putJson(
             "/api/v1/doctor/patients/{$this->patientA->id}/history/{$entry->id}",
