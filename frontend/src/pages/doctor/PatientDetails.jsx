@@ -174,6 +174,7 @@ export default function PatientDetails() {
           onEdit={setEditingVisit}
           patientId={patient.id}
           prescriptionCounts={prescriptionCounts}
+          canDownload
         />
       </Card>
 

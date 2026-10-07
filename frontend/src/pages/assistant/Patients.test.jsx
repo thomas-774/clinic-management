@@ -101,6 +101,9 @@ describe('Assistant: patients', () => {
     expect(screen.queryByRole('button', { name: 'Edit' })).toBeInTheDocument() // contact info only
     const visit = screen.getByRole('listitem', { name: '5 Oct 2026' })
     expect(within(visit).queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument()
+    // The visit file holds the work done: doctor only (FR-K.6).
+    expect(within(visit).queryByRole('button', { name: /Download visit/ })).not.toBeInTheDocument()
+    expect(within(visit).queryByRole('button', { name: /^(PDF|Word)$/ })).not.toBeInTheDocument()
 
     await userEvent.click(within(visit).getByRole('button', { name: /Show payment/ }))
     expect(within(visit).getByText(/by Amal Saad/)).toBeInTheDocument()

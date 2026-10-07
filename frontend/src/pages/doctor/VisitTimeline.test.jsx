@@ -175,3 +175,104 @@ describe('PatientDetails: visit timeline', () => {
     expect(screen.getByTestId('outstanding')).toHaveTextContent('EGP 800.00')
   })
 })
+
+describe('PatientDetails: visit file buttons', () => {
+  let saved
+
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+    saved = []
+    URL.createObjectURL = vi.fn(() => 'blob:visit')
+    URL.revokeObjectURL = vi.fn()
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function () {
+      saved.push(this.download)
+    })
+  })
+
+  const fileResponse = (id, format) => ({
+    data: new Blob(['file']),
+    headers: { 'content-disposition': `attachment; filename="visit-${id}.${format}"` },
+  })
+
+  it('every visit has PDF and Word buttons that download its file', async () => {
+    fakeServer()
+    const exportVisit = vi.spyOn(visitsApi, 'exportVisit').mockImplementation(async (id, format) => fileResponse(id, format))
+    renderDetails()
+
+    await screen.findByRole('list', { name: 'Visits' })
+    for (const date of ['1 Oct 2026', '10 Aug 2026']) {
+      expect(within(visitItem(date)).getByRole('button', { name: `Download visit of ${date} as PDF` })).toHaveTextContent('PDF')
+      expect(within(visitItem(date)).getByRole('button', { name: `Download visit of ${date} as Word` })).toHaveTextContent('Word')
+    }
+
+    await userEvent.click(within(visitItem('10 Aug 2026')).getByRole('button', { name: 'Download visit of 10 Aug 2026 as Word' }))
+    expect(exportVisit).toHaveBeenCalledWith(1, 'docx')
+    expect(await screen.findByText('Word file saved.')).toBeInTheDocument()
+
+    await userEvent.click(within(visitItem('1 Oct 2026')).getByRole('button', { name: 'Download visit of 1 Oct 2026 as PDF' }))
+    expect(exportVisit).toHaveBeenLastCalledWith(2, 'pdf')
+    await vi.waitFor(() => expect(saved).toEqual(['visit-1.docx', 'visit-2.pdf']))
+  })
+
+  it('shows the visit busy while its file downloads', async () => {
+    fakeServer()
+    let finish
+    vi.spyOn(visitsApi, 'exportVisit').mockImplementation(
+      (id, format) =>
+        new Promise((resolve) => {
+          finish = () => resolve(fileResponse(id, format))
+        }),
+    )
+    renderDetails()
+
+    await screen.findByRole('list', { name: 'Visits' })
+    const pdf = within(visitItem('10 Aug 2026')).getByRole('button', { name: 'Download visit of 10 Aug 2026 as PDF' })
+    const word = within(visitItem('10 Aug 2026')).getByRole('button', { name: 'Download visit of 10 Aug 2026 as Word' })
+    await userEvent.click(pdf)
+
+    await vi.waitFor(() => expect(pdf).toHaveAttribute('aria-busy', 'true'))
+    expect(pdf).toBeDisabled()
+    expect(word).toBeDisabled()
+    expect(word).toHaveAttribute('aria-busy', 'false')
+    // Other visits stay usable.
+    expect(within(visitItem('1 Oct 2026')).getByRole('button', { name: 'Download visit of 1 Oct 2026 as PDF' })).toBeEnabled()
+
+    finish()
+    await vi.waitFor(() => expect(pdf).toBeEnabled())
+    expect(pdf).toHaveAttribute('aria-busy', 'false')
+  })
+
+  it('fetches the file again on every click, so it follows new payments', async () => {
+    fakeServer()
+    const exportVisit = vi.spyOn(visitsApi, 'exportVisit').mockImplementation(async (id, format) => fileResponse(id, format))
+    renderDetails()
+
+    await screen.findByRole('list', { name: 'Visits' })
+    const pdfButton = () => within(visitItem('10 Aug 2026')).getByRole('button', { name: 'Download visit of 10 Aug 2026 as PDF' })
+    await userEvent.click(pdfButton())
+    await vi.waitFor(() => expect(saved).toHaveLength(1))
+
+    await userEvent.click(within(visitItem('10 Aug 2026')).getByRole('button', { name: 'Add payment' }))
+    await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Save payment' }))
+    await screen.findByText('Payment recorded. Remaining: EGP 0.00')
+
+    await userEvent.click(pdfButton())
+    await vi.waitFor(() => expect(saved).toHaveLength(2))
+    expect(exportVisit).toHaveBeenCalledTimes(2)
+    expect(URL.createObjectURL).toHaveBeenCalledTimes(2)
+  })
+
+  it('shows the server’s message when the download is refused', async () => {
+    fakeServer()
+    const response = { status: 403, data: new Blob([JSON.stringify({ message: 'This action is unauthorized.' })]) }
+    vi.spyOn(visitsApi, 'exportVisit').mockRejectedValue(Object.assign(new Error('403'), { response }))
+    renderDetails()
+
+    await screen.findByRole('list', { name: 'Visits' })
+    await userEvent.click(within(visitItem('1 Oct 2026')).getByRole('button', { name: 'Download visit of 1 Oct 2026 as Word' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('This action is unauthorized.')
+    expect(saved).toEqual([])
+  })
+})

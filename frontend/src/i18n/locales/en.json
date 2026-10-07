@@ -406,7 +406,11 @@
   "visitFile": {
     "pdfSaved": "PDF saved.",
     "docxSaved": "Word file saved.",
-    "failed": "The file could not be downloaded. Please try again."
+    "failed": "The file could not be downloaded. Please try again.",
+    "pdf": "PDF",
+    "docx": "Word",
+    "downloadLabel": "Download visit of {{date}} as {{format}}",
+    "downloading": "Downloading…"
   },
   "dashboard": {
     "today": "Today",

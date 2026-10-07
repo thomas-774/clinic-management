@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import PaymentStatusBadge from '../../components/PaymentStatusBadge'
+import { useVisitExport } from '../../hooks/useVisits'
 import { formatDate, formatMoney, formatTime } from '../../utils/format'
 
 const smallButton = 'rounded-md px-2 py-1 text-xs font-semibold hover:bg-slate-100'
@@ -15,7 +16,36 @@ function Amount({ label, children, className = 'text-slate-900' }) {
   )
 }
 
-function VisitItem({ visit, onAddPayment, onEdit, prescriptionCount = 0, prescriptionsFor = null }) {
+/**
+ * The visit file, downloaded again at any time (FR-K.4). Fetched fresh on each
+ * click, so it shows the balance after the latest payment. Doctor only (FR-K.6).
+ */
+function VisitFileButtons({ visit }) {
+  const { t } = useTranslation()
+  const exportFile = useVisitExport()
+  const date = formatDate(visit.visit_date)
+
+  return ['pdf', 'docx'].map((format) => {
+    const busy = exportFile.isPending && exportFile.variables?.format === format
+    return (
+      <button
+        key={format}
+        type="button"
+        onClick={() => exportFile.mutate({ id: visit.id, format })}
+        disabled={exportFile.isPending}
+        aria-busy={busy}
+        aria-label={t('visitFile.downloadLabel', { date, format: t(`visitFile.${format}`) })}
+        title={busy ? t('visitFile.downloading') : undefined}
+        className={`${smallButton} inline-flex items-center gap-1 text-slate-700 disabled:opacity-60`}
+      >
+        {busy && <span aria-hidden="true" className="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />}
+        {t(`visitFile.${format}`)}
+      </button>
+    )
+  })
+}
+
+function VisitItem({ visit, onAddPayment, onEdit, prescriptionCount = 0, prescriptionsFor = null, canDownload = false }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const owes = Number(visit.remaining) > 0
@@ -43,6 +73,7 @@ function VisitItem({ visit, onAddPayment, onEdit, prescriptionCount = 0, prescri
               {t('prescriptions.write')}
             </Link>
           )}
+          {canDownload && <VisitFileButtons visit={visit} />}
           {onEdit && (
             <button type="button" onClick={() => onEdit(visit)} className={`${smallButton} text-sky-700`}>
               {t('visits.edit')}
@@ -97,9 +128,9 @@ function VisitItem({ visit, onAddPayment, onEdit, prescriptionCount = 0, prescri
  * Every visit, newest first, with its money (FR-C.5, FR-D.5). For the doctor,
  * `patientId` adds "Write prescription" on each visit, and
  * `prescriptionCounts` ({ visitId: count }) a badge on visits that have
- * prescriptions (FR-J.7).
+ * prescriptions (FR-J.7), and `canDownload` the PDF / Word buttons (FR-K.4).
  */
-export default function VisitTimeline({ visits, onAddPayment, onEdit, patientId, prescriptionCounts }) {
+export default function VisitTimeline({ visits, onAddPayment, onEdit, patientId, prescriptionCounts, canDownload = false }) {
   const { t } = useTranslation()
   if (!visits.length) return <p className="text-sm text-slate-500">{t('patientDetails.noVisits')}</p>
 
@@ -113,6 +144,7 @@ export default function VisitTimeline({ visits, onAddPayment, onEdit, patientId,
           onEdit={onEdit}
           prescriptionsFor={patientId ?? null}
           prescriptionCount={prescriptionCounts?.[visit.id] ?? 0}
+          canDownload={canDownload}
         />
       ))}
     </ol>
