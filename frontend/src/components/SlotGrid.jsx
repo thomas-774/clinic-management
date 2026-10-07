@@ -10,7 +10,7 @@ export default function SlotGrid({ slots = [], loading = false, selected = null,
 
   if (loading) {
     return (
-      <div role="status" aria-label={t('common.loading')} className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+      <div role="status" aria-label={t('common.loading')} className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
         {Array.from({ length: 8 }, (_, i) => (
           <div key={i} data-testid="slot-skeleton" className="h-11 animate-pulse rounded-lg bg-slate-200" />
         ))}
@@ -23,7 +23,7 @@ export default function SlotGrid({ slots = [], loading = false, selected = null,
   }
 
   return (
-    <div role="group" aria-label={t('slots.label')} className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+    <div role="group" aria-label={t('slots.label')} className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
       {slots.map((slot) => {
         const isSelected = slot.start_at === selected
         return (

@@ -1,11 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { bookAppointment, cancelMyAppointment, getMyAppointments } from '../api/appointments'
-import { profileKey } from './useProfile'
+import { profileKey, WARM_STALE_TIME } from './useProfile'
 
 export const myAppointmentsKey = ['patient', 'appointments']
 
 export function useMyAppointments() {
-  return useQuery({ queryKey: myAppointmentsKey, queryFn: getMyAppointments })
+  return useQuery({ queryKey: myAppointmentsKey, queryFn: getMyAppointments, staleTime: WARM_STALE_TIME })
 }
 
 /** Booking or cancelling changes the free slots, the list and the next appointment. */

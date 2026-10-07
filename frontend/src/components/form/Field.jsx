@@ -1,7 +1,7 @@
 import { useId } from 'react'
 
 const inputClass = (error) =>
-  `mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-slate-900 shadow-sm focus:outline-none focus:ring-2 ${
+  `mt-1 block min-h-11 w-full rounded-lg border bg-white px-3 py-2 text-base text-slate-900 shadow-sm focus:outline-none focus:ring-2 ${
     error ? 'border-red-600 focus:ring-red-600' : 'border-slate-500 focus:ring-sky-600'
   }`
 

@@ -21,6 +21,14 @@ export function formatDate(value, language) {
   }).format(new Date(isDateOnly ? `${value}T00:00:00Z` : value))
 }
 
+/** "2026-10-05" → { weekday: "Mon", day: "5", month: "Oct" } for a day picker. */
+export function dayParts(value, language) {
+  const parts = new Intl.DateTimeFormat(locale(language), { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' })
+    .formatToParts(new Date(`${value}T00:00:00Z`))
+  const part = (type) => parts.find((p) => p.type === type)?.value ?? ''
+  return { weekday: part('weekday'), day: part('day'), month: part('month') }
+}
+
 /** ISO date-time → "17:45" in clinic time. */
 export function formatTime(value, language) {
   if (!value) return ''

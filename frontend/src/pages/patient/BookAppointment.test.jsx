@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AxiosError } from 'axios'
 import { vi } from 'vitest'
@@ -43,16 +43,51 @@ describe('BookAppointment', () => {
 
   afterEach(() => vi.useRealTimers())
 
-  it('limits the date picker to today … today + booking window', async () => {
+  it('offers one day chip per day from today to today + booking window', async () => {
     fakeSlots()
     renderBook()
 
     await screen.findByRole('button', { name: '17:00' })
-    const date = screen.getByLabelText('Date')
-    expect(date).toHaveValue('2026-10-05')
-    expect(date).toHaveAttribute('min', '2026-10-05')
-    expect(date).toHaveAttribute('max', '2026-10-19')
-    expect(screen.getByText('You can book up to 14 days ahead.')).toBeInTheDocument()
+    const days = screen.getByRole('radiogroup', { name: 'Date' })
+    expect(days).toHaveAccessibleDescription('You can book up to 14 days ahead.')
+    const chips = within(days).getAllByRole('radio')
+    expect(chips).toHaveLength(15)
+    expect(chips[0]).toHaveAccessibleName('Mon 5 Oct')
+    expect(chips[0]).toBeChecked()
+    expect(chips[14]).toHaveAccessibleName('Mon 19 Oct')
+  })
+
+  it('moves between days with the arrow keys, mirrored in Arabic', async () => {
+    const user = userEvent.setup()
+    const getSlots = fakeSlots()
+    renderBook()
+
+    await screen.findByRole('button', { name: '17:00' })
+    // One Tab stop for the whole row.
+    await tabTo(user, screen.getByRole('radio', { name: 'Mon 5 Oct' }))
+    expect(screen.getByRole('radio', { name: 'Tue 6 Oct' })).toHaveAttribute('tabindex', '-1')
+
+    await user.keyboard('{ArrowRight}')
+    expect(screen.getByRole('radio', { name: 'Tue 6 Oct' })).toHaveFocus()
+    expect(screen.getByRole('radio', { name: 'Tue 6 Oct' })).toBeChecked()
+    expect(await screen.findByRole('button', { name: '18:30' })).toBeInTheDocument()
+    expect(getSlots).toHaveBeenCalledWith('2026-10-06')
+
+    await user.keyboard('{End}')
+    expect(screen.getByRole('radio', { name: 'Mon 19 Oct' })).toHaveFocus()
+    await user.keyboard('{Home}')
+    expect(screen.getByRole('radio', { name: 'Mon 5 Oct' })).toHaveFocus()
+
+    // RTL: the next day sits to the left.
+    document.documentElement.dir = 'rtl'
+    try {
+      await user.keyboard('{ArrowLeft}')
+      expect(screen.getByRole('radio', { name: 'Tue 6 Oct' })).toHaveFocus()
+      await user.keyboard('{ArrowRight}')
+      expect(screen.getByRole('radio', { name: 'Mon 5 Oct' })).toHaveFocus()
+    } finally {
+      document.documentElement.dir = 'ltr'
+    }
   })
 
   it('books a slot from start to finish and lands on My appointments', async () => {
@@ -61,7 +96,7 @@ describe('BookAppointment', () => {
     renderBook()
 
     await screen.findByRole('button', { name: '17:00' })
-    fireEvent.change(screen.getByLabelText('Date'), { target: { value: '2026-10-06' } })
+    await userEvent.click(screen.getByRole('radio', { name: 'Tue 6 Oct' }))
     await userEvent.click(await screen.findByRole('button', { name: '18:30' }))
     expect(getSlots).toHaveBeenCalledWith('2026-10-06')
 
@@ -115,7 +150,7 @@ describe('BookAppointment', () => {
     renderBook()
 
     await screen.findByRole('button', { name: '17:00' })
-    fireEvent.change(screen.getByLabelText('Date'), { target: { value: '2026-10-09' } })
+    await userEvent.click(screen.getByRole('radio', { name: 'Fri 9 Oct' }))
 
     expect(await screen.findByText('No free slots on this day.')).toBeInTheDocument()
   })

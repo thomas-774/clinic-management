@@ -59,7 +59,7 @@ const LOADING = { ar: 'جارٍ التحميل…', en: 'Loading…' }
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 /** The fixture for one API call, or null. */
-function answer(role, method, url) {
+export function answer(role, method, url) {
   if (method !== 'GET') return { data: null, message: null }
   const { pathname, searchParams } = new URL(url)
   const path = pathname.replace(/^\/api\/v1/, '')
@@ -73,7 +73,7 @@ function answer(role, method, url) {
 }
 
 /** Minimal CDP client over the browser's WebSocket (flattened sessions). */
-async function connect(wsUrl) {
+export async function connect(wsUrl) {
   const socket = new WebSocket(wsUrl)
   await new Promise((resolve, reject) => {
     socket.onopen = resolve
@@ -102,7 +102,7 @@ async function connect(wsUrl) {
   return { send, on: (listener) => listeners.push(listener), close: () => socket.close() }
 }
 
-async function waitFor(check, timeout = 15000) {
+export async function waitFor(check, timeout = 15000) {
   const until = Date.now() + timeout
   while (Date.now() < until) {
     if (await check()) return true
@@ -194,7 +194,7 @@ async function main() {
           const r = e.getBoundingClientRect()
           const ring = (s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0) || (s.boxShadow && s.boxShadow !== 'none')
           const name = (e.getAttribute('aria-label') || e.innerText || e.value || e.placeholder || '').trim().slice(0, 40)
-          return { key: e.outerHTML.slice(0, 120), what: e.tagName.toLowerCase() + (name ? ' "' + name + '"' : ''), ring, visible: r.width > 0 && r.height > 0 }
+          return { key: e.outerHTML.slice(0, 120) + '|' + (e.innerText || e.value || ''), what: e.tagName.toLowerCase() + (name ? ' "' + name + '"' : ''), ring, visible: r.width > 0 && r.height > 0 }
         })()`)
         if (!stop) break
         if (stops.length && stop.key === stops[0].key) break
@@ -202,6 +202,7 @@ async function main() {
       }
       return {
         stops: stops.length,
+        order: stops.map((s) => s.what),
         noRing: stops.filter((s) => !s.ring).map((s) => s.what),
         hidden: stops.filter((s) => !s.visible).map((s) => s.what),
       }

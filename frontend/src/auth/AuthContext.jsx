@@ -1,7 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import * as authApi from '../api/auth'
 import { setUnauthorizedHandler, tokenStorage } from '../api/client'
+import { warmStart } from '../pages/warmStart'
 import { AuthContext } from './useAuth'
 
 export function AuthProvider({ children }) {
@@ -9,6 +11,8 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   // With a stored token we must ask /me before deciding where the user belongs.
   const [loading, setLoading] = useState(() => Boolean(tokenStorage.get()))
+  // The page the app was opened on, for warmStart().
+  const firstPath = useRef(useLocation().pathname)
 
   useEffect(() => {
     // An expired or revoked token: forget the user; route guards send them to /login.
@@ -18,6 +22,7 @@ export function AuthProvider({ children }) {
     })
 
     if (!tokenStorage.get()) return
+    warmStart(firstPath.current, queryClient)
     let cancelled = false
     authApi
       .me()

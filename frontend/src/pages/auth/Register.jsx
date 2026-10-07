@@ -44,7 +44,7 @@ export default function Register() {
       footer={
         <>
           {t('auth.register.haveAccount')}{' '}
-          <Link to="/login" className="font-medium text-sky-700 hover:underline">
+          <Link to="/login" className="inline-flex min-h-11 min-w-11 items-center justify-center font-medium text-sky-700 hover:underline">
             {t('auth.register.logIn')}
           </Link>
         </>
@@ -73,6 +73,8 @@ export default function Register() {
           name="email"
           type="email"
           autoComplete="email"
+          autoCapitalize="none"
+          spellCheck={false}
           dir="ltr"
           value={form.email}
           onChange={update('email')}
@@ -109,7 +111,7 @@ export default function Register() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-lg bg-sky-700 px-4 py-2.5 font-semibold text-white hover:bg-sky-800 disabled:opacity-60"
+          className="min-h-11 w-full rounded-lg bg-sky-700 px-4 py-2.5 font-semibold text-white hover:bg-sky-800 disabled:opacity-60"
         >
           {submitting ? t('auth.register.submitting') : t('auth.register.submit')}
         </button>

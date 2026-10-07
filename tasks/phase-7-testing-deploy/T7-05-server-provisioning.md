@@ -12,7 +12,7 @@
 - [ ] Separate staging and production databases.
 - [ ] Security headers for the SPA (T11-01, NFR-S.1) in the Nginx `server` block that serves `frontend/dist` (the API adds its own in `SecurityHeaders` middleware; it also sends HSTS outside local / testing):
   ```nginx
-  add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'" always;
+  add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'" always;
   add_header X-Content-Type-Options "nosniff" always;
   add_header Referrer-Policy "no-referrer" always;
   add_header X-Frame-Options "DENY" always;
@@ -28,6 +28,7 @@
   - `.env`: `APP_ENV=production`, `APP_DEBUG=false` (14.3.2).
   - Keep Nginx access logs no longer than needed (e.g. 14 days with logrotate): the patient search term is in the URL (8.3.1).
   - No DNS record points at a server or service the clinic no longer uses (10.3.3).
+- [ ] Serve the SPA compressed and cached (T11-14, NFR-P.5; the Lighthouse numbers there assume it): `gzip on; gzip_types text/css application/javascript application/json image/svg+xml;`, `location /assets/ { add_header Cache-Control "public, max-age=31536000, immutable"; }` (file names carry a content hash; repeat the security headers in that block, as `add_header` there replaces the server's), and `Cache-Control: no-cache` on `index.html`. The Cairo font files are in `/assets/` too (self-hosted, `font-src 'self'`).
 - [ ] Hide the PHP version: `expose_php = Off` in the FPM `php.ini` (no `X-Powered-By` header) and `server_tokens off;` in Nginx.
 
 ## Done when

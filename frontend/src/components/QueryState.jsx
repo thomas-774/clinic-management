@@ -17,7 +17,7 @@ export function LoadError({ onRetry }) {
     <div role="alert" className="rounded-xl bg-red-50 p-4 text-red-700">
       <p>{t('common.loadError')}</p>
       {onRetry && (
-        <button type="button" onClick={onRetry} className="mt-2 text-sm font-semibold underline">
+        <button type="button" onClick={onRetry} className="mt-2 min-h-11 text-sm font-semibold underline">
           {t('common.retry')}
         </button>
       )}

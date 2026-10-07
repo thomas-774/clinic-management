@@ -26,7 +26,7 @@ export default function PasswordField({ label, error, hint, className, ...inputP
             onClick={() => setVisible((shown) => !shown)}
             aria-controls={controlProps.id}
             aria-label={`${action} ${label}`}
-            className="absolute inset-y-0 end-0 mt-1 rounded-e-lg px-3 text-sm font-medium text-sky-700 hover:text-sky-900 focus:outline-none focus:ring-2 focus:ring-sky-600"
+            className="absolute inset-y-0 end-0 min-w-11 rounded-e-lg px-3 text-sm font-medium text-sky-700 hover:text-sky-900 focus:outline-none focus:ring-2 focus:ring-sky-600"
           >
             {action}
           </button>

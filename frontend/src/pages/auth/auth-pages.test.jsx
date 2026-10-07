@@ -139,6 +139,38 @@ describe('Register page', () => {
 })
 
 // NFR-U.1 (T11-12): axe on the loaded page in both languages.
+// NFR-U.2 (T11-14): the phone shows the right keyboard and can fill the fields in.
+describe('mobile keyboards and autofill', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+  })
+
+  it('login: username / current-password, no auto-capitalising or correcting', () => {
+    renderAppAt('/login')
+
+    const login = screen.getByLabelText('Phone or email')
+    expect(login).toHaveAttribute('autocomplete', 'username')
+    expect(login).toHaveAttribute('autocapitalize', 'none')
+    expect(login).toHaveAttribute('autocorrect', 'off')
+    expect(login).toHaveAttribute('spellcheck', 'false')
+    expect(screen.getByLabelText('Password')).toHaveAttribute('autocomplete', 'current-password')
+  })
+
+  it('register: every field has its autocomplete token and the phone a phone keypad', () => {
+    renderAppAt('/register')
+
+    expect(screen.getByLabelText('Full name')).toHaveAttribute('autocomplete', 'name')
+    expect(screen.getByLabelText('Phone')).toHaveAttribute('type', 'tel')
+    expect(screen.getByLabelText('Phone')).toHaveAttribute('autocomplete', 'tel')
+    expect(screen.getByLabelText(/Email/)).toHaveAttribute('type', 'email')
+    expect(screen.getByLabelText(/Email/)).toHaveAttribute('autocomplete', 'email')
+    expect(screen.getByLabelText('Address')).toHaveAttribute('autocomplete', 'street-address')
+    expect(screen.getByLabelText('Password')).toHaveAttribute('autocomplete', 'new-password')
+    expect(screen.getByLabelText('Confirm password')).toHaveAttribute('autocomplete', 'new-password')
+  })
+})
+
 describe('accessibility', () => {
   beforeEach(() => {
     localStorage.clear()

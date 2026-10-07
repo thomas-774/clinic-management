@@ -10,6 +10,7 @@
 - [x] `Strict-Transport-Security: max-age=31536000; includeSubDomains` only when `app.env` is not `local` / `testing`.
 - [x] Write the Nginx headers for the SPA into T7-05: the same four headers plus a CSP — `default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'`. Check the print page (T9-11) and the download helper (T10-07) still work under it.
   Note: the same policy is in `frontend/vite.config.js` (`preview.headers`), with the API origin from `VITE_API_URL` added to `connect-src` because locally the API runs on another port. Code review: no `eval` / `new Function`, no inline `<script>` or `<style>`; React `style` props are set through the CSSOM, which `style-src` does not block; the download helper uses a `blob:` link with `download`, which CSP does not govern. The in-browser check is still open (see below).
+  Note (T11-14): Cairo is self-hosted since T11-14, so the policy is now `style-src 'self'; font-src 'self'` (no Google Fonts); T7-05 and `vite.config.js` are updated.
 - [x] Remove `X-Powered-By` (`expose_php = Off`) in the server checklist (T7-05).
 
 ## Done when

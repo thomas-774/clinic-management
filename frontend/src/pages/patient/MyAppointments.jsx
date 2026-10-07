@@ -46,7 +46,7 @@ export default function MyAppointments() {
                     <button
                       type="button"
                       onClick={() => setToCancel(appointment)}
-                      className="self-start rounded-lg px-3 py-1.5 text-sm font-semibold text-red-700 ring-1 ring-red-200 hover:bg-red-50 sm:self-auto"
+                      className="min-h-11 w-full rounded-lg px-4 text-sm font-semibold text-red-700 ring-1 ring-red-200 hover:bg-red-50 sm:w-auto"
                     >
                       {t('myAppointments.cancel')}
                     </button>
@@ -59,7 +59,10 @@ export default function MyAppointments() {
         ) : (
           <>
             <p className="text-sm text-slate-500">{t('myAppointments.noUpcoming')}</p>
-            <Link to="/patient/book" className="mt-2 inline-block text-sm font-semibold text-sky-700 hover:underline">
+            <Link
+              to="/patient/book"
+              className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-sky-700 px-4 font-semibold text-white hover:bg-sky-800 sm:w-auto"
+            >
               {t('patientHome.bookNow')}
             </Link>
           </>

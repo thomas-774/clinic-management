@@ -81,7 +81,7 @@ export default function Modal({ open, title, onClose, children, size = 'md' }) {
             data-close
             onClick={onClose}
             aria-label={t('common.close')}
-            className="-m-1 rounded-lg p-1 text-xl leading-none text-slate-500 hover:bg-slate-100"
+            className="-m-2 inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg text-xl leading-none text-slate-500 hover:bg-slate-100"
           >
             ×
           </button>

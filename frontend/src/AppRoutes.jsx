@@ -20,6 +20,7 @@ import {
   PatientDetails,
   PatientHome,
   PatientsList,
+  PREFETCH_DELAY_MS,
   prefetchRolePages,
   PrescriptionForm,
   PrescriptionPrintPage,
@@ -41,9 +42,13 @@ function HomeRedirect() {
 export default function AppRoutes() {
   const { role } = useAuth()
 
-  // Logged in (or back with a stored token): fetch the rest of the role's pages now.
+  // Logged in (or back with a stored token): fetch the rest of the role's pages
+  // once the current page is up, so they don't compete with it on a slow
+  // phone network (NFR-P.5, T11-14).
   useEffect(() => {
-    if (role) prefetchRolePages(role)
+    if (!role) return
+    const timer = setTimeout(() => prefetchRolePages(role), PREFETCH_DELAY_MS)
+    return () => clearTimeout(timer)
   }, [role])
 
   return (

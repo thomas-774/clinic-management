@@ -15,7 +15,7 @@ function InfoRow({ label, children }) {
   return (
     <div className="flex flex-col gap-0.5 py-2 sm:flex-row sm:gap-4">
       <dt className="text-sm text-slate-500 sm:w-28 sm:shrink-0">{label}</dt>
-      <dd className="text-slate-900">{children}</dd>
+      <dd className="min-w-0 break-words text-slate-900">{children}</dd>
     </div>
   )
 }
@@ -43,6 +43,7 @@ function ContactForm({ profile, onDone }) {
       <TextField
         label={t('patientHome.phone')}
         type="tel"
+        autoComplete="tel"
         dir="ltr"
         value={form.phone}
         onChange={(e) => setForm({ ...form, phone: e.target.value })}
@@ -51,6 +52,7 @@ function ContactForm({ profile, onDone }) {
       />
       <TextField
         label={t('patientHome.address')}
+        autoComplete="street-address"
         value={form.address}
         onChange={(e) => setForm({ ...form, address: e.target.value })}
         error={errors.address}
@@ -60,11 +62,15 @@ function ContactForm({ profile, onDone }) {
         <button
           type="submit"
           disabled={update.isPending}
-          className="rounded-lg bg-sky-700 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-800 disabled:opacity-60"
+          className="min-h-11 flex-1 rounded-lg bg-sky-700 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-800 disabled:opacity-60 sm:flex-none"
         >
           {update.isPending ? t('common.saving') : t('common.save')}
         </button>
-        <button type="button" onClick={() => onDone(false)} className="rounded-lg px-4 py-2 text-sm text-slate-600 hover:bg-slate-100">
+        <button
+          type="button"
+          onClick={() => onDone(false)}
+          className="min-h-11 flex-1 rounded-lg px-4 py-2 text-sm text-slate-600 ring-1 ring-slate-300 hover:bg-slate-100 sm:flex-none"
+        >
           {t('common.cancel')}
         </button>
       </div>
@@ -99,14 +105,17 @@ export default function PatientHome() {
                 </span>
                 <StatusBadge status={next.status} />
               </p>
-              <Link to="/patient/appointments" className="mt-2 inline-block text-sm font-semibold text-sky-700 hover:underline">
+              <Link to="/patient/appointments" className="mt-1 inline-flex min-h-11 items-center text-sm font-semibold text-sky-700 hover:underline">
                 {t('patientHome.manageAppointment')}
               </Link>
             </>
           ) : (
             <>
               <p className="text-sm text-slate-500">{t('patientHome.noAppointment')}</p>
-              <Link to="/patient/book" className="mt-2 inline-block text-sm font-semibold text-sky-700 hover:underline">
+              <Link
+                to="/patient/book"
+                className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-sky-700 px-4 font-semibold text-white hover:bg-sky-800 sm:w-auto"
+              >
                 {t('patientHome.bookNow')}
               </Link>
             </>
@@ -119,7 +128,7 @@ export default function PatientHome() {
           {hasBalance ? (
             <ul aria-label={t('patientHome.unpaidVisits')} className="mt-2 divide-y divide-slate-100 text-sm">
               {profile.unpaid_visits.map((visit) => (
-                <li key={visit.id} className="flex justify-between gap-3 py-1.5">
+                <li key={visit.id} className="flex flex-wrap justify-between gap-x-3 py-1.5">
                   <span className="text-slate-600">{t('patientHome.visitOn', { date: formatDate(visit.visit_date) })}</span>
                   <span className="font-semibold text-red-600">{formatMoney(visit.remaining)}</span>
                 </li>
@@ -141,7 +150,7 @@ export default function PatientHome() {
                 setEditing(true)
                 setSaved(false)
               }}
-              className="text-sm font-semibold text-sky-700 hover:underline"
+              className="-my-2 min-h-11 text-sm font-semibold text-sky-700 hover:underline"
             >
               {t('patientHome.editContact')}
             </button>
@@ -173,7 +182,7 @@ export default function PatientHome() {
       </Card>
 
       <Card title={t('patientHome.currentIllness')}>
-        <p className={profile.current_illness ? 'text-slate-900' : 'text-sm text-slate-500'}>
+        <p className={profile.current_illness ? 'break-words text-slate-900' : 'text-sm text-slate-500'}>
           {profile.current_illness || t('patientHome.noIllness')}
         </p>
       </Card>

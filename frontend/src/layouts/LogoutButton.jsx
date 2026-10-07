@@ -9,7 +9,7 @@ export default function LogoutButton({ className = '' }) {
     <button
       type="button"
       onClick={logout}
-      className={`rounded-lg px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 ${className}`}
+      className={`inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-red-700 hover:bg-red-50 ${className}`}
     >
       {t('common.logout')}
     </button>

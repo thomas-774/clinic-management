@@ -42,7 +42,7 @@ export default function Login() {
       footer={
         <>
           {t('auth.login.newPatient')}{' '}
-          <Link to="/register" className="font-medium text-sky-700 hover:underline">
+          <Link to="/register" className="inline-flex min-h-11 min-w-11 items-center justify-center font-medium text-sky-700 hover:underline">
             {t('auth.login.createAccount')}
           </Link>
         </>
@@ -58,6 +58,9 @@ export default function Login() {
           label={t('auth.login.loginField')}
           name="login"
           autoComplete="username"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           dir="ltr"
           value={form.login}
           onChange={update('login')}
@@ -76,7 +79,7 @@ export default function Login() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-lg bg-sky-700 px-4 py-2.5 font-semibold text-white hover:bg-sky-800 disabled:opacity-60"
+          className="min-h-11 w-full rounded-lg bg-sky-700 px-4 py-2.5 font-semibold text-white hover:bg-sky-800 disabled:opacity-60"
         >
           {submitting ? t('auth.login.submitting') : t('auth.login.submit')}
         </button>

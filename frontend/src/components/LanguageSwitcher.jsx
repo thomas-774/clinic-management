@@ -11,7 +11,7 @@ export default function LanguageSwitcher({ className = '' }) {
       lang={next}
       title={t('language.change')}
       onClick={() => i18n.changeLanguage(next)}
-      className={`rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-slate-300 hover:bg-slate-100 ${className}`}
+      className={`inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg px-3 text-sm font-medium text-slate-600 ring-1 ring-slate-300 hover:bg-slate-100 ${className}`}
     >
       {t('language.other')}
     </button>

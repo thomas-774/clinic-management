@@ -13,10 +13,14 @@ describe('lazy role pages', () => {
     vi.restoreAllMocks()
   })
 
-  it('are React.lazy components', () => {
+  it('load their chunk on demand and remember it once it is in (T11-14)', async () => {
     for (const page of [lazyPages.PatientHome, lazyPages.Dashboard, lazyPages.Reports, lazyPages.AssistantToday]) {
-      expect(page.$$typeof).toBe(Symbol.for('react.lazy'))
+      expect(page.load).toEqual(expect.any(Function))
     }
+    const module = await lazyPages.Reports.load()
+    // Rendered directly from now on: no second suspend, no held-back paint.
+    expect(lazyPages.Reports.load.module).toBe(module)
+    expect(lazyPages.loaders.doctor.Reports).toBe(lazyPages.Reports.load)
   })
 
   it('renders a lazily loaded page and prefetches the rest of the role', async () => {
@@ -41,7 +45,9 @@ describe('lazy role pages', () => {
     renderAppAt('/patient')
 
     expect(await screen.findByRole('heading', { name: 'Hello, Mona Ali' })).toBeInTheDocument()
-    expect(prefetch).toHaveBeenCalledWith('patient')
+    // Only once the page is up (T11-14).
+    expect(prefetch).not.toHaveBeenCalled()
+    await vi.waitFor(() => expect(prefetch).toHaveBeenCalledWith('patient'), { timeout: lazyPages.PREFETCH_DELAY_MS + 1000 })
     expect(prefetch).not.toHaveBeenCalledWith('doctor')
   })
 

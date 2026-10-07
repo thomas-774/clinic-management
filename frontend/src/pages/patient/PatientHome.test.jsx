@@ -123,6 +123,10 @@ describe('PatientHome', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Edit contact info' }))
     const phone = screen.getByLabelText('Phone')
+    // Phone keypad and autofill on a phone (NFR-U.2).
+    expect(phone).toHaveAttribute('type', 'tel')
+    expect(phone).toHaveAttribute('autocomplete', 'tel')
+    expect(screen.getByLabelText('Address')).toHaveAttribute('autocomplete', 'street-address')
     await userEvent.clear(phone)
     await userEvent.type(phone, '01099998888')
     const address = screen.getByLabelText('Address')

@@ -25,3 +25,5 @@ coverage
 *.sw?
 dist-a11y
 a11y-audit-results.json
+/dist-mobile
+/mobile-audit
