@@ -6,6 +6,7 @@ import * as appointmentsApi from '../../api/appointments'
 import * as authApi from '../../api/auth'
 import { tokenStorage } from '../../api/client'
 import * as patientsApi from '../../api/doctorPatients'
+import * as prescriptionsApi from '../../api/prescriptions'
 import * as visitsApi from '../../api/visits'
 import { expectPath, renderAppAt } from '../../test/renderApp'
 import { expectNoA11yViolationsInBothLanguages, tabTo } from '../../test/a11y'
@@ -51,6 +52,7 @@ function renderForm(path) {
 describe('VisitForm', () => {
   beforeEach(() => {
     localStorage.clear()
+    sessionStorage.clear()
     vi.restoreAllMocks()
     vi.useFakeTimers({ toFake: ['Date'] })
     vi.setSystemTime(new Date('2026-10-05T14:20:00Z')) // 17:20 in Cairo
@@ -126,6 +128,86 @@ describe('VisitForm', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Not now' }))
     expect(screen.queryByRole('link', { name: 'Write prescription for this visit' })).not.toBeInTheDocument()
+  })
+
+  it('"Write prescription" on a complete visit still writes the prescription first, without saving', async () => {
+    const create = fakeServer()
+    const exportVisit = vi.spyOn(visitsApi, 'exportVisit')
+    renderForm('/doctor/visits/new?appointment=40')
+
+    await userEvent.type(await screen.findByLabelText('Work done today'), 'Extraction')
+    await userEvent.type(screen.getByLabelText('Total cost'), '800')
+    expect(screen.getByRole('button', { name: 'Save visit' })).toBeEnabled()
+    await userEvent.click(screen.getByRole('button', { name: 'Write prescription' }))
+
+    expect(create).not.toHaveBeenCalled()
+    expect(exportVisit).not.toHaveBeenCalled()
+    await expectPath('/doctor/patients/7/prescriptions/new')
+    expect(JSON.parse(sessionStorage.getItem('clinic.visitDraft'))).toMatchObject({
+      form: { work_done: 'Extraction', total_amount: '800' },
+    })
+  })
+
+  it('"Write prescription" before the cost: writes it first and keeps the visit typed so far', async () => {
+    const create = fakeServer()
+    renderForm('/doctor/visits/new?appointment=40')
+
+    await userEvent.type(await screen.findByLabelText('Work done today'), 'Extraction')
+    expect(screen.getByRole('button', { name: 'Save visit' })).toBeDisabled()
+    await userEvent.click(screen.getByRole('button', { name: 'Write prescription' }))
+
+    expect(create).not.toHaveBeenCalled()
+    await expectPath('/doctor/patients/7/prescriptions/new')
+    expect(await screen.findByText("For today's visit — you will go back to it after saving.")).toBeInTheDocument()
+    expect(JSON.parse(sessionStorage.getItem('clinic.visitDraft'))).toMatchObject({
+      url: '/doctor/visits/new?appointment=40',
+      form: { work_done: 'Extraction', total_amount: '' },
+      prescriptionIds: [],
+    })
+  })
+
+  it('back from the prescription: restores the visit and links the prescription on save', async () => {
+    fakeServer()
+    vi.spyOn(prescriptionsApi, 'getPrescription').mockResolvedValue({
+      id: 55,
+      patient_id: 7,
+      visit_id: null,
+      issued_on: '2026-10-05',
+      notes: 'After meals',
+      items: [
+        { id: 1, drug_id: 11, drug_name: 'Augmentin 1 g', drug_form: 'tablets', instructions: '1 tablet every 12 hours' },
+        { id: 2, drug_id: null, drug_name: 'Mouthwash X', drug_form: null, instructions: 'Rinse twice daily' },
+      ],
+    })
+    const update = vi.spyOn(prescriptionsApi, 'updatePrescription').mockResolvedValue({ id: 55 })
+    sessionStorage.setItem(
+      'clinic.visitDraft',
+      JSON.stringify({
+        url: '/doctor/visits/new?appointment=40',
+        form: { work_done: 'Extraction', total_amount: '', paid_now: '', method: 'cash' },
+        prescriptionIds: [55],
+        savedAt: Date.now(),
+      }),
+    )
+    renderForm('/doctor/visits/new?appointment=40')
+
+    expect(await screen.findByLabelText('Work done today')).toHaveValue('Extraction')
+    expect(screen.getByText(/^Prescription written \(1\)/)).toHaveAttribute('role', 'status')
+    await userEvent.type(screen.getByLabelText('Total cost'), '800')
+    await userEvent.click(screen.getByRole('button', { name: 'Save visit' }))
+
+    await expectPath('/doctor/patients/7')
+    expect(update).toHaveBeenCalledWith(55, {
+      visit_id: 88,
+      issued_on: '2026-10-05',
+      notes: 'After meals',
+      items: [
+        { drug_id: 11, instructions: '1 tablet every 12 hours' },
+        { drug_name: 'Mouthwash X', instructions: 'Rinse twice daily' },
+      ],
+    })
+    expect(sessionStorage.getItem('clinic.visitDraft')).toBeNull()
+    expect(screen.queryByText('The visit of 5 Oct 2026 is saved.')).not.toBeInTheDocument()
   })
 
   it('shows 0 in black when fully paid', async () => {

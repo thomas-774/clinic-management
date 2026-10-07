@@ -57,6 +57,32 @@ export function useSavePrescription() {
   })
 }
 
+/**
+ * Links prescriptions written before their visit was saved to it:
+ * `mutateAsync({ ids, visitId })`. The update replaces every field, so each is
+ * sent back as it is, with only `visit_id` changed.
+ */
+export function useLinkPrescriptions() {
+  return useMutation({
+    mutationFn: ({ ids, visitId }) =>
+      Promise.all(
+        ids.map(async (id) => {
+          const prescription = await getPrescription(id)
+          return updatePrescription(id, {
+            visit_id: visitId,
+            issued_on: prescription.issued_on,
+            notes: prescription.notes,
+            items: prescription.items.map((item) => ({
+              ...(item.drug_id ? { drug_id: item.drug_id } : { drug_name: item.drug_name }),
+              instructions: item.instructions,
+            })),
+          })
+        }),
+      ),
+    onSuccess: useRefreshAfterPrescription(),
+  })
+}
+
 export function useDeletePrescription() {
   return useMutation({ mutationFn: (id) => deletePrescription(id), onSuccess: useRefreshAfterPrescription() })
 }

@@ -409,6 +409,9 @@
     },
     "save_pdf": "حفظ الزيارة + PDF",
     "save_docx": "حفظ الزيارة + Word",
+    "writePrescription": "كتابة روشتة",
+    "prescriptionPending": "تمت كتابة الروشتة ({{count}}) — سيتم ربطها بهذه الزيارة عند حفظها.",
+    "linkFailed": "تم حفظ الزيارة، لكن تعذّر ربط الروشتة بها — الروشتة محفوظة في روشتات المريض.",
     "fileFailed": "تم حفظ الزيارة، لكن تعذّر تنزيل الملف — استخدم زرّي PDF / Word في الزيارة."
   },
   "paymentStatus": {
@@ -597,6 +600,7 @@
     "age": "السن {{age}}",
     "date": "التاريخ",
     "forVisit": "لزيارة {{date}}",
+    "forTodaysVisit": "لزيارة اليوم — ستعود إليها بعد الحفظ.",
     "reminder": "راجع قبل كتابة الدواء",
     "lines": "الأدوية",
     "line": "الدواء {{number}}",
@@ -629,7 +633,8 @@
     "notes": "ملاحظات",
     "signature": "التوقيع",
     "printAgain": "اطبع مرة أخرى",
-    "backToPatient": "→ رجوع للمريض"
+    "backToPatient": "→ رجوع للمريض",
+    "backToVisit": "→ رجوع للزيارة"
   },
   "prescriptions": {
     "title": "الروشتات",

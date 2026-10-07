@@ -15,6 +15,7 @@ import { errorMessage, fieldErrors } from '../../utils/apiErrors'
 import { ageOn } from '../../utils/dates'
 import { formatDate, todayInClinic } from '../../utils/format'
 import Form from '../../components/form/Form'
+import { addDraftPrescription, isVisitFormPath } from '../../utils/visitDraft'
 
 /** RX-1: a prescription has 1 to 15 lines. */
 export const MAX_LINES = 15
@@ -62,7 +63,7 @@ function lineServerError(errors, index) {
  * edited, the patient's allergies and conditions as a reminder, and Save or
  * Save & Print.
  *
- * Routes: /doctor/patients/:id/prescriptions/new[?visit=:id] and, with
+ * Routes: /doctor/patients/:id/prescriptions/new[?visit=:id | ?returnTo=:visitFormUrl] and, with
  * `editing`, /doctor/prescriptions/:id/edit.
  */
 export default function PrescriptionForm({ editing = false }) {
@@ -88,6 +89,8 @@ export default function PrescriptionForm({ editing = false }) {
   if (patient.isError) return <LoadError onRetry={patient.refetch} />
 
   const visitId = editing ? prescription.data.visit_id : Number(params.get('visit')) || null
+  // Written before its visit was saved: back to the visit form, which links it on save.
+  const returnTo = !editing && isVisitFormPath(params.get('returnTo')) ? params.get('returnTo') : null
 
   return (
     <PrescriptionEditor
@@ -95,11 +98,12 @@ export default function PrescriptionForm({ editing = false }) {
       patient={patient.data}
       prescription={editing ? prescription.data : null}
       visitId={visitId}
+      returnTo={returnTo}
     />
   )
 }
 
-function PrescriptionEditor({ patient, prescription, visitId }) {
+function PrescriptionEditor({ patient, prescription, visitId, returnTo }) {
   const { t } = useTranslation()
   const toast = useToast()
   const navigate = useNavigate()
@@ -249,7 +253,9 @@ function PrescriptionEditor({ patient, prescription, visitId }) {
       {
         onSuccess: (saved) => {
           toast.success(t('prescriptionForm.saved'))
-          navigate(print ? `/doctor/prescriptions/${saved.id}/print` : `/doctor/patients/${patient.id}`)
+          if (returnTo) addDraftPrescription(returnTo, saved.id)
+          if (print) navigate(`/doctor/prescriptions/${saved.id}/print`, { state: { returnTo } })
+          else navigate(returnTo ?? `/doctor/patients/${patient.id}`)
         },
       },
     )
@@ -281,6 +287,7 @@ function PrescriptionEditor({ patient, prescription, visitId }) {
             {age !== null && <span className="text-sm text-slate-500"> · {t('prescriptionForm.age', { age })}</span>}
           </p>
           {visit && <p className="text-sm text-slate-500">{t('prescriptionForm.forVisit', { date: formatDate(visit.visit_date) })}</p>}
+          {returnTo && <p className="text-sm text-slate-500">{t('prescriptionForm.forTodaysVisit')}</p>}
         </div>
         <TextField
           type="date"

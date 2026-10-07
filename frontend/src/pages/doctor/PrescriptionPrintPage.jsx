@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import PrescriptionPrint from '../../components/PrescriptionPrint'
 import { LoadError, Loading } from '../../components/QueryState'
 import { usePrescription } from '../../hooks/usePrescriptions'
 import { paperOf } from '../../utils/prescriptions'
+import { isVisitFormPath } from '../../utils/visitDraft'
 
 /** Opens the print dialog once, after the prescription and the web fonts are ready. */
 function usePrintOnce(ready) {
@@ -48,6 +49,9 @@ function usePaperClass(paper) {
 export default function PrescriptionPrintPage() {
   const { t } = useTranslation()
   const { id } = useParams()
+  // Printed for a visit not saved yet: back to that visit form.
+  const asked = useLocation().state?.returnTo
+  const returnTo = isVisitFormPath(asked) ? asked : null
   const { data, isPending, isError, error, refetch } = usePrescription(id, { purpose: 'print' })
   usePaperClass(data ? paperOf(data) : null)
   usePrintOnce(Boolean(data))
@@ -70,8 +74,8 @@ export default function PrescriptionPrintPage() {
   return (
     <div className="min-h-screen bg-slate-100 py-6 print:min-h-0 print:bg-white print:py-0">
       <div className={`mx-auto mb-4 flex flex-wrap items-center justify-between gap-2 px-4 print:hidden ${width}`}>
-        <Link to={`/doctor/patients/${data.patient_id}`} className="text-sm font-semibold text-sky-700 hover:underline">
-          {t('rxPrint.backToPatient')}
+        <Link to={returnTo ?? `/doctor/patients/${data.patient_id}`} className="text-sm font-semibold text-sky-700 hover:underline">
+          {t(returnTo ? 'rxPrint.backToVisit' : 'rxPrint.backToPatient')}
         </Link>
         <button
           type="button"

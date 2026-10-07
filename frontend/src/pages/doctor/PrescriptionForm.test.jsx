@@ -318,6 +318,37 @@ describe('PrescriptionForm', () => {
     expect(prescriptionsApi.getPrescription).toHaveBeenCalledWith('55')
     expect(patientsApi.getPatient).toHaveBeenCalledWith(7)
   })
+
+  it('written from an unsaved visit: Save goes back to the visit form and records the prescription', async () => {
+    const create = fakeServer()
+    const url = '/doctor/visits/new?appointment=40'
+    sessionStorage.setItem('clinic.visitDraft', JSON.stringify({ url, form: { work_done: 'Extraction' }, prescriptionIds: [], savedAt: Date.now() }))
+    renderForm(`/doctor/patients/7/prescriptions/new?returnTo=${encodeURIComponent(url)}`)
+
+    await screen.findByRole('group', { name: 'Medication 1' })
+    await searchFor(1, 'aug', 'Augmentin 1 g')
+    await userEvent.keyboard('{Enter}')
+    await userEvent.type(instructions(1), '1 tablet every 12 hours')
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+    expect(create).toHaveBeenCalledWith(7, expect.objectContaining({ visit_id: null }))
+    await expectPath('/doctor/visits/new')
+    expect(JSON.parse(sessionStorage.getItem('clinic.visitDraft')).prescriptionIds).toEqual([55])
+    sessionStorage.clear()
+  })
+
+  it('ignores a returnTo that is not the visit form', async () => {
+    fakeServer()
+    renderForm(`/doctor/patients/7/prescriptions/new?returnTo=${encodeURIComponent('https://evil.example')}`)
+
+    await screen.findByRole('group', { name: 'Medication 1' })
+    await searchFor(1, 'aug', 'Augmentin 1 g')
+    await userEvent.keyboard('{Enter}')
+    await userEvent.type(instructions(1), '1 tablet every 12 hours')
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+    await expectPath('/doctor/patients/7')
+  })
 })
 
 // NFR-U.1 (T11-12): axe on the loaded page in both languages.

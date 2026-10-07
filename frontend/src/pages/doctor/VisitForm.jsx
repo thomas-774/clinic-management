@@ -8,12 +8,14 @@ import SelectField from '../../components/form/SelectField'
 import TextAreaField from '../../components/form/TextAreaField'
 import { usePatient } from '../../hooks/usePatient'
 import { useSchedule } from '../../hooks/useSchedule'
+import { useLinkPrescriptions } from '../../hooks/usePrescriptions'
 import { useCreateVisit, useVisitExport } from '../../hooks/useVisits'
 import { useToast } from '../../toast/useToast'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
 import { formatDate, formatMoney, formatTime, todayInClinic } from '../../utils/format'
 import { PAYMENT_METHODS, fromPiastres, toPiastres } from '../../utils/money'
 import Form from '../../components/form/Form'
+import { clearVisitDraft, loadVisitDraft, saveVisitDraft } from '../../utils/visitDraft'
 
 /**
  * Who the visit is for: the appointment handed over by the schedule (or found
@@ -78,11 +80,17 @@ export default function VisitForm() {
   const { t } = useTranslation()
   const toast = useToast()
   const navigate = useNavigate()
+  const { pathname, search } = useLocation()
+  const url = pathname + search
   const { appointment, patient, isPending, isError, refetch } = useVisitContext()
   const create = useCreateVisit()
+  const linkPrescriptions = useLinkPrescriptions()
   const exportFile = useVisitExport({ showErrors: false })
   const [fileChoice, chooseFile] = useFileChoice()
-  const [form, setForm] = useState({ work_done: '', total_amount: '', paid_now: '', method: 'cash' })
+  // Back from a prescription written first: what was typed, and the prescriptions to link.
+  const [draft] = useState(() => loadVisitDraft(url))
+  const [form, setForm] = useState(() => ({ work_done: '', total_amount: '', paid_now: '', method: 'cash', ...draft?.form }))
+  const pendingPrescriptions = draft?.prescriptionIds ?? []
 
   if (isPending) return <Loading />
   if (isError) return <LoadError onRetry={refetch} />
@@ -108,7 +116,23 @@ export default function VisitForm() {
 
   const serverErrors = fieldErrors(create.error)
   const formError = create.error && !Object.keys(serverErrors).length ? errorMessage(create.error, t('common.networkError')) : ''
-  const canSave = form.work_done.trim() !== '' && !Number.isNaN(total) && !Number.isNaN(paid) && !overpaid && !create.isPending && !exportFile.isPending
+  const busy = create.isPending || exportFile.isPending || linkPrescriptions.isPending
+  const canSave = form.work_done.trim() !== '' && !Number.isNaN(total) && !Number.isNaN(paid) && !overpaid && !busy
+
+  /**
+   * "Write prescription": writes the prescription first, without saving the
+   * visit, and comes back here keeping what was typed. The prescription is
+   * linked to the visit when the visit is saved.
+   */
+  function writePrescription() {
+    saveVisitDraft(url, form)
+    navigate(`/doctor/patients/${patient.id}/prescriptions/new?returnTo=${encodeURIComponent(url)}`)
+  }
+
+  function cancel() {
+    clearVisitDraft()
+    navigate(-1)
+  }
 
   function submit(event) {
     event.preventDefault()
@@ -125,12 +149,19 @@ export default function VisitForm() {
       {
         onSuccess: async (visit) => {
           toast.success(t('visitForm.saved', { remaining: formatMoney(visit.remaining) }))
+          clearVisitDraft()
+          if (pendingPrescriptions.length) {
+            // The visit is saved either way; an unlinked prescription stays on the patient.
+            await linkPrescriptions
+              .mutateAsync({ ids: pendingPrescriptions, visitId: visit.id })
+              .catch(() => toast.error(t('visitForm.linkFailed')))
+          }
           if (fileChoice !== 'none') {
             // The visit is saved either way; the file can be downloaded again from the visit (FR-K.4).
             await exportFile.mutateAsync({ id: visit.id, format: fileChoice }).catch(() => toast.error(t('visitForm.fileFailed')))
           }
-          // The patient page then offers to write this visit's prescription (FR-J.7).
-          navigate(`/doctor/patients/${patient.id}`, { state: { savedVisitId: visit.id } })
+          // Without a prescription yet, the patient page offers to write one (FR-J.7).
+          navigate(`/doctor/patients/${patient.id}`, { state: pendingPrescriptions.length ? null : { savedVisitId: visit.id } })
         },
       },
     )
@@ -159,6 +190,12 @@ export default function VisitForm() {
           )}
         </p>
       </div>
+
+      {pendingPrescriptions.length > 0 && (
+        <p role="status" className="rounded-lg bg-violet-50 px-3 py-2 text-sm text-violet-900 ring-1 ring-violet-200">
+          {t('visitForm.prescriptionPending', { count: pendingPrescriptions.length })}
+        </p>
+      )}
 
       {formError && (
         <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
@@ -230,15 +267,23 @@ export default function VisitForm() {
             ))}
           </div>
         </fieldset>
-        <button type="button" onClick={() => navigate(-1)} className="rounded-lg px-4 py-2 text-sm text-slate-600 hover:bg-slate-100">
+        <button type="button" onClick={cancel} className="rounded-lg px-4 py-2 text-sm text-slate-600 hover:bg-slate-100">
           {t('common.cancel')}
+        </button>
+        <button
+          type="button"
+          onClick={writePrescription}
+          disabled={busy}
+          className="rounded-lg px-4 py-2 text-sm font-semibold text-violet-700 ring-1 ring-violet-200 hover:bg-violet-50 disabled:opacity-60"
+        >
+          {t('visitForm.writePrescription')}
         </button>
         <button
           type="submit"
           disabled={!canSave}
           className="rounded-lg bg-sky-700 px-5 py-2 text-sm font-semibold text-white hover:bg-sky-800 disabled:opacity-60"
         >
-          {create.isPending || exportFile.isPending ? t('common.saving') : t('visitForm.save', { context: fileChoice === 'none' ? undefined : fileChoice })}
+          {busy ? t('common.saving') : t('visitForm.save', { context: fileChoice === 'none' ? undefined : fileChoice })}
         </button>
       </div>
     </Form>

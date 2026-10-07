@@ -409,6 +409,9 @@
     },
     "save_pdf": "Save visit + PDF",
     "save_docx": "Save visit + Word",
+    "writePrescription": "Write prescription",
+    "prescriptionPending": "Prescription written ({{count}}) — it will be linked to this visit when you save it.",
+    "linkFailed": "Visit saved, but the prescription could not be linked to it — it is still in the patient's prescriptions.",
     "fileFailed": "Visit saved, but the file could not be downloaded — use the PDF / Word buttons on the visit."
   },
   "paymentStatus": {
@@ -597,6 +600,7 @@
     "age": "Age {{age}}",
     "date": "Date",
     "forVisit": "For the visit of {{date}}",
+    "forTodaysVisit": "For today's visit — you will go back to it after saving.",
     "reminder": "Check before prescribing",
     "lines": "Medications",
     "line": "Medication {{number}}",
@@ -629,7 +633,8 @@
     "notes": "Notes",
     "signature": "Signature",
     "printAgain": "Print again",
-    "backToPatient": "← Back to patient"
+    "backToPatient": "← Back to patient",
+    "backToVisit": "← Back to the visit"
   },
   "prescriptions": {
     "title": "Prescriptions",
