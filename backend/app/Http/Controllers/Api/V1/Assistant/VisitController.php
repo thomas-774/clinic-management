@@ -32,7 +32,7 @@ class VisitController extends Controller
             ->withPaid()
             ->unpaid()
             ->with(['patient.user:id,name,phone', 'payments.recordedBy:id,name'])
-            ->whereDate('visit_date', $validated['date'] ?? today()->toDateString())
+            ->where('visit_date', $validated['date'] ?? today()->toDateString())
             ->orderBy('created_at')
             ->orderBy('id')
             ->get();

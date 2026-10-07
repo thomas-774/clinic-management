@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\Visit;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Smalot\PdfParser\Parser;
 use Tests\TestCase;
 
@@ -132,4 +133,20 @@ function pdfText(string $pdf): string
 function pdfArabic(string $phrase): string
 {
     return implode('', array_reverse(mb_str_split($phrase)));
+}
+
+/**
+ * T11-08 (NFR-P.2): how many SQL queries $call runs.
+ */
+function queryCount(Closure $call): int
+{
+    DB::flushQueryLog();
+    DB::enableQueryLog();
+    try {
+        $call();
+    } finally {
+        DB::disableQueryLog();
+    }
+
+    return count(DB::getQueryLog());
 }

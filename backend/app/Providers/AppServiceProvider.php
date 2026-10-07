@@ -5,6 +5,7 @@ namespace App\Providers;
 use Carbon\CarbonInterface;
 use Closure;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\RateLimiter;
@@ -33,6 +34,10 @@ class AppServiceProvider extends ServiceProvider
         Date::serializeUsing(
             fn (CarbonInterface $date) => $date->copy()->setTimezone(config('app.timezone'))->toIso8601String(),
         );
+
+        // NFR-P.2: a relation read without with() / load() throws outside
+        // production, so the test suite catches every N+1 query.
+        Model::preventLazyLoading(! $this->app->isProduction());
 
         $this->configureRateLimiting();
 

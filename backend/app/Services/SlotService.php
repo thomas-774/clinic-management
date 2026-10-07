@@ -65,7 +65,7 @@ class SlotService
             ->orderBy('start_time')
             ->get();
 
-        $blocks = $this->doctor->blockedTimes()->whereDate('date', $day)->get();
+        $blocks = $this->doctor->blockedTimes()->where('date', $day->toDateString())->get();
 
         if ($ranges->isEmpty() || $blocks->contains(fn (BlockedTime $block) => $block->isWholeDay())) {
             return [];
@@ -128,6 +128,10 @@ class SlotService
             ->whereIn('status', AppointmentStatus::holdingSlot())
             ->where('start_at', '<', $day->copy()->addDay())
             ->where('end_at', '>', $day)
+            // A slot is at most 240 minutes, so anything overlapping the day
+            // starts after the day before: lets MySQL use (doctor_id, start_at)
+            // instead of reading every appointment (T11-08).
+            ->where('start_at', '>', $day->copy()->subDay())
             ->get(['start_at', 'end_at'])
             ->map(fn ($appointment) => [$appointment->start_at, $appointment->end_at]);
     }

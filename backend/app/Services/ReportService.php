@@ -64,11 +64,21 @@ class ReportService
      */
     public function outstandingByPatient(): array
     {
+        // Every visit has to be checked, so (T11-08): only the columns used
+        // below, read from the (visit_date, patient_id, total_amount) index in
+        // date order, and the payments summed once per visit in one pass
+        // rather than by a subquery per visit.
+        $paid = Payment::query()
+            ->select('visit_id')
+            ->selectRaw('SUM(amount) as payments_sum_amount')
+            ->groupBy('visit_id');
+
         $unpaid = Visit::query()
-            ->withPaid()
+            ->select(['visits.id', 'visits.patient_id', 'visits.visit_date', 'visits.total_amount', 'paid.payments_sum_amount'])
+            ->leftJoinSub($paid, 'paid', 'paid.visit_id', '=', 'visits.id')
+            ->whereRaw('visits.total_amount > COALESCE(paid.payments_sum_amount, 0)')
             ->with('patient.user:id,name,phone')
-            ->havingRaw('total_amount > COALESCE(payments_sum_amount, 0)')
-            ->orderBy('visit_date')
+            ->orderBy('visits.visit_date')
             ->get();
 
         $rows = $unpaid->groupBy('patient_id')->map(fn ($visits) => [

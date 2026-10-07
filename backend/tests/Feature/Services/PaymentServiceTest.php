@@ -41,7 +41,7 @@ it('a second payment of 500 → remaining 0, paid', function () {
     $visit = reloaded($this->visit);
     expect($this->service->remaining($visit))->toBe('0.00')
         ->and($this->service->status($visit))->toBe(PaymentStatus::Paid)
-        ->and($visit->payments()->pluck('method')->all())->toBe([PaymentMethod::Cash, PaymentMethod::Card]);
+        ->and($visit->payments()->orderBy('id')->pluck('method')->all())->toBe([PaymentMethod::Cash, PaymentMethod::Card]);
 });
 
 it('rejects a payment of 600 when 500 remains', function () {

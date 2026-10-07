@@ -210,3 +210,11 @@ describe('visits and payments (T1-05)', function () {
             ->and(Schema::hasIndex('payments', ['paid_at']))->toBeTrue();
     });
 });
+
+// T11-08 (NFR-P.3): the indexes the EXPLAIN plans asked for.
+it('has the report and list indexes', function () {
+    expect(Schema::hasIndex('visits', ['visit_date', 'patient_id', 'total_amount']))->toBeTrue()
+        ->and(Schema::hasIndex('visits', ['patient_id', 'visit_date']))->toBeTrue()
+        ->and(Schema::hasIndex('payments', ['visit_id', 'amount']))->toBeTrue()
+        ->and(Schema::hasIndex('users', ['name']))->toBeTrue();
+});

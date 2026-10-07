@@ -389,6 +389,7 @@ Twelve tables cover the whole v1 (nine core tables, plus `drugs`, `prescriptions
 - INDEX `(doctor_id, start_at)` for the schedule; INDEX `(paid_at)` on payments for reports; INDEX `(patient_id)` on every child table.
 - Remaining balance is **not stored**; it is computed (`total_amount − SUM(payments)`) in a query or Eloquent accessor to avoid stale data.
 - INDEX `(is_active, trade_name)` on drugs for the prefix search; UNIQUE `seed_key` so the seeder can upsert (the PDF repeats some trade names with different forms); INDEX `(patient_id, issued_on)` on prescriptions.
+- Phase 11 (T11-08, from `EXPLAIN`): INDEX `(visit_date, patient_id, total_amount)` on visits for the reports (revenue counts by visit date) and the outstanding totals; INDEX `(patient_id, visit_date)` on visits; INDEX `(visit_id, amount)` on payments so balance sums read the index only; INDEX `(name)` on users for the patients list.
 
 ## 6. Backend (Laravel) Architecture
 

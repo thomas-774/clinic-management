@@ -52,8 +52,10 @@ class Patient extends Model
                     ->where('users.name', 'like', $like)
                     ->orWhere('users.phone', 'like', $like));
             })
+            // users.id breaks ties (one user per patient): both sort keys on
+            // users let MySQL read the name index in order and stop at the page.
             ->orderBy('users.name')
-            ->orderBy('patients.id');
+            ->orderBy('users.id');
     }
 
     public function user(): BelongsTo
