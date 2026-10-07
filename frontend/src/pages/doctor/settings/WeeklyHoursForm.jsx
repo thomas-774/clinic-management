@@ -13,7 +13,7 @@ function nextRange(ranges) {
 }
 
 const timeInput = (error) =>
-  `w-28 rounded-lg border bg-white px-2 py-1.5 text-sm ${error ? 'border-red-400' : 'border-slate-300'}`
+  `w-28 rounded-lg border bg-white px-2 py-1.5 text-sm focus:outline-none focus:ring-2 ${error ? 'border-red-600 focus:ring-red-600' : 'border-slate-500 focus:ring-sky-600'}`
 
 /**
  * Weekly grid: each day lists its ranges (start, end, remove) with "Add range";
@@ -60,7 +60,7 @@ export default function WeeklyHoursForm({ week, onChange, errors, onSave, saving
                               aria-invalid={errors[`${key}.start_time`] ? true : undefined}
                               className={timeInput(errors[`${key}.start_time`])}
                             />
-                            <span className="text-slate-400">–</span>
+                            <span className="text-slate-500">–</span>
                             <input
                               type="time"
                               aria-label={t('settings.rangeEnd', { day: dayName, n: index + 1 })}

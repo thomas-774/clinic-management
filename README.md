@@ -90,9 +90,11 @@ Run both before opening a PR; CI runs the same two commands. Each stops at the f
 | App | Command | What it runs |
 | --- | --- | --- |
 | Backend | `cd backend && composer check` | Pint (`--test`, whole backend) · Pest with coverage: total ≥ 80 %, `app/Services` ≥ 95 % (`scripts/check-coverage.php`) · `composer audit` |
-| Frontend | `cd frontend && npm run check` | oxlint (`--deny-warnings`) · Vitest with coverage: lines ≥ 70 %, branches ≥ 60 %, `src/utils` and `src/hooks` ≥ 85 % · `vite build` · bundle budget (`scripts/check-bundle-size.js`) · `npm audit` |
+| Frontend | `cd frontend && npm run check` | oxlint (`--deny-warnings`, jsx-a11y) · text contrast of the palette (`scripts/a11y-audit/palette.mjs`) · Vitest with coverage: lines ≥ 70 %, branches ≥ 60 %, `src/utils` and `src/hooks` ≥ 85 % · `vite build` · bundle budget (`scripts/check-bundle-size.js`) · `npm audit` |
 
 Backend coverage needs the PCOV extension. On Laragon (PHP 8.3, thread safe, x64): download `php_pcov-1.0.12-8.3-ts-vs16-x64.zip` from https://downloads.php.net/~windows/pecl/releases/pcov/1.0.12/, copy `php_pcov.dll` into `C:\laragon\bin\php\php-8.3.*\ext`, and add `extension=pcov` to that PHP's `php.ini`. Check with `php -m` (it lists `pcov`). Coverage reports land in `backend/build/coverage` and `frontend/coverage` (both git-ignored).
+
+Accessibility in a real browser (WCAG 2.1 AA, both languages, headless Edge or `EDGE_PATH`, no backend needed): `cd frontend && npm run a11y:audit`. Method and results: [docs/a11y/wcag-aa-audit.md](docs/a11y/wcag-aa-audit.md).
 
 ### Pre-commit hook
 

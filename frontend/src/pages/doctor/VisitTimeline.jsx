@@ -63,7 +63,7 @@ function VisitItem({ visit, onAddPayment, onEdit, prescriptionCount = 0, prescri
             {t('prescriptions.visitBadge', { count: prescriptionCount })}
           </span>
         )}
-        <div className="ms-auto flex gap-1">
+        <div className="ms-auto flex flex-wrap gap-1">
           {prescriptionsFor && (
             <Link
               to={`/doctor/patients/${prescriptionsFor}/prescriptions/new?visit=${visit.id}`}

@@ -218,7 +218,7 @@ Performance
 Quality and usability
 - [x] [T11-11](phase-11-nfr/T11-11-coverage-and-lint-gates.md) Coverage and lint gates, one `check` command · M
 - [x] [T11-12](phase-11-nfr/T11-12-a11y-foundation.md) Accessibility foundation · M
-- [ ] [T11-13](phase-11-nfr/T11-13-wcag-aa-audit.md) WCAG 2.1 AA audit of every page · L
+- [x] [T11-13](phase-11-nfr/T11-13-wcag-aa-audit.md) WCAG 2.1 AA audit of every page · L
 - [ ] [T11-14](phase-11-nfr/T11-14-mobile-first-patient-pages.md) Mobile-first patient pages · M
 
 SaaS readiness and close-out

@@ -35,10 +35,12 @@ export default function SlotGrid({ slots = [], loading = false, selected = null,
             onClick={() => onSelect?.(slot)}
             className={`h-11 rounded-lg text-sm font-semibold ring-1 transition ${
               isSelected
-                ? 'bg-sky-600 text-white ring-sky-600'
+                ? 'bg-sky-700 text-white ring-sky-700'
                 : 'bg-white text-sky-800 ring-sky-200 hover:bg-sky-50'
             }`}
           >
+            {/* The chosen slot is marked by more than its colour (WCAG 1.4.1). */}
+            {isSelected && <span aria-hidden="true">✓ </span>}
             {formatTime(slot.start_at)}
           </button>
         )

@@ -32,6 +32,7 @@ export default function WeekView({ start, onOpenDay }) {
           <section
             key={day}
             aria-label={`${t(`days.${dayOfWeek(day)}`)} ${formatDate(day)}`}
+            aria-current={day === today ? 'date' : undefined}
             className={`flex min-h-32 flex-col rounded-xl bg-white ring-1 ${day === today ? 'ring-2 ring-sky-500' : 'ring-slate-200'}`}
           >
             <button
@@ -40,7 +41,11 @@ export default function WeekView({ start, onOpenDay }) {
               aria-label={t('schedule.openDay', { day: `${t(`days.${dayOfWeek(day)}`)} ${formatDate(day)}` })}
               className="rounded-t-xl border-b border-slate-100 px-2 py-2 text-start hover:bg-slate-50"
             >
-              <span className="block text-sm font-semibold text-slate-900">{t(`days.${dayOfWeek(day)}`)}</span>
+              <span className="block text-sm font-semibold text-slate-900">
+                {t(`days.${dayOfWeek(day)}`)}
+                {/* Today is not told by the ring colour alone (WCAG 1.4.1). */}
+                {day === today && <span className="ms-1 rounded bg-sky-100 px-1 text-xs font-semibold text-sky-800">{t('schedule.today')}</span>}
+              </span>
               <span className="block text-xs text-slate-500">{formatDate(day)}</span>
               <span className="mt-1 block text-xs text-sky-700">{t('schedule.count', { count: active })}</span>
             </button>

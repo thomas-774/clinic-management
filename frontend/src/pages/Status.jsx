@@ -29,7 +29,7 @@ export default function Status() {
         )}
         {data && (
           <>
-            <p className="mt-1 text-lg font-semibold text-green-600">{data.status}</p>
+            <p className="mt-1 text-lg font-semibold text-green-700">{data.status}</p>
             <p className="text-sm text-slate-500">{t('status.serverTime', { time: data.time })}</p>
           </>
         )}

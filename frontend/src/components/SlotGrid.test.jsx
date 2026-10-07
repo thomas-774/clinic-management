@@ -61,6 +61,9 @@ describe('SlotGrid + useSlots', () => {
 
     expect(screen.getByRole('button', { name: '17:45' })).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('button', { name: '17:00' })).toHaveAttribute('aria-pressed', 'false')
+    // Not by colour alone (WCAG 1.4.1): a check mark, which screen readers skip (they hear "pressed").
+    expect(screen.getByRole('button', { name: '17:45' })).toHaveTextContent('✓ 17:45')
+    expect(screen.getByRole('button', { name: '17:00' })).not.toHaveTextContent('✓')
   })
 
   it('shows the empty state for a day without slots', async () => {

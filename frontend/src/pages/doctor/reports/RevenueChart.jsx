@@ -49,7 +49,7 @@ export default function RevenueChart({ month, onMonthChange }) {
             type="month"
             value={month}
             onChange={(e) => e.target.value && onMonthChange(e.target.value)}
-            className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-600"
+            className="rounded-lg border border-slate-500 bg-white px-3 py-1.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-600"
           />
         </label>
         {data && !empty && (
@@ -68,7 +68,8 @@ export default function RevenueChart({ month, onMonthChange }) {
           <p className="py-16 text-center text-slate-500">{t('reports.chart.empty')}</p>
         ) : (
           <>
-            <div dir="ltr" role="img" aria-label={t('reports.chart.label', { total: formatMoney(total) })}>
+            {/* overflow-hidden: the chart never widens the page, even before it has measured its box. */}
+            <div dir="ltr" role="img" aria-label={t('reports.chart.label', { total: formatMoney(total) })} className="overflow-hidden">
               <ResponsiveContainer width="100%" height={280} initialDimension={{ width: 800, height: 280 }}>
                 <BarChart data={points} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
                   <CartesianGrid vertical={false} stroke={GRID} />

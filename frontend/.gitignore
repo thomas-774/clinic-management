@@ -23,3 +23,5 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+dist-a11y
+a11y-audit-results.json

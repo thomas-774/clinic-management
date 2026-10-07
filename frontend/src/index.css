@@ -14,6 +14,13 @@
     outline: 2px solid var(--color-sky-700);
     outline-offset: 2px;
   }
+
+  /* Chromium puts the focus on a segment inside date and time fields, so the
+     field itself only matches :focus-within (found in the T11-13 audit). */
+  :is(input[type='date'], input[type='time'], input[type='month'], input[type='datetime-local']):focus-within {
+    outline: 2px solid var(--color-sky-700);
+    outline-offset: 2px;
+  }
 }
 
 /*

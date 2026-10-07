@@ -84,7 +84,7 @@ describe('PatientDetails: prescriptions', () => {
     expect(list).toHaveBeenCalledWith(7)
 
     expect(within(card()).getByRole('link', { name: 'Write prescription' })).toHaveAttribute('href', '/doctor/patients/7/prescriptions/new')
-    expect(screen.getByRole('link', { name: 'Open the prescription of 4 Oct 2026' })).toHaveAttribute('href', '/doctor/prescriptions/31/edit')
+    expect(screen.getByRole('link', { name: 'Open / Edit the prescription of 4 Oct 2026' })).toHaveAttribute('href', '/doctor/prescriptions/31/edit')
   })
 
   it('Reprint opens the print route', async () => {
@@ -155,11 +155,11 @@ describe('PatientDetails: prescriptions', () => {
     renderDetails()
 
     await screen.findByRole('list', { name: 'Prescriptions' })
-    expect(within(visitItem('4 Oct 2026')).getByRole('link', { name: 'Write a prescription for the visit of 4 Oct 2026' })).toHaveAttribute(
+    expect(within(visitItem('4 Oct 2026')).getByRole('link', { name: 'Write prescription for the visit of 4 Oct 2026' })).toHaveAttribute(
       'href',
       '/doctor/patients/7/prescriptions/new?visit=90',
     )
-    expect(within(visitItem('20 Sept 2026')).getByRole('link', { name: 'Write a prescription for the visit of 20 Sept 2026' })).toHaveAttribute(
+    expect(within(visitItem('20 Sept 2026')).getByRole('link', { name: 'Write prescription for the visit of 20 Sept 2026' })).toHaveAttribute(
       'href',
       '/doctor/patients/7/prescriptions/new?visit=80',
     )

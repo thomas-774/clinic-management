@@ -113,7 +113,7 @@ export default function DrugFormModal({ drug, onClose }) {
                       placeholder={t('drugsAdmin.ingredientNamePlaceholder')}
                       value={row.name}
                       onChange={(event) => setIngredient(row.key, 'name', event.target.value)}
-                      className={`w-2/5 rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 ${error ? 'border-red-400 focus:ring-red-600' : 'border-slate-300 focus:ring-sky-600'}`}
+                      className={`w-2/5 rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 ${error ? 'border-red-600 focus:ring-red-600' : 'border-slate-500 focus:ring-sky-600'}`}
                     />
                     <input
                       dir="auto"
@@ -121,7 +121,7 @@ export default function DrugFormModal({ drug, onClose }) {
                       placeholder={t('drugsAdmin.ingredientNotePlaceholder')}
                       value={row.note}
                       onChange={(event) => setIngredient(row.key, 'note', event.target.value)}
-                      className="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-600"
+                      className="min-w-0 flex-1 rounded-lg border border-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-600"
                     />
                     <button
                       type="button"

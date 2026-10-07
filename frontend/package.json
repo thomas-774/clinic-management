@@ -7,13 +7,15 @@
     "dev": "vite",
     "build": "vite build",
     "check:size": "node scripts/check-bundle-size.js",
+    "check:contrast": "node scripts/a11y-audit/palette.mjs",
     "lint": "oxlint --deny-warnings --format=default",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
     "audit:deps": "node scripts/audit-deps.mjs",
     "test:coverage": "vitest run --coverage --maxWorkers=4",
-    "check": "npm run lint && npm run test:coverage && npm run build && npm run check:size && npm run audit:deps"
+    "check": "npm run lint && npm run check:contrast && npm run test:coverage && npm run build && npm run check:size && npm run audit:deps",
+    "a11y:audit": "node scripts/a11y-audit/run.mjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.104.1",

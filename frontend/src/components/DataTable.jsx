@@ -20,7 +20,8 @@ export default function DataTable({ columns, rows, rowHref, emptyMessage, pagina
 
   return (
     <div>
-      <div className="overflow-x-auto rounded-xl bg-white ring-1 ring-slate-200">
+      {/* relative: absolutely placed sr-only text stays inside the scroll box instead of widening the page. */}
+      <div className="relative overflow-x-auto rounded-xl bg-white ring-1 ring-slate-200">
         <table className="w-full text-start text-sm">
           <thead className="bg-slate-50 text-slate-600">
             <tr>

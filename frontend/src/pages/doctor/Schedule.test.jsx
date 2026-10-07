@@ -278,6 +278,17 @@ describe('Schedule: week view', () => {
 
   afterEach(() => vi.useRealTimers())
 
+  it('marks today in words and as the current date, not by the ring colour alone', async () => {
+    fakeServer([])
+    renderSchedule()
+    await userEvent.click(await screen.findByRole('button', { name: 'Week' }))
+
+    const today = await screen.findByRole('region', { name: 'Monday 5 Oct 2026' })
+    expect(today).toHaveAttribute('aria-current', 'date')
+    expect(within(today).getByText('Today')).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Sunday 4 Oct 2026' })).not.toHaveAttribute('aria-current')
+  })
+
   it('shows seven columns from Saturday with each day’s appointments', async () => {
     const server = fakeServer([
       appt(1, '2026-10-05', '17:00', '17:45', MONA),

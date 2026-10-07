@@ -19,7 +19,7 @@ export default function OutstandingModal({ open, onClose }) {
       ) : data.data.length === 0 ? (
         <p className="py-6 text-center text-slate-500">{t('dashboard.nobodyOwes')}</p>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="relative overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="text-slate-600">
               <tr>

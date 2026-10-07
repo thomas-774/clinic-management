@@ -318,7 +318,7 @@ function PrescriptionEditor({ patient, prescription, visitId }) {
         </p>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
         <div className="space-y-4">
           <Card title={t('prescriptionForm.lines')}>
             <ol className="space-y-3">
@@ -392,7 +392,7 @@ function PrescriptionEditor({ patient, prescription, visitId }) {
                           onChange={(event) => update(line.key, { instructions: event.target.value })}
                           onKeyDown={(event) => onInstructionsKeyDown(event, line)}
                           className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 ${
-                            error && chosenName ? 'border-red-400 focus:ring-red-600' : 'border-slate-300 focus:ring-sky-600'
+                            error && chosenName ? 'border-red-600 focus:ring-red-600' : 'border-slate-500 focus:ring-sky-600'
                           }`}
                         />
                         {error && (
