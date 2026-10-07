@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Doctor;
 
+use App\Enums\AuditAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Doctor\StorePrescriptionRequest;
 use App\Http\Resources\ApiResourceCollection;
@@ -9,8 +10,10 @@ use App\Http\Resources\PrescriptionListItemResource;
 use App\Http\Resources\PrescriptionResource;
 use App\Models\Patient;
 use App\Models\Prescription;
+use App\Services\AuditLogger;
 use App\Services\PrescriptionService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
@@ -54,11 +57,15 @@ class PrescriptionController extends Controller
     }
 
     /**
-     * GET /doctor/prescriptions/{prescription} — with patient name / age and the print header (FR-J.5).
+     * GET /doctor/prescriptions/{prescription}[?purpose=print] — with patient name / age and the
+     * print header (FR-J.5). Audited as `printed` when the print page asks, else `viewed` (NFR-S.4).
      */
-    public function show(Prescription $prescription): PrescriptionResource
+    public function show(Request $request, Prescription $prescription, AuditLogger $audit): PrescriptionResource
     {
         Gate::authorize('managePrescriptions', $prescription->patient);
+
+        $action = $request->query('purpose') === 'print' ? AuditAction::Printed : AuditAction::Viewed;
+        $audit->record($action, $prescription, $prescription->patient_id);
 
         return $this->resource($prescription);
     }

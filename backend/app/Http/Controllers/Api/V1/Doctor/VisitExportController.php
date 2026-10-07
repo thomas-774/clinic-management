@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api\V1\Doctor;
 
+use App\Enums\AuditAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Doctor\ExportVisitRequest;
 use App\Models\Visit;
+use App\Services\AuditLogger;
 use App\Services\VisitReport\PdfVisitReport;
 use App\Services\VisitReport\VisitReportService;
 use App\Services\VisitReport\WordVisitReport;
@@ -23,9 +25,9 @@ class VisitExportController extends Controller
     /**
      * GET /doctor/visits/{visit}/export?format=pdf|docx — built from the
      * database now, in the request's language (FR-K.5), and never stored
-     * (VR-1). The file name is plain ASCII (VR-5).
+     * (VR-1). The file name is plain ASCII (VR-5). Audited as `exported` (NFR-S.4).
      */
-    public function __invoke(ExportVisitRequest $request, Visit $visit, VisitReportService $reports): Response
+    public function __invoke(ExportVisitRequest $request, Visit $visit, VisitReportService $reports, AuditLogger $audit): Response
     {
         $format = $request->validated('format');
         $data = $reports->build($visit, app()->getLocale());
@@ -33,6 +35,8 @@ class VisitExportController extends Controller
         $bytes = $format === 'pdf'
             ? app(PdfVisitReport::class)->render($data)
             : app(WordVisitReport::class)->render($data);
+        $audit->record(AuditAction::Exported, $visit, $visit->patient_id);
+
         $name = sprintf('visit-%s-%d.%s', $visit->visit_date->format('Y-m-d'), $visit->id, $format);
 
         return response($bytes, 200, [

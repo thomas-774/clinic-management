@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Database\Factories\VisitFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,6 +17,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['patient_id', 'appointment_id', 'visit_date', 'work_done', 'total_amount'])]
 class Visit extends Model
 {
+    use Auditable;
+
     /** @use HasFactory<VisitFactory> */
     use HasFactory;
 
@@ -67,5 +70,13 @@ class Visit extends Model
     public function scopeUnpaid(Builder $query): void
     {
         $query->whereRaw('visits.total_amount > (select coalesce(sum(payments.amount), 0) from payments where payments.visit_id = visits.id)');
+    }
+
+    /**
+     * The patient this record belongs to, for the audit log (NFR-S.4).
+     */
+    public function auditPatientId(): ?int
+    {
+        return $this->patient_id;
     }
 }

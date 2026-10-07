@@ -71,6 +71,13 @@ describe('PrescriptionPrintPage', () => {
     expect(sheet).toHaveClass('rx-paper-a5')
   })
 
+  it('asks for the prescription as a print, so the server logs it as printed (NFR-S.4)', async () => {
+    renderPrint()
+
+    await screen.findByRole('article', { name: 'Prescription' })
+    expect(prescriptionsApi.getPrescription).toHaveBeenCalledWith('55', { purpose: 'print' })
+  })
+
   it('has no app chrome and never shows warnings or ingredients (RX-4)', async () => {
     renderPrint({
       ...PRESCRIPTION,

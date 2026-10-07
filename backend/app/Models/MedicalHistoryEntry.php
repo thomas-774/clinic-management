@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\HistoryType;
+use App\Models\Concerns\Auditable;
 use Database\Factories\MedicalHistoryEntryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,6 +14,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['patient_id', 'type', 'title', 'details', 'patient_visible', 'recorded_on'])]
 class MedicalHistoryEntry extends Model
 {
+    use Auditable;
+
     /** @use HasFactory<MedicalHistoryEntryFactory> */
     use HasFactory;
 
@@ -50,5 +53,13 @@ class MedicalHistoryEntry extends Model
     public function scopePatientVisible(Builder $query): void
     {
         $query->where('patient_visible', true);
+    }
+
+    /**
+     * The patient this record belongs to, for the audit log (NFR-S.4).
+     */
+    public function auditPatientId(): ?int
+    {
+        return $this->patient_id;
     }
 }

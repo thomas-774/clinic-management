@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AppointmentStatus;
+use App\Models\Concerns\Auditable;
 use Database\Factories\PatientFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 #[Fillable(['user_id', 'address', 'date_of_birth', 'gender', 'current_illness'])]
 class Patient extends Model
 {
+    use Auditable;
+
     /** @use HasFactory<PatientFactory> */
     use HasFactory;
 
@@ -91,5 +94,14 @@ class Patient extends Model
     public function prescriptions(): HasMany
     {
         return $this->hasMany(Prescription::class);
+    }
+
+    /**
+     * The patient this record belongs to, for the audit log (NFR-S.4).
+     * The patient record itself.
+     */
+    public function auditPatientId(): ?int
+    {
+        return $this->getKey();
     }
 }

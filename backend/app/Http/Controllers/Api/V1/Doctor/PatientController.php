@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Doctor;
 
+use App\Enums\AuditAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Doctor\StorePatientRequest;
 use App\Http\Requests\Doctor\UpdatePatientRequest;
@@ -10,6 +11,7 @@ use App\Http\Resources\PatientDetailResource;
 use App\Http\Resources\PatientListItemResource;
 use App\Http\Resources\PatientResource;
 use App\Models\Patient;
+use App\Services\AuditLogger;
 use App\Services\PatientAccountService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -59,10 +61,13 @@ class PatientController extends Controller
 
     /**
      * GET /doctor/patients/{patient} — full profile with detailed history (FR-C.2, C.3).
+     * Holds the history and the visits, so this one read is audited (NFR-S.4).
      */
-    public function show(Patient $patient): PatientDetailResource
+    public function show(Patient $patient, AuditLogger $audit): PatientDetailResource
     {
         Gate::authorize('view', $patient);
+
+        $audit->record(AuditAction::Viewed, $patient, $patient);
 
         return PatientDetailResource::make($patient->load('user'));
     }

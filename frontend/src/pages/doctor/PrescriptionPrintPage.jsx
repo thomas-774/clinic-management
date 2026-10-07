@@ -48,7 +48,7 @@ function usePaperClass(paper) {
 export default function PrescriptionPrintPage() {
   const { t } = useTranslation()
   const { id } = useParams()
-  const { data, isPending, isError, error, refetch } = usePrescription(id)
+  const { data, isPending, isError, error, refetch } = usePrescription(id, { purpose: 'print' })
   usePaperClass(data ? paperOf(data) : null)
   usePrintOnce(Boolean(data))
 

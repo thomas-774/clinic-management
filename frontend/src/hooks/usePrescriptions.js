@@ -21,9 +21,17 @@ export function usePatientPrescriptions(patientId, { enabled = true } = {}) {
   })
 }
 
-/** One full prescription, for the form and the print page. */
-export function usePrescription(id, { enabled = true } = {}) {
-  return useQuery({ queryKey: prescriptionKey(id), queryFn: () => getPrescription(id), enabled: enabled && Boolean(id) })
+/**
+ * One full prescription, for the form and (with `purpose: 'print'`) the print page. The
+ * print page always asks the server, so every print is audited (NFR-S.4).
+ */
+export function usePrescription(id, { enabled = true, purpose } = {}) {
+  return useQuery({
+    queryKey: purpose ? [...prescriptionKey(id), purpose] : prescriptionKey(id),
+    queryFn: () => (purpose ? getPrescription(id, { purpose }) : getPrescription(id)),
+    enabled: enabled && Boolean(id),
+    ...(purpose && { gcTime: 0 }),
+  })
 }
 
 /** Prescriptions show on the patient page (list and count), so both are refreshed after a change. */

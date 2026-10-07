@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Assistant;
 
+use App\Enums\AuditAction;
 use App\Http\Controllers\Api\V1\Doctor\PatientController as DoctorPatientController;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Assistant\StorePatientRequest;
@@ -10,6 +11,7 @@ use App\Http\Resources\ApiResourceCollection;
 use App\Http\Resources\AssistantPatientResource;
 use App\Http\Resources\PatientListItemResource;
 use App\Models\Patient;
+use App\Services\AuditLogger;
 use App\Services\PatientAccountService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -58,10 +60,13 @@ class PatientController extends Controller
 
     /**
      * GET /assistant/patients/{patient} — contact info, visits' money, balance.
+     * Audited like the doctor's page (NFR-S.4).
      */
-    public function show(Patient $patient): AssistantPatientResource
+    public function show(Patient $patient, AuditLogger $audit): AssistantPatientResource
     {
         Gate::authorize('view', $patient);
+
+        $audit->record(AuditAction::Viewed, $patient, $patient);
 
         return AssistantPatientResource::make($patient->load('user'));
     }

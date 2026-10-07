@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Database\Factories\PrescriptionItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['prescription_id', 'drug_id', 'drug_name', 'drug_form', 'instructions', 'position'])]
 class PrescriptionItem extends Model
 {
+    use Auditable;
+
     /** @use HasFactory<PrescriptionItemFactory> */
     use HasFactory;
 
@@ -38,5 +41,14 @@ class PrescriptionItem extends Model
     public function drug(): BelongsTo
     {
         return $this->belongsTo(Drug::class);
+    }
+
+    /**
+     * The patient this record belongs to, for the audit log (NFR-S.4).
+     * Through the prescription, without lazy-loading it.
+     */
+    public function auditPatientId(): ?int
+    {
+        return $this->relationLoaded('prescription') ? $this->prescription?->patient_id : Prescription::whereKey($this->prescription_id)->value('patient_id');
     }
 }

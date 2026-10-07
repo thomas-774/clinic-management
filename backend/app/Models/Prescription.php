@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Database\Factories\PrescriptionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['patient_id', 'doctor_id', 'visit_id', 'issued_on', 'notes'])]
 class Prescription extends Model
 {
+    use Auditable;
+
     /** @use HasFactory<PrescriptionFactory> */
     use HasFactory;
 
@@ -51,5 +54,13 @@ class Prescription extends Model
     public function items(): HasMany
     {
         return $this->hasMany(PrescriptionItem::class)->orderBy('position');
+    }
+
+    /**
+     * The patient this record belongs to, for the audit log (NFR-S.4).
+     */
+    public function auditPatientId(): ?int
+    {
+        return $this->patient_id;
     }
 }
