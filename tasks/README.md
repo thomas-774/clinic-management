@@ -203,7 +203,7 @@ Built before Phase 7. Measurable targets for security and privacy, performance, 
 
 Security and privacy
 - [ ] [T11-01](phase-11-nfr/T11-01-security-headers.md) Security headers and `no-store` on API responses · S
-- [ ] [T11-02](phase-11-nfr/T11-02-rate-limits.md) Rate limits on writes, search and register · S
+- [x] [T11-02](phase-11-nfr/T11-02-rate-limits.md) Rate limits on writes, search and register · S
 - [ ] [T11-03](phase-11-nfr/T11-03-dependency-audit.md) Dependency audit (composer + npm) · S
 - [ ] [T11-04](phase-11-nfr/T11-04-audit-log.md) Audit log of medical and money records · L
 - [ ] [T11-05](phase-11-nfr/T11-05-audit-log-page.md) Activity log: API, Settings page and pruning · M

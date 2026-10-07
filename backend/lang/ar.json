@@ -299,6 +299,7 @@
     "Too late to cancel online, please call the clinic.": "فات وقت الإلغاء عبر الإنترنت، يرجى الاتصال بالعيادة.",
     "Too Many Attempts.": "محاولات كثيرة جدًا. يرجى المحاولة لاحقًا.",
     "Too Many Requests": "طلبات كثيرة جدًا",
+    "Too many requests. Please try again in :seconds seconds.": "طلبات كثيرة جدًا. يرجى المحاولة مرة أخرى بعد :seconds ثانية.",
     "total cost": "التكلفة الإجمالية",
     "Total cost": "التكلفة الإجمالية",
     "trade name": "الاسم التجاري",

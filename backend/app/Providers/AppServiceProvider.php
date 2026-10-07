@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Carbon\CarbonInterface;
+use Closure;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
@@ -43,16 +44,39 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Login: 5 attempts per minute per account and IP (§9.2).
+     * Per minute, numbers in config/clinic.php (§9.2, NFR-S.2): login per
+     * account and IP, register per IP, writes and searches per user.
      */
     private function configureRateLimiting(): void
     {
-        RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)
+        RateLimiter::for('login', fn (Request $request) => Limit::perMinute(config('clinic.rate_limits.login'))
             ->by(Str::lower((string) $request->input('login')).'|'.$request->ip())
-            ->response(fn (Request $request, array $headers) => response()->json(
-                ['message' => __('auth.throttle', ['seconds' => $headers['Retry-After'] ?? 60])],
-                429,
-                $headers,
-            )));
+            ->response($this->tooManyRequests('auth.throttle')));
+
+        RateLimiter::for('register', fn (Request $request) => Limit::perMinute(config('clinic.rate_limits.register'))
+            ->by($request->ip())
+            ->response($this->tooManyRequests()));
+
+        // Applied to whole route groups: reads pass, every write is counted.
+        RateLimiter::for('writes', fn (Request $request) => $request->isMethodSafe()
+            ? Limit::none()
+            : Limit::perMinute(config('clinic.rate_limits.writes'))->by($request->user()?->id ?: $request->ip())
+                ->response($this->tooManyRequests()));
+
+        RateLimiter::for('search', fn (Request $request) => Limit::perMinute(config('clinic.rate_limits.search'))
+            ->by($request->user()?->id ?: $request->ip())
+            ->response($this->tooManyRequests()));
+    }
+
+    /**
+     * 429 as { message } in the request language, with Retry-After.
+     */
+    private function tooManyRequests(string $message = 'Too many requests. Please try again in :seconds seconds.'): Closure
+    {
+        return fn (Request $request, array $headers) => response()->json(
+            ['message' => __($message, ['seconds' => $headers['Retry-After'] ?? 60])],
+            429,
+            $headers,
+        );
     }
 }

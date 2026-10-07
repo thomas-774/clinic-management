@@ -29,14 +29,15 @@ Route::get('/health', fn () => response()->json([
 ]));
 
 Route::prefix('auth')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:register');
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
-    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+    Route::post('/logout', [AuthController::class, 'logout'])->middleware(['auth:sanctum', 'throttle:writes']);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
+// throttle:writes counts only POST / PUT / PATCH / DELETE (AppServiceProvider, NFR-S.2).
+Route::middleware(['auth:sanctum', 'throttle:writes'])->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
-    Route::get('/slots', [SlotController::class, 'index'])->middleware('role:patient,doctor,assistant')->name('slots.index');
+    Route::get('/slots', [SlotController::class, 'index'])->middleware(['role:patient,doctor,assistant', 'throttle:search'])->name('slots.index');
 
     // Patient area: /api/v1/patient/* (profile, own appointments).
     Route::prefix('patient')->middleware('role:patient')->name('patient.')->group(function () {
@@ -49,7 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Doctor area: /api/v1/doctor/* (patients, schedule, visits, settings, reports, drugs, prescriptions).
     Route::prefix('doctor')->middleware('role:doctor')->name('doctor.')->group(function () {
-        Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
+        Route::get('/patients', [PatientController::class, 'index'])->middleware('throttle:search')->name('patients.index');
         Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
         Route::get('/patients/{patient}', [PatientController::class, 'show'])->name('patients.show');
         Route::put('/patients/{patient}', [PatientController::class, 'update'])->name('patients.update');
@@ -80,8 +81,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/blocked-times', [BlockedTimeController::class, 'store'])->name('blocked-times.store');
         Route::delete('/blocked-times/{blockedTime}', [BlockedTimeController::class, 'destroy'])->name('blocked-times.destroy');
 
-        Route::get('/drugs/search', [DrugController::class, 'search'])->name('drugs.search');
-        Route::get('/drugs', [DrugController::class, 'index'])->name('drugs.index');
+        Route::get('/drugs/search', [DrugController::class, 'search'])->middleware('throttle:search')->name('drugs.search');
+        Route::get('/drugs', [DrugController::class, 'index'])->middleware('throttle:search')->name('drugs.index');
         Route::post('/drugs', [DrugController::class, 'store'])->name('drugs.store');
         Route::get('/drugs/{drug}', [DrugController::class, 'show'])->name('drugs.show');
         Route::put('/drugs/{drug}', [DrugController::class, 'update'])->name('drugs.update');
@@ -100,7 +101,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Assistant (front desk) area: /api/v1/assistant/* — contact info and money only (Module I).
     Route::prefix('assistant')->middleware('role:assistant')->name('assistant.')->group(function () {
-        Route::get('/patients', [AssistantPatientController::class, 'index'])->name('patients.index');
+        Route::get('/patients', [AssistantPatientController::class, 'index'])->middleware('throttle:search')->name('patients.index');
         Route::post('/patients', [AssistantPatientController::class, 'store'])->name('patients.store');
         Route::get('/patients/{patient}', [AssistantPatientController::class, 'show'])->name('patients.show');
         Route::put('/patients/{patient}', [AssistantPatientController::class, 'update'])->name('patients.update');

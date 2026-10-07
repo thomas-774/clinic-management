@@ -32,6 +32,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Rate limits (requests per minute)
+    |--------------------------------------------------------------------------
+    |
+    | §9.2, NFR-S.2: login per account + IP, register per IP, writes
+    | (POST / PUT / PATCH / DELETE) and searches per user. A request over the
+    | limit gets 429 with Retry-After and a translated { message }.
+    |
+    */
+
+    'rate_limits' => [
+        'login' => (int) env('CLINIC_RATE_LIMIT_LOGIN', 5),
+        'register' => (int) env('CLINIC_RATE_LIMIT_REGISTER', 5),
+        'writes' => (int) env('CLINIC_RATE_LIMIT_WRITES', 60),
+        'search' => (int) env('CLINIC_RATE_LIMIT_SEARCH', 120),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Doctor account
     |--------------------------------------------------------------------------
     |
