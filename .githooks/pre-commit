@@ -1,0 +1,43 @@
+#!/bin/sh
+# Fast checks on the staged files only (NFR-Q.4, T11-11); the full gates are
+# `composer check` and `npm run check`.
+#   - Pint (--test) on staged PHP in backend/
+#   - oxlint (--deny-warnings) on staged JS/JSX in frontend/
+#   - Vitest on the tests related to the staged frontend files
+# Turn on once per clone:  git config core.hooksPath .githooks
+# PHP not on PATH (e.g. Laragon in Git Bash)? Set PHP=/path/to/php.exe.
+
+root=$(git rev-parse --show-toplevel) || exit 1
+cd "$root" || exit 1
+
+staged() {
+  git diff --cached --name-only --diff-filter=ACMR -- "$@"
+}
+
+php_files=$(staged 'backend/*.php' | sed 's#^backend/##')
+js_files=$(staged 'frontend/*.js' 'frontend/*.jsx' 'frontend/*.mjs' | sed 's#^frontend/##')
+failed=0
+
+if [ -n "$php_files" ]; then
+  php=${PHP:-php}
+  if command -v "$php" >/dev/null 2>&1; then
+    echo "pre-commit: Pint on $(echo "$php_files" | wc -l | tr -d ' ') PHP file(s)"
+    # shellcheck disable=SC2086 # one path per word; repo paths have no spaces
+    (cd backend && "$php" vendor/bin/pint --test $php_files) || failed=1
+  else
+    echo "pre-commit: PHP not found, Pint skipped (set PHP=/path/to/php)" >&2
+  fi
+fi
+
+if [ -n "$js_files" ]; then
+  echo "pre-commit: oxlint and related tests on $(echo "$js_files" | wc -l | tr -d ' ') JS file(s)"
+  # shellcheck disable=SC2086
+  (cd frontend && npx --no-install oxlint --deny-warnings --format=default $js_files) || failed=1
+  # shellcheck disable=SC2086
+  (cd frontend && npx --no-install vitest related --run --passWithNoTests --maxWorkers=4 $js_files) || failed=1
+fi
+
+if [ "$failed" -ne 0 ]; then
+  echo "pre-commit: fix the problems above, or commit with --no-verify if you must." >&2
+  exit 1
+fi

@@ -1,11 +1,13 @@
 <?php
 
+use Carbon\Carbon;
+
 it('returns ok and the server time', function () {
     $response = $this->getJson('/api/v1/health');
 
     $response->assertOk()->assertJson(['status' => 'ok']);
     expect($response->json('time'))->toBeString();
-    expect(\Carbon\Carbon::parse($response->json('time'))->isValid())->toBeTrue();
+    expect(Carbon::parse($response->json('time'))->isValid())->toBeTrue();
 });
 
 it('allows the frontend origin through CORS', function () {

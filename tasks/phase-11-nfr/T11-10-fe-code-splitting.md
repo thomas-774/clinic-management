@@ -19,7 +19,7 @@
 | | Before | After |
 | --- | --- | --- |
 | JS chunks | 1 | 45 |
-| Entry chunk | 964.5 kB · 284.0 kB gzip | 287.9 kB · 88.2 kB gzip (+ `client` 171.2 kB · 58.4 kB gzip, React DOM) |
+| Entry chunk | 964.5 kB · 284.0 kB gzip | 287.9 kB · 88.2 kB gzip (+ the shared `client` chunk, 171.2 kB · 58.4 kB gzip: libraries the pages share, e.g. i18next, axios, React Query) |
 | Patient pages, initial JS (entry + everything the three patient pages import) | 284.0 kB gzip | 160.4 kB gzip in 20 files (budget 200) |
 | Largest chunk | 964.5 kB | `Reports` 363.2 kB · 105.3 kB gzip, with Recharts (budget 500) |
 | Build warning "larger than 500 kB" | yes | no |

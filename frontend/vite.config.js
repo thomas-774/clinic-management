@@ -41,5 +41,18 @@ export default defineConfig(({ mode }) => ({
     globals: true,
     pool: 'threads', // the default forks pool times out on Windows paths containing spaces
     setupFiles: './src/test/setup.js',
+    // NFR-Q.2 (T11-11): `npm run test:coverage` fails under these numbers.
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{js,jsx}'],
+      exclude: ['src/test/**'],
+      reporter: ['text-summary', 'html'],
+      thresholds: {
+        lines: 70,
+        branches: 60,
+        'src/utils/**': { lines: 85, branches: 85, functions: 85, statements: 85 },
+        'src/hooks/**': { lines: 85, branches: 85, functions: 85, statements: 85 },
+      },
+    },
   },
 }))

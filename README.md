@@ -83,6 +83,27 @@ The file is named `visit-<date>-<visit number>.pdf` (or `.docx`) and goes to the
 | Backend | `cd backend && php artisan test` | Pest on the MySQL database `clinic_testing` (create it and grant your DB user access) |
 | Frontend | `cd frontend && npm run test` | Vitest + React Testing Library (jsdom) |
 
+### Quality gates (`check`)
+
+Run both before opening a PR; CI runs the same two commands. Each stops at the first failure.
+
+| App | Command | What it runs |
+| --- | --- | --- |
+| Backend | `cd backend && composer check` | Pint (`--test`, whole backend) · Pest with coverage: total ≥ 80 %, `app/Services` ≥ 95 % (`scripts/check-coverage.php`) · `composer audit` |
+| Frontend | `cd frontend && npm run check` | oxlint (`--deny-warnings`) · Vitest with coverage: lines ≥ 70 %, branches ≥ 60 %, `src/utils` and `src/hooks` ≥ 85 % · `vite build` · bundle budget (`scripts/check-bundle-size.js`) · `npm audit` |
+
+Backend coverage needs the PCOV extension. On Laragon (PHP 8.3, thread safe, x64): download `php_pcov-1.0.12-8.3-ts-vs16-x64.zip` from https://downloads.php.net/~windows/pecl/releases/pcov/1.0.12/, copy `php_pcov.dll` into `C:\laragon\bin\php\php-8.3.*\ext`, and add `extension=pcov` to that PHP's `php.ini`. Check with `php -m` (it lists `pcov`). Coverage reports land in `backend/build/coverage` and `frontend/coverage` (both git-ignored).
+
+### Pre-commit hook
+
+A fast hook checks only the staged files: Pint on PHP, oxlint on JS/JSX, and the Vitest tests related to the staged frontend files. Turn it on once per clone:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+If `php` is not on the PATH of Git's shell (Laragon), point the hook at it, e.g. `export PHP=/c/laragon/bin/php/php-8.3.33-Win32-vs16-x64/php.exe`; without PHP it skips Pint with a warning. `git commit --no-verify` skips the hook.
+
 ## Branching
 
 - `main` is protected: no direct pushes; every change goes through a pull request.
