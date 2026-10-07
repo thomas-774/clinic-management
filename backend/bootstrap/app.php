@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureRole;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
@@ -26,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Global (not only the api group) so it runs before auth / throttle and
         // also for unknown URLs: every error message comes back translated.
         $middleware->append(SetLocale::class);
+        $middleware->append(SecurityHeaders::class);
 
         $middleware->alias(['role' => EnsureRole::class]);
         // Check the role before route-model binding, so a wrong-role user gets
