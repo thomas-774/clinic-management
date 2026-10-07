@@ -798,7 +798,7 @@ The baseline measured on Oct 7, 2026 is shown where one exists, so the gain can 
 | ID | Requirement | Target / check | Baseline | Task |
 | --- | --- | --- | --- | --- |
 | NFR-T.1 | One place resolves "the clinic" | A `ClinicContext` service is the only code that finds the clinic's doctor; `User::clinicDoctor()` (5 callers today) is called only there. A Pest architecture test fails on any new caller. | 5 callers | T11-15 |
-| NFR-T.2 | Future tenancy model written down | ADR `docs/adr/0001-multi-clinic-tenancy.md`: single database, `clinic_id` on the tables it lists, a global scope, and how today's data migrates. | none | T11-15 |
+| NFR-T.2 | Future tenancy model written down | ADR [`docs/adr/0001-multi-clinic-tenancy.md`](docs/adr/0001-multi-clinic-tenancy.md): single database, `clinic_id` on the tables it lists, a global scope, and how today's data migrates. | none | T11-15 |
 
 ### 11.3 Not in Phase 11 (deferred on purpose)
 

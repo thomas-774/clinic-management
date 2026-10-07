@@ -10,6 +10,7 @@ Each task is one file: what to build, which plan section it comes from, the step
 - Tick the checkboxes in the task file while working, then mark the task `[x]` in the list below when every "Done when" item passes.
 - **Size:** S = up to 2 hours · M = half a day · L = about a full day.
 - **Plan refs** point back to the plan (FR-x.y requirements, BR/PR rules, § sections).
+- **SaaS guardrails (from T11-15 on):** new code follows the checklist at the end of [ADR 0001 — Multi-clinic tenancy](../docs/adr/0001-multi-clinic-tenancy.md#checklist-for-new-code-from-t11-15-on): find the clinic through `ClinicContext`, no `DB::table()` in controllers, no `static` caches of the doctor, and list any new clinic table, unique rule, cache key or stored file in the ADR. `tests/Unit/Architecture/TenancyGuardrailsTest.php` enforces the first three.
 
 ## Overview
 
@@ -222,7 +223,7 @@ Quality and usability
 - [x] [T11-14](phase-11-nfr/T11-14-mobile-first-patient-pages.md) Mobile-first patient pages · M
 
 SaaS readiness and close-out
-- [ ] [T11-15](phase-11-nfr/T11-15-tenancy-guardrails.md) SaaS guardrails: ClinicContext and tenancy ADR · M
+- [x] [T11-15](phase-11-nfr/T11-15-tenancy-guardrails.md) SaaS guardrails: ClinicContext and tenancy ADR · M
 - [ ] [T11-16](phase-11-nfr/T11-16-measure-and-docs.md) Measure every NFR and update the docs · S
 
 ## Phase 7 — Testing, polish and deployment

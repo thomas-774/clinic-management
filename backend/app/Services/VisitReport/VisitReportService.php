@@ -2,13 +2,12 @@
 
 namespace App\Services\VisitReport;
 
-use App\Models\DoctorSetting;
 use App\Models\Payment;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
-use App\Models\User;
 use App\Models\Visit;
 use App\Services\PaymentService;
+use App\Support\ClinicContext;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
 
@@ -63,7 +62,10 @@ class VisitReportService
 
     private const METHODS = ['cash' => 'Cash', 'card' => 'Card', 'wallet' => 'Wallet'];
 
-    public function __construct(private readonly PaymentService $payments) {}
+    public function __construct(
+        private readonly PaymentService $payments,
+        private readonly ClinicContext $clinic,
+    ) {}
 
     public function build(Visit $visit, string $locale): VisitReportData
     {
@@ -149,8 +151,8 @@ class VisitReportService
      */
     private function header(string $locale): array
     {
-        $doctor = User::clinicDoctor();
-        $settings = $doctor->doctorSetting ?? new DoctorSetting;
+        $doctor = $this->clinic->doctor();
+        $settings = $this->clinic->settings();
 
         return array_filter([
             'clinic_name' => $settings->clinic_name,

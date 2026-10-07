@@ -29,7 +29,7 @@ beforeEach(function () {
     $this->seed(DoctorSeeder::class);
     $this->travelTo('2026-10-05 08:00:00');
 
-    $this->doctor = User::clinicDoctor();
+    $this->doctor = clinicDoctor();
     $this->assistant = User::factory()->assistant()->create();
     // The patient whose own lists grow: history, visits, prescriptions, appointments.
     $this->focus = Patient::factory()->create();

@@ -15,13 +15,13 @@ beforeEach(function () {
     config()->set('clinic.doctor', ['name' => 'Dr', 'phone' => '01000000000', 'email' => null, 'password' => 'password']);
     $this->seed(DoctorSeeder::class);
     $this->travelTo('2026-10-05 08:00:00');
-    $this->doctor = User::clinicDoctor();
+    $this->doctor = clinicDoctor();
     $this->assistant = User::factory()->assistant()->create();
 });
 
 function deskAppointment(string $start, ?Patient $patient = null, string $status = 'booked'): Appointment
 {
-    return Appointment::factory()->for(User::clinicDoctor(), 'doctor')->for($patient ?? Patient::factory()->create())
+    return Appointment::factory()->for(clinicDoctor(), 'doctor')->for($patient ?? Patient::factory()->create())
         ->at($start)->create(['status' => $status]);
 }
 

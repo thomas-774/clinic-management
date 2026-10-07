@@ -2,7 +2,6 @@
 
 use App\Models\Appointment;
 use App\Models\Patient;
-use App\Models\User;
 use Database\Seeders\DoctorSeeder;
 
 beforeEach(function () {
@@ -23,7 +22,7 @@ it('returns the seeded 45-minute slots with start and end in Cairo time', functi
 });
 
 it('hides booked slots', function () {
-    Appointment::factory()->for(User::clinicDoctor(), 'doctor')->for($this->patient)->at('2026-10-06 17:45')->create();
+    Appointment::factory()->for(clinicDoctor(), 'doctor')->for($this->patient)->at('2026-10-06 17:45')->create();
 
     $starts = $this->actingAs($this->patient->user)->getJson('/api/v1/slots?date=2026-10-06')->json('data.*.start_at');
 
@@ -37,7 +36,7 @@ it('returns an empty list on Friday', function () {
 });
 
 it('is open to the doctor too', function () {
-    $this->actingAs(User::clinicDoctor())->getJson('/api/v1/slots?date=2026-10-06')
+    $this->actingAs(clinicDoctor())->getJson('/api/v1/slots?date=2026-10-06')
         ->assertOk()
         ->assertJsonCount(5, 'data');
 });
@@ -53,7 +52,7 @@ it('requires login', function () {
 });
 
 it('returns no slots for a date the doctor blocks as a holiday (T3-08)', function () {
-    $doctor = User::clinicDoctor();
+    $doctor = clinicDoctor();
     $this->actingAs($doctor)->getJson('/api/v1/slots?date=2026-10-06')->assertJsonCount(5, 'data');
 
     $this->actingAs($doctor)->postJson('/api/v1/doctor/blocked-times', ['date' => '2026-10-06', 'reason' => 'Holiday'])

@@ -9,6 +9,7 @@ use App\Models\Patient;
 use App\Models\User;
 use App\Models\Visit;
 use App\Services\SlotService;
+use App\Support\ClinicContext;
 use Closure;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Http\Kernel;
@@ -173,7 +174,7 @@ class RunBenchmark extends Command
     private function endpoints(int $iterations): array
     {
         $calls = $iterations + self::WARM_UP;
-        $doctor = User::clinicDoctor();
+        $doctor = app(ClinicContext::class)->doctor();
         $assistant = User::query()->where('role', UserRole::Assistant)->where('is_active', true)->firstOrFail();
         $patients = Patient::query()->whereHas('visits')->inRandomOrder()->limit($calls)->with('user')->get()->values();
         $visits = Visit::query()->inRandomOrder()->limit($calls)->pluck('id')->values();

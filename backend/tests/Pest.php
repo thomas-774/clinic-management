@@ -10,6 +10,7 @@ use App\Models\Prescription;
 use App\Models\PrescriptionItem;
 use App\Models\User;
 use App\Models\Visit;
+use App\Support\ClinicContext;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -66,6 +67,16 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/**
+ * The clinic's doctor, found the way the app finds it (NFR-T.1). A new
+ * ClinicContext each call, so the test gets its own instance and never the
+ * one the requests under test memoize.
+ */
+function clinicDoctor(): User
+{
+    return (new ClinicContext)->doctor();
 }
 
 /**

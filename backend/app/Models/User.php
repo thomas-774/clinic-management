@@ -46,6 +46,9 @@ class User extends Authenticatable
     /**
      * The clinic's doctor. v1 has exactly one (§10); with more doctors this
      * becomes a choice made by the patient.
+     *
+     * Call it only from App\Support\ClinicContext (NFR-T.1); everything else
+     * asks the context, and tests/Unit/Architecture checks that.
      */
     public static function clinicDoctor(): self
     {

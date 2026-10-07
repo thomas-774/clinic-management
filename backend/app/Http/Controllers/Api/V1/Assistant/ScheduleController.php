@@ -11,9 +11,9 @@ use App\Http\Resources\ApiResourceCollection;
 use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
 use App\Models\Patient;
-use App\Models\User;
 use App\Services\AppointmentService;
 use App\Services\BookingService;
+use App\Support\ClinicContext;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 
@@ -28,10 +28,10 @@ class ScheduleController extends Controller
     /**
      * GET /assistant/appointments?from=&to= — the doctor's schedule.
      */
-    public function index(ScheduleRangeRequest $request): ApiResourceCollection
+    public function index(ScheduleRangeRequest $request, ClinicContext $clinic): ApiResourceCollection
     {
         return AppointmentResource::collection($this->appointments->schedule(
-            User::clinicDoctor(),
+            $clinic->doctor(),
             $request->validated('from'),
             $request->validated('to'),
         ));
@@ -58,9 +58,9 @@ class ScheduleController extends Controller
      * PATCH /assistant/appointments/{appointment}/status { status } — Arrived,
      * No-show or Cancelled; the patient cut-off (BR-5) does not apply.
      */
-    public function updateStatus(UpdateAppointmentStatusRequest $request, Appointment $appointment): AppointmentResource
+    public function updateStatus(UpdateAppointmentStatusRequest $request, Appointment $appointment, ClinicContext $clinic): AppointmentResource
     {
-        abort_unless($appointment->doctor_id === User::clinicDoctor()->id, 404);
+        abort_unless($appointment->doctor_id === $clinic->doctorId(), 404);
 
         $appointment = $this->appointments->changeStatus($appointment, AppointmentStatus::from($request->validated('status')));
 

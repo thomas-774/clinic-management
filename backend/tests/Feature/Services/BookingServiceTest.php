@@ -5,7 +5,6 @@ use App\Exceptions\ActiveAppointmentExistsException;
 use App\Exceptions\SlotUnavailableException;
 use App\Models\Appointment;
 use App\Models\Patient;
-use App\Models\User;
 use App\Services\BookingService;
 use Database\Seeders\DoctorSeeder;
 use Illuminate\Support\Carbon;
@@ -21,7 +20,7 @@ beforeEach(function () {
     config()->set('clinic.doctor', ['name' => 'Dr', 'phone' => '01000000000', 'email' => null, 'password' => 'password']);
     $this->seed(DoctorSeeder::class);
     $this->travelTo('2026-10-05 08:00:00');
-    $this->doctor = User::clinicDoctor();
+    $this->doctor = clinicDoctor();
     $this->patient = Patient::factory()->create();
 });
 
@@ -100,7 +99,7 @@ it('turns a unique-index clash after the slot check into SlotUnavailableExceptio
     // Another request inserts the same slot between our check and our insert.
     Appointment::creating(function () {
         DB::table('appointments')->insert([
-            'doctor_id' => User::clinicDoctor()->id,
+            'doctor_id' => clinicDoctor()->id,
             'patient_id' => Patient::factory()->create()->id,
             'start_at' => '2026-10-06 17:00:00',
             'end_at' => '2026-10-06 17:45:00',

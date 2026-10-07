@@ -2,7 +2,6 @@
 
 use App\Models\Appointment;
 use App\Models\Patient;
-use App\Models\User;
 use Database\Seeders\DoctorSeeder;
 
 /*
@@ -15,14 +14,14 @@ beforeEach(function () {
     config()->set('clinic.doctor', ['name' => 'Dr', 'phone' => '01000000000', 'email' => null, 'password' => 'password']);
     $this->seed(DoctorSeeder::class);
     $this->travelTo('2026-10-05 08:00:00');
-    $this->doctor = User::clinicDoctor();
+    $this->doctor = clinicDoctor();
     $this->patient = Patient::factory()->create();
     $this->user = $this->patient->user;
 });
 
 function myAppointment(Patient $patient, string $start, string $state = 'booked'): Appointment
 {
-    $factory = Appointment::factory()->for(User::clinicDoctor(), 'doctor')->for($patient)->at($start);
+    $factory = Appointment::factory()->for(clinicDoctor(), 'doctor')->for($patient)->at($start);
 
     return ($state === 'booked' ? $factory : $factory->{$state}())->create();
 }

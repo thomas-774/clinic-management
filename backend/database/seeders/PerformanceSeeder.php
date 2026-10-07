@@ -7,6 +7,7 @@ use App\Enums\PaymentMethod;
 use App\Enums\UserRole;
 use App\Models\Drug;
 use App\Models\User;
+use App\Support\ClinicContext;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Crypt;
@@ -130,7 +131,7 @@ class PerformanceSeeder extends Seeder
 
         $this->call([DoctorSeeder::class, AssistantSeeder::class, DrugSeeder::class]);
 
-        $doctor = User::clinicDoctor();
+        $doctor = app(ClinicContext::class)->doctor();
         $assistantId = (int) User::query()->where('role', UserRole::Assistant)->value('id');
         $this->configureSchedule($doctor);
 

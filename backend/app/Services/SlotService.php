@@ -7,6 +7,7 @@ use App\Models\BlockedTime;
 use App\Models\DoctorSetting;
 use App\Models\User;
 use App\Models\WorkingHour;
+use App\Support\ClinicContext;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -25,7 +26,7 @@ class SlotService
      */
     public static function forClinic(): self
     {
-        return new self(User::clinicDoctor());
+        return new self(app(ClinicContext::class)->doctor());
     }
 
     public function doctor(): User

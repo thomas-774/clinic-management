@@ -35,7 +35,7 @@ beforeEach(function () {
     $this->seed(DoctorSeeder::class);
     $this->travelTo('2026-10-05 08:00:00');
 
-    $this->doctor = User::clinicDoctor();
+    $this->doctor = clinicDoctor();
     $this->otherDoctor = User::factory()->doctor()->create();
     $this->assistant = User::factory()->assistant()->create();
     $this->me = Patient::factory()->create();

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Support\ClinicContext;
 use Carbon\CarbonInterface;
 use Closure;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -21,7 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // NFR-T.1: "the clinic" is resolved once per request or queued job.
+        $this->app->scoped(ClinicContext::class);
     }
 
     /**
