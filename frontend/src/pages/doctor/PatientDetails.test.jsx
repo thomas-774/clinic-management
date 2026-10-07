@@ -168,6 +168,13 @@ describe('PatientDetails', () => {
     expect(await screen.findByText('Walk-in visit')).toBeInTheDocument()
   })
 
+  it('links to the activity on this patient (NFR-S.5)', async () => {
+    fakeServer()
+    renderDetails()
+
+    expect(await screen.findByRole('link', { name: 'Activity on this patient' })).toHaveAttribute('href', '/doctor/settings?tab=activity&patient=7')
+  })
+
   it('says so when the patient does not exist', async () => {
     vi.spyOn(api, 'getPatient').mockRejectedValue(new AxiosError('x', '404', {}, null, { status: 404, data: {} }))
     renderDetails()

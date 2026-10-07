@@ -222,7 +222,47 @@
     "tabs": {
       "general": "Hours & booking",
       "drugs": "Drugs",
-      "prescription": "Prescription"
+      "prescription": "Prescription",
+      "activity": "Activity"
+    }
+  },
+  "activity": {
+    "intro": "Who opened or changed medical and money records, newest first. Kept for 5 years.",
+    "patient": "Patient",
+    "patientPlaceholder": "Search by name or phone",
+    "matchingPatients": "Matching patients",
+    "noPatientMatch": "No patient matches.",
+    "clearPatient": "All patients",
+    "user": "User",
+    "allUsers": "All users",
+    "action": "Action",
+    "allActions": "All actions",
+    "from": "From",
+    "to": "To",
+    "count": "Entries: {{total}}",
+    "empty": "No activity matches these filters.",
+    "onPatient": "Activity on this patient",
+    "deletedUser": "Deleted account",
+    "actions": {
+      "viewed": "Viewed",
+      "created": "Added",
+      "updated": "Changed",
+      "deleted": "Deleted",
+      "exported": "Downloaded file",
+      "printed": "Printed"
+    },
+    "roles": {
+      "doctor": "Doctor",
+      "assistant": "Assistant"
+    },
+    "columns": {
+      "time": "When",
+      "user": "User",
+      "action": "Action",
+      "record": "Record",
+      "patient": "Patient",
+      "fields": "Changed fields",
+      "ip": "IP address"
     }
   },
   "blocked": {

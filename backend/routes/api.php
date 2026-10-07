@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\Assistant\PatientController as AssistantPatientC
 use App\Http\Controllers\Api\V1\Assistant\ScheduleController as AssistantScheduleController;
 use App\Http\Controllers\Api\V1\Assistant\VisitController as AssistantVisitController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\Doctor\AuditLogController;
 use App\Http\Controllers\Api\V1\Doctor\BlockedTimeController;
 use App\Http\Controllers\Api\V1\Doctor\DrugController;
 use App\Http\Controllers\Api\V1\Doctor\MedicalHistoryController;
@@ -97,6 +98,8 @@ Route::middleware(['auth:sanctum', 'throttle:writes'])->group(function () {
         Route::get('/reports/payments', [ReportController::class, 'payments'])->name('reports.payments');
         Route::get('/reports/outstanding', [ReportController::class, 'outstanding'])->name('reports.outstanding');
         Route::get('/reports/daily-revenue', [ReportController::class, 'dailyRevenue'])->name('reports.daily-revenue');
+
+        Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
     });
 
     // Assistant (front desk) area: /api/v1/assistant/* — contact info and money only (Module I).

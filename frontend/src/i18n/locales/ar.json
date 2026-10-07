@@ -222,7 +222,47 @@
     "tabs": {
       "general": "المواعيد والحجز",
       "drugs": "الأدوية",
-      "prescription": "الروشتة"
+      "prescription": "الروشتة",
+      "activity": "النشاط"
+    }
+  },
+  "activity": {
+    "intro": "من فتح أو غيّر السجلات الطبية والمالية، الأحدث أولًا. تُحفظ لمدة 5 سنوات.",
+    "patient": "المريض",
+    "patientPlaceholder": "ابحث بالاسم أو رقم الهاتف",
+    "matchingPatients": "المرضى المطابقون",
+    "noPatientMatch": "لا يوجد مريض مطابق.",
+    "clearPatient": "كل المرضى",
+    "user": "المستخدم",
+    "allUsers": "كل المستخدمين",
+    "action": "الإجراء",
+    "allActions": "كل الإجراءات",
+    "from": "من",
+    "to": "إلى",
+    "count": "عدد السجلات: {{total}}",
+    "empty": "لا يوجد نشاط مطابق لهذه الاختيارات.",
+    "onPatient": "النشاط على هذا المريض",
+    "deletedUser": "حساب محذوف",
+    "actions": {
+      "viewed": "عرض",
+      "created": "إضافة",
+      "updated": "تعديل",
+      "deleted": "حذف",
+      "exported": "تنزيل ملف",
+      "printed": "طباعة"
+    },
+    "roles": {
+      "doctor": "الطبيب",
+      "assistant": "المساعد"
+    },
+    "columns": {
+      "time": "الوقت",
+      "user": "المستخدم",
+      "action": "الإجراء",
+      "record": "السجل",
+      "patient": "المريض",
+      "fields": "الحقول المعدّلة",
+      "ip": "عنوان IP"
     }
   },
   "blocked": {

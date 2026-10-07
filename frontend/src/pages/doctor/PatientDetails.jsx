@@ -180,6 +180,12 @@ export default function PatientDetails() {
 
       <PatientPrescriptions patient={patient} prescriptions={prescriptions} />
 
+      <p className="text-end">
+        <Link to={`/doctor/settings?tab=activity&patient=${patient.id}`} className="text-sm font-semibold text-sky-700 hover:underline">
+          {t('activity.onPatient')}
+        </Link>
+      </p>
+
       {editingInfo && <EditPatientModal patient={patient} onClose={() => setEditingInfo(false)} />}
       {paying && <AddPaymentModal visit={paying} onClose={() => setPaying(null)} />}
       {editingVisit && <EditVisitModal visit={editingVisit} onClose={() => setEditingVisit(null)} />}

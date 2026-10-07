@@ -5,6 +5,7 @@ import { LoadError, Loading } from '../../components/QueryState'
 import { useDoctorSettings, useUpdateSettings, useUpdateWorkingHours, useWorkingHours } from '../../hooks/useSettings'
 import { useToast } from '../../toast/useToast'
 import { errorMessage } from '../../utils/apiErrors'
+import ActivityTab from './settings/ActivityTab'
 import BlockedTimesCard from './settings/BlockedTimesCard'
 import StaffCard from './settings/StaffCard'
 import BookingSettingsForm from './settings/BookingSettingsForm'
@@ -86,8 +87,8 @@ function SettingsEditor({ initialSettings, initialWeek }) {
   )
 }
 
-/** Hours and booking, then the prescription parts (FR-J.6). */
-const TABS = ['general', 'drugs', 'prescription']
+/** Hours and booking, the prescription parts (FR-J.6), then who did what (NFR-S.5). */
+const TABS = ['general', 'drugs', 'prescription', 'activity']
 
 /** Tab bar (ARIA tabs): ← → / Home / End move between tabs; the open tab is kept in ?tab=. */
 function Tabs({ current, onChange }) {
@@ -144,6 +145,8 @@ export default function Settings() {
   let panel
   if (tab === 'drugs') {
     panel = <DrugsTab />
+  } else if (tab === 'activity') {
+    panel = <ActivityTab />
   } else if (settings.isPending || hours.isPending) {
     panel = <Loading />
   } else if (settings.isError || hours.isError) {
