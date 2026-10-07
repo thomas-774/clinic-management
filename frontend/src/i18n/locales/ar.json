@@ -9,7 +9,9 @@
     "save": "حفظ",
     "saving": "جارٍ الحفظ…",
     "cancel": "إلغاء",
-    "close": "إغلاق"
+    "close": "إغلاق",
+    "showPassword": "إظهار",
+    "hidePassword": "إخفاء"
   },
   "language": {
     "other": "English",

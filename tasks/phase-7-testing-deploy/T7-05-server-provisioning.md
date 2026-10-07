@@ -21,6 +21,13 @@
   ```
   `connect-src 'self'` assumes the API is served on the same domain (`/api/v1`); if it gets its own subdomain, add that origin. `frontend/vite.config.js` holds the same policy for `npm run preview`.
 - [ ] Generate `APP_KEY` once per environment (`php artisan key:generate --show`, set it in `.env`) and store production's in the password manager before any patient data is entered: the medical text is encrypted with it (T11-06, NFR-S.6) and is lost without it. Staging gets its own key. Never regenerate it on a server that has data — rotate instead (T7-07).
+- [ ] ASVS L1 server items (T11-07, `docs/security/asvs-l1.md`, the rows marked "Deploy"):
+  - TLS: `ssl_protocols TLSv1.2 TLSv1.3;` with Mozilla's "intermediate" cipher list; port 80 only redirects to HTTPS (9.1.1 – 9.1.3).
+  - Nginx roots are `backend/public` and `frontend/dist` only; `autoindex off;` and `location ~ /\.(?!well-known) { deny all; }` so `.env` / `.git` are never served (4.3.2, 12.5.1).
+  - `client_max_body_size 1m;` (12.1.1).
+  - `.env`: `APP_ENV=production`, `APP_DEBUG=false` (14.3.2).
+  - Keep Nginx access logs no longer than needed (e.g. 14 days with logrotate): the patient search term is in the URL (8.3.1).
+  - No DNS record points at a server or service the clinic no longer uses (10.3.3).
 - [ ] Hide the PHP version: `expose_php = Off` in the FPM `php.ini` (no `X-Powered-By` header) and `server_tokens off;` in Nginx.
 
 ## Done when

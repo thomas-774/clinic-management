@@ -66,6 +66,21 @@ describe('Login page', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Too many login attempts.')
   })
+
+  // T11-07 (ASVS 2.1.12): the password can be shown to check it, then hidden again.
+  it('shows and hides the password', async () => {
+    renderAppAt('/login')
+    const password = screen.getByLabelText('Password')
+    await userEvent.type(password, 'secret-pass')
+    expect(password).toHaveAttribute('type', 'password')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Show Password' }))
+    expect(password).toHaveAttribute('type', 'text')
+    expect(password).toHaveValue('secret-pass')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Hide Password' }))
+    expect(password).toHaveAttribute('type', 'password')
+  })
 })
 
 describe('Register page', () => {

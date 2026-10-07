@@ -80,3 +80,16 @@ it('is A4 portrait in Arial with real headings, a repeated table header and its 
         ->and($parts['docProps/core.xml'])->toContain('<dc:title>Visit report — 7 Oct 2026</dc:title>')
         ->and($parts['docProps/core.xml'])->toContain('<dc:creator>Smile Dental Clinic</dc:creator>');
 });
+
+// T11-07 (ASVS V5.3): "&" and "<" in the doctor's text are escaped, so the
+// file stays valid and the text cannot add its own XML.
+it('escapes XML characters in the texts it writes', function () {
+    ['visit' => $visit] = visitReportFixture();
+    $visit->update(['work_done' => 'Scaling & polishing <upper> "6" </w:t></w:r><w:r><w:t>INJECTED']);
+
+    $xml = visitDocx($visit, 'en')['word/document.xml'];
+
+    expect(simplexml_load_string($xml))->not->toBeFalse()
+        ->and($xml)->toContain('Scaling &amp; polishing &lt;upper&gt;')
+        ->and($xml)->not->toContain('<w:t>INJECTED');
+});

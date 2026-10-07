@@ -9,7 +9,9 @@
     "save": "Save",
     "saving": "Saving…",
     "cancel": "Cancel",
-    "close": "Close"
+    "close": "Close",
+    "showPassword": "Show",
+    "hidePassword": "Hide"
   },
   "language": {
     "other": "العربية",

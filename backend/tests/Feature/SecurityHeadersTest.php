@@ -12,6 +12,7 @@ function assertSecurityHeaders($response): void
     foreach (SecurityHeaders::HEADERS as $name => $value) {
         $response->assertHeader($name, $value);
     }
+    $response->assertHeader('Content-Security-Policy', SecurityHeaders::API_CSP);
 }
 
 function assertNotStored($response): void
@@ -60,6 +61,19 @@ it('keeps the visit file a download, with no-store', function () {
     assertSecurityHeaders($response);
     assertNotStored($response);
     expect($response->headers->get('Content-Disposition'))->toStartWith('attachment; filename="visit-');
+});
+
+// T11-07 (ASVS 14.4.2): a JSON response opened in a browser tab is saved, not shown.
+it('marks JSON responses as a download named api.json', function () {
+    $this->getJson('/api/v1/health')->assertHeader('Content-Disposition', SecurityHeaders::API_DISPOSITION);
+    $this->getJson('/api/v1/does-not-exist')->assertHeader('Content-Disposition', SecurityHeaders::API_DISPOSITION);
+});
+
+it('leaves the welcome page without the API headers', function () {
+    $response = $this->get('/');
+
+    expect($response->headers->has('Content-Disposition'))->toBeFalse()
+        ->and($response->headers->has('Content-Security-Policy'))->toBeFalse();
 });
 
 it('sends HSTS only outside local and testing', function (string $env, bool $hsts) {

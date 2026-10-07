@@ -69,6 +69,17 @@ describe('register', function () {
         $this->postJson('/api/v1/auth/register', registrationData(['password' => 'short', 'password_confirmation' => 'short']))
             ->assertJsonValidationErrors(['password']);
     });
+
+    // T11-07 (ASVS 2.1.2).
+    it('accepts a 64-character password and rejects one longer than 128', function () {
+        $long = str_repeat('a', 64);
+        $this->postJson('/api/v1/auth/register', registrationData(['password' => $long, 'password_confirmation' => $long]))
+            ->assertCreated();
+
+        $tooLong = str_repeat('b', 129);
+        $this->postJson('/api/v1/auth/register', registrationData(['phone' => '01087654321', 'email' => null, 'password' => $tooLong, 'password_confirmation' => $tooLong]))
+            ->assertJsonValidationErrors(['password']);
+    });
 });
 
 describe('login', function () {

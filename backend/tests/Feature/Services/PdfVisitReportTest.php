@@ -80,3 +80,11 @@ it('leaves out the prescriptions section when the visit has none', function () {
     expect($text)->not->toContain('Prescriptions')
         ->and($text)->toContain('No payments yet.');
 });
+
+// T11-07 (ASVS V5.3): the Blade template escapes the doctor's text.
+it('prints XML characters in the texts as text', function () {
+    ['visit' => $visit] = visitReportFixture();
+    $visit->update(['work_done' => 'Scaling & polishing <b>upper</b>']);
+
+    expect(pdfText(visitPdf($visit, 'en')))->toContain('Scaling & polishing <b>upper</b>');
+});

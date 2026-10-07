@@ -208,7 +208,7 @@ Security and privacy
 - [x] [T11-04](phase-11-nfr/T11-04-audit-log.md) Audit log of medical and money records · L
 - [ ] [T11-05](phase-11-nfr/T11-05-audit-log-page.md) Activity log: API, Settings page and pruning · M
 - [x] [T11-06](phase-11-nfr/T11-06-encrypt-medical-fields.md) Encrypt medical text at rest · L
-- [ ] [T11-07](phase-11-nfr/T11-07-asvs-l1-review.md) OWASP ASVS Level 1 review · M
+- [x] [T11-07](phase-11-nfr/T11-07-asvs-l1-review.md) OWASP ASVS Level 1 review · M
 
 Performance
 - [ ] [T11-08](phase-11-nfr/T11-08-indexes-and-n-plus-one.md) Indexes and N+1 guard · M

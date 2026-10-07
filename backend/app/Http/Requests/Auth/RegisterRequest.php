@@ -24,7 +24,8 @@ class RegisterRequest extends FormRequest
             'name' => ['required', 'string', 'max:120'],
             'phone' => ['required', ...$this->phoneRules()],
             'email' => ['nullable', 'string', 'email', 'max:150', 'unique:users,email'],
-            'password' => ['required', 'string', 'confirmed', Password::min(8)],
+            // ASVS 2.1.2: 64 characters allowed, more than 128 refused.
+            'password' => ['required', 'string', 'confirmed', Password::min(8), 'max:128'],
             'address' => ['required', 'string', 'max:255'],
         ];
     }

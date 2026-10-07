@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../auth/useAuth'
+import PasswordField from '../../components/form/PasswordField'
 import TextField from '../../components/form/TextField'
 import AuthLayout from '../../layouts/AuthLayout'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
@@ -85,10 +86,9 @@ export default function Register() {
           error={errors.address}
           required
         />
-        <TextField
+        <PasswordField
           label={t('auth.register.password')}
           name="password"
-          type="password"
           autoComplete="new-password"
           hint={t('auth.register.passwordHint')}
           value={form.password}
@@ -96,10 +96,9 @@ export default function Register() {
           error={errors.password}
           required
         />
-        <TextField
+        <PasswordField
           label={t('auth.register.confirmPassword')}
           name="password_confirmation"
-          type="password"
           autoComplete="new-password"
           value={form.password_confirmation}
           onChange={update('password_confirmation')}

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../auth/useAuth'
+import PasswordField from '../../components/form/PasswordField'
 import TextField from '../../components/form/TextField'
 import AuthLayout from '../../layouts/AuthLayout'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
@@ -62,10 +63,9 @@ export default function Login() {
           error={errors.login}
           required
         />
-        <TextField
+        <PasswordField
           label={t('auth.login.password')}
           name="password"
-          type="password"
           autoComplete="current-password"
           value={form.password}
           onChange={update('password')}

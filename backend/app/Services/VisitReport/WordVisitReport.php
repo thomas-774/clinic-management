@@ -6,6 +6,7 @@ use PhpOffice\PhpWord\Element\AbstractContainer;
 use PhpOffice\PhpWord\Element\Table;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\Shared\Converter;
 use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\SimpleType\TblWidth;
@@ -42,6 +43,9 @@ class WordVisitReport
     public function render(VisitReportData $data): string
     {
         $this->data = $data;
+        // PHPWord writes text into the XML as is unless told to escape it, so a
+        // "&" or "<" in the work done would corrupt the file (ASVS V5.3).
+        Settings::setOutputEscapingEnabled(true);
         $word = $this->document();
         // Whole twips: PHPWord's own A4 size has decimals, which OOXML does not allow.
         $paper = new Paper(config('visit_report.paper'));
