@@ -212,7 +212,7 @@ Security and privacy
 
 Performance
 - [x] [T11-08](phase-11-nfr/T11-08-indexes-and-n-plus-one.md) Indexes and N+1 guard · M
-- [ ] [T11-09](phase-11-nfr/T11-09-performance-budget.md) 5-year dataset and API response-time budget · M
+- [x] [T11-09](phase-11-nfr/T11-09-performance-budget.md) 5-year dataset and API response-time budget · M
 - [ ] [T11-10](phase-11-nfr/T11-10-fe-code-splitting.md) Code splitting and bundle budget · M
 
 Quality and usability

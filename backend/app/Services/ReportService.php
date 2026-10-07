@@ -8,6 +8,7 @@ use App\Models\Visit;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Dashboard and report numbers (Module H). Periods come from Period::for()
@@ -73,24 +74,40 @@ class ReportService
             ->selectRaw('SUM(amount) as payments_sum_amount')
             ->groupBy('visit_id');
 
-        $unpaid = Visit::query()
-            ->select(['visits.id', 'visits.patient_id', 'visits.visit_date', 'visits.total_amount', 'paid.payments_sum_amount'])
+        // Plain rows, not models (T11-09): on 5 years of data ~5,600 unpaid
+        // visits, and building a Visit, Patient and User for each took 370 of
+        // the 440 ms. Names in a second query, for the owing patients only:
+        // joining users here made MySQL read every patient's visits.
+        $unpaid = Visit::query()->toBase()
+            ->select(['visits.patient_id', 'visits.visit_date', 'visits.total_amount', 'paid.payments_sum_amount'])
             ->leftJoinSub($paid, 'paid', 'paid.visit_id', '=', 'visits.id')
             ->whereRaw('visits.total_amount > COALESCE(paid.payments_sum_amount, 0)')
-            ->with('patient.user:id,name,phone')
             ->orderBy('visits.visit_date')
             ->get();
 
-        $rows = $unpaid->groupBy('patient_id')->map(fn ($visits) => [
-            'patient_id' => $visits->first()->patient_id,
-            'patient_name' => $visits->first()->patient->user->name,
-            'phone' => $visits->first()->patient->user->phone,
-            'outstanding' => $this->payments->sumRemaining($visits),
-            'unpaid_visits' => $visits->count(),
-            'oldest_visit_date' => $visits->first()->visit_date->format('Y-m-d'),
-        ]);
+        $users = DB::table('patients')
+            ->join('users', 'users.id', '=', 'patients.user_id')
+            ->whereIn('patients.id', $unpaid->pluck('patient_id')->unique()->values())
+            ->get(['patients.id', 'users.name', 'users.phone'])
+            ->keyBy('id');
 
-        return $rows->sort(fn ($a, $b) => bccomp($b['outstanding'], $a['outstanding'], 2) ?: strcmp($a['patient_name'], $b['patient_name']))
+        $rows = [];
+        foreach ($unpaid as $visit) {
+            $remaining = bcsub(PaymentService::money($visit->total_amount), PaymentService::money($visit->payments_sum_amount), 2);
+            // Visits come oldest first, so the first one seen is the oldest.
+            $rows[$visit->patient_id] ??= [
+                'patient_id' => (int) $visit->patient_id,
+                'patient_name' => $users[$visit->patient_id]->name,
+                'phone' => $users[$visit->patient_id]->phone,
+                'outstanding' => '0.00',
+                'unpaid_visits' => 0,
+                'oldest_visit_date' => substr((string) $visit->visit_date, 0, 10),
+            ];
+            $rows[$visit->patient_id]['outstanding'] = bcadd($rows[$visit->patient_id]['outstanding'], $remaining, 2);
+            $rows[$visit->patient_id]['unpaid_visits']++;
+        }
+
+        return collect($rows)->sort(fn ($a, $b) => bccomp($b['outstanding'], $a['outstanding'], 2) ?: strcmp($a['patient_name'], $b['patient_name']))
             ->values()
             ->all();
     }
