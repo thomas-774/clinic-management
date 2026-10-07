@@ -9,6 +9,7 @@ import TextField from '../../components/form/TextField'
 import { useProfile, useUpdateProfile } from '../../hooks/useProfile'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
 import { formatDate, formatMoney, formatTime } from '../../utils/format'
+import Form from '../../components/form/Form'
 
 function InfoRow({ label, children }) {
   return (
@@ -33,7 +34,7 @@ function ContactForm({ profile, onDone }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-3">
+    <Form onSubmit={handleSubmit} className="space-y-3">
       {formError && (
         <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           {formError}
@@ -67,7 +68,7 @@ function ContactForm({ profile, onDone }) {
           {t('common.cancel')}
         </button>
       </div>
-    </form>
+    </Form>
   )
 }
 

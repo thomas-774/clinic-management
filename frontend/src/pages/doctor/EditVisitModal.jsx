@@ -7,6 +7,7 @@ import { useUpdateVisit } from '../../hooks/useVisits'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
 import { formatDate, formatMoney } from '../../utils/format'
 import { toPiastres } from '../../utils/money'
+import Form from '../../components/form/Form'
 
 /** Work done and total of a visit (FR-D.2, D.3); the total cannot go below what was paid (PR-2). */
 export default function EditVisitModal({ visit, onClose }) {
@@ -28,7 +29,7 @@ export default function EditVisitModal({ visit, onClose }) {
 
   return (
     <Modal open title={t('visits.editTitle', { date: formatDate(visit.visit_date) })} onClose={onClose}>
-      <form onSubmit={handleSubmit} noValidate className="space-y-3">
+      <Form onSubmit={handleSubmit} className="space-y-3">
         {formError && (
           <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
             {formError}
@@ -58,7 +59,7 @@ export default function EditVisitModal({ visit, onClose }) {
             {update.isPending ? t('common.saving') : t('common.save')}
           </button>
         </div>
-      </form>
+      </Form>
     </Modal>
   )
 }

@@ -8,6 +8,7 @@ import TextField from '../../../components/form/TextField'
 import { useCreateStaff, useStaff, useUpdateStaff } from '../../../hooks/useStaff'
 import { useToast } from '../../../toast/useToast'
 import { errorMessage, fieldErrors } from '../../../utils/apiErrors'
+import Form from '../../../components/form/Form'
 
 const smallButton = 'rounded-md px-2 py-1 text-xs font-semibold hover:bg-slate-100'
 
@@ -56,7 +57,7 @@ function StaffModal({ account, onClose }) {
       {created ? (
         <PasswordOnce account={created} onClose={onClose} />
       ) : (
-        <form onSubmit={handleSubmit} noValidate className="space-y-3">
+        <Form onSubmit={handleSubmit} className="space-y-3">
           {formError && (
             <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
               {formError}
@@ -73,7 +74,7 @@ function StaffModal({ account, onClose }) {
               {save.isPending ? t('common.saving') : t(account ? 'common.save' : 'staff.create')}
             </button>
           </div>
-        </form>
+        </Form>
       )}
     </Modal>
   )

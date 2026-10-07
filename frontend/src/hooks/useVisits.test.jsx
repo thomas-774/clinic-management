@@ -1,10 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { act, renderHook, screen } from '@testing-library/react'
+import { act, renderHook } from '@testing-library/react'
 import { AxiosError, AxiosHeaders } from 'axios'
 import { vi } from 'vitest'
 import client from '../api/client'
 import { ToastProvider } from '../toast/ToastProvider'
 import { useVisitExport } from './useVisits'
+import { errorToasts, successToasts } from '../test/a11y'
 
 const PDF = 'application/pdf'
 const DOCX = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
@@ -69,7 +70,7 @@ describe('useVisitExport', () => {
     expect(URL.createObjectURL).toHaveBeenCalledWith(file)
     expect(saved).toEqual(['visit-2026-10-07-88.pdf'])
     expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:visit-file')
-    expect(await screen.findByRole('status')).toHaveTextContent('PDF saved.')
+    await vi.waitFor(() => expect(successToasts()).toHaveTextContent('PDF saved.'))
   })
 
   it('saves a Word file, with a fallback name when the header is not readable', async () => {
@@ -80,7 +81,7 @@ describe('useVisitExport', () => {
 
     expect(requests[0].params).toEqual({ format: 'docx' })
     expect(saved).toEqual(['visit-12.docx'])
-    expect(await screen.findByRole('status')).toHaveTextContent('Word file saved.')
+    await vi.waitFor(() => expect(successToasts()).toHaveTextContent('Word file saved.'))
   })
 
   it.each([
@@ -92,7 +93,7 @@ describe('useVisitExport', () => {
 
     await act(() => result.current.mutateAsync({ id: 88, format: 'pdf' }).catch(() => {}))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(message)
+    await vi.waitFor(() => expect(errorToasts()).toHaveTextContent(message))
     expect(result.current.error.response.data).toEqual({ message })
     expect(URL.createObjectURL).not.toHaveBeenCalled()
     expect(saved).toEqual([])
@@ -106,6 +107,6 @@ describe('useVisitExport', () => {
 
     await act(() => result.current.mutateAsync({ id: 88, format: 'pdf' }).catch(() => {}))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('The file could not be downloaded. Please try again.')
+    await vi.waitFor(() => expect(errorToasts()).toHaveTextContent('The file could not be downloaded. Please try again.'))
   })
 })

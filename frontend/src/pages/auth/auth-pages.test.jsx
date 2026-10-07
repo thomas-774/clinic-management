@@ -5,6 +5,7 @@ import { vi } from 'vitest'
 import * as authApi from '../../api/auth'
 import { tokenStorage } from '../../api/client'
 import { expectPath, renderAppAt } from '../../test/renderApp'
+import { expectNoA11yViolationsInBothLanguages, tabTo } from '../../test/a11y'
 
 function apiError(status, data) {
   return new AxiosError('error', String(status), {}, null, { status, data, headers: {}, config: {}, statusText: '' })
@@ -134,5 +135,50 @@ describe('Register page', () => {
     expect(screen.getByText('The password field confirmation does not match.')).toBeInTheDocument()
     expect(screen.getByLabelText('Phone')).toHaveAttribute('aria-invalid', 'true')
     expect(screen.getByLabelText('Full name')).not.toHaveAttribute('aria-invalid')
+  })
+})
+
+// NFR-U.1 (T11-12): axe on the loaded page in both languages.
+describe('accessibility', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+  })
+
+  it('login: has no serious or critical axe issues, in Arabic and in English', async () => {
+    await expectNoA11yViolationsInBothLanguages(() => renderAppAt('/login'))
+  })
+
+  it('register: has no serious or critical axe issues, in Arabic and in English', async () => {
+    await expectNoA11yViolationsInBothLanguages(() => renderAppAt('/register'))
+  })
+
+  it('logs in with the keyboard only, starting at "Skip to content"', async () => {
+    const user = userEvent.setup()
+    const login = vi.spyOn(authApi, 'login').mockResolvedValue({ token: 'doc-token', user: { id: 1, role: 'doctor' } })
+    renderAppAt('/login')
+
+    await user.tab()
+    expect(screen.getByRole('link', { name: 'Skip to content' })).toHaveFocus()
+    await tabTo(user, screen.getByLabelText('Phone or email'))
+    await user.keyboard('01000000000')
+    await tabTo(user, screen.getByLabelText('Password'))
+    await user.keyboard('password{Enter}')
+
+    expect(login).toHaveBeenCalledWith({ login: '01000000000', password: 'password' })
+    await expectPath('/doctor')
+  })
+
+  it('puts the focus on the field the server rejected', async () => {
+    const user = userEvent.setup()
+    vi.spyOn(authApi, 'login').mockRejectedValue(apiError(422, { message: 'x', errors: { login: ['These credentials do not match our records.'] } }))
+    renderAppAt('/login')
+
+    await tabTo(user, screen.getByLabelText('Password'))
+    await user.keyboard('wrong{Enter}')
+
+    const field = await screen.findByRole('textbox', { name: 'Phone or email' })
+    await vi.waitFor(() => expect(field).toHaveFocus())
+    expect(field).toHaveAttribute('aria-invalid', 'true')
   })
 })

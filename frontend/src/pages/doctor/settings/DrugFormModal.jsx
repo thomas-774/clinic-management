@@ -8,6 +8,7 @@ import { useSaveDrug } from '../../../hooks/useDrugs'
 import { useToast } from '../../../toast/useToast'
 import { errorMessage, fieldErrors } from '../../../utils/apiErrors'
 import { DRUG_CATEGORIES } from '../../../utils/drugCategories'
+import Form from '../../../components/form/Form'
 
 /** The backend allows 1 to 10 active ingredients. */
 const MAX_INGREDIENTS = 10
@@ -75,7 +76,7 @@ export default function DrugFormModal({ drug, onClose }) {
 
   return (
     <Modal open size="lg" title={drug ? t('drugsAdmin.editTitle', { name: drug.trade_name }) : t('drugsAdmin.addTitle')} onClose={onClose}>
-      <form onSubmit={handleSubmit} noValidate className="space-y-3">
+      <Form onSubmit={handleSubmit} className="space-y-3">
         {formError && (
           <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
             {formError}
@@ -112,7 +113,7 @@ export default function DrugFormModal({ drug, onClose }) {
                       placeholder={t('drugsAdmin.ingredientNamePlaceholder')}
                       value={row.name}
                       onChange={(event) => setIngredient(row.key, 'name', event.target.value)}
-                      className={`w-2/5 rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 ${error ? 'border-red-400 focus:ring-red-200' : 'border-slate-300 focus:ring-sky-200'}`}
+                      className={`w-2/5 rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 ${error ? 'border-red-400 focus:ring-red-600' : 'border-slate-300 focus:ring-sky-600'}`}
                     />
                     <input
                       dir="auto"
@@ -120,7 +121,7 @@ export default function DrugFormModal({ drug, onClose }) {
                       placeholder={t('drugsAdmin.ingredientNotePlaceholder')}
                       value={row.note}
                       onChange={(event) => setIngredient(row.key, 'note', event.target.value)}
-                      className="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-200"
+                      className="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-600"
                     />
                     <button
                       type="button"
@@ -170,7 +171,7 @@ export default function DrugFormModal({ drug, onClose }) {
             {save.isPending ? t('common.saving') : t('common.save')}
           </button>
         </div>
-      </form>
+      </Form>
     </Modal>
   )
 }

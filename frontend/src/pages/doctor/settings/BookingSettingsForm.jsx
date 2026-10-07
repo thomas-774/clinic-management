@@ -3,6 +3,7 @@ import Card from '../../../components/Card'
 import SelectField from '../../../components/form/SelectField'
 import TextField from '../../../components/form/TextField'
 import { DURATION_PRESETS } from '../../../utils/schedule'
+import Form from '../../../components/form/Form'
 
 /** Duration (15/30/45/60/custom), booking window and cancellation cut-off (FR-G.2). */
 export default function BookingSettingsForm({ value, onChange, errors, onSave, saving }) {
@@ -12,8 +13,8 @@ export default function BookingSettingsForm({ value, onChange, errors, onSave, s
 
   return (
     <Card title={t('settings.booking')}>
-      <form
-        noValidate
+      <Form
+       
         onSubmit={(event) => {
           event.preventDefault()
           onSave()
@@ -75,7 +76,7 @@ export default function BookingSettingsForm({ value, onChange, errors, onSave, s
         <button type="submit" disabled={saving} className="rounded-lg bg-sky-700 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-800 disabled:opacity-60">
           {saving ? t('common.saving') : t('settings.saveBooking')}
         </button>
-      </form>
+      </Form>
     </Card>
   )
 }

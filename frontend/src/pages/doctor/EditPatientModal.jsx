@@ -6,6 +6,7 @@ import TextAreaField from '../../components/form/TextAreaField'
 import TextField from '../../components/form/TextField'
 import { useStaffApi } from '../../staff/staffApi'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
+import Form from '../../components/form/Form'
 
 const fromPatient = (patient) => ({
   name: patient.name,
@@ -39,7 +40,7 @@ export default function EditPatientModal({ patient, onClose }) {
 
   return (
     <Modal open title={t('patientDetails.editTitle')} onClose={onClose}>
-      <form onSubmit={handleSubmit} noValidate className="space-y-3">
+      <Form onSubmit={handleSubmit} className="space-y-3">
         {formError && (
           <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
             {formError}
@@ -73,7 +74,7 @@ export default function EditPatientModal({ patient, onClose }) {
             {update.isPending ? t('common.saving') : t('common.save')}
           </button>
         </div>
-      </form>
+      </Form>
     </Modal>
   )
 }

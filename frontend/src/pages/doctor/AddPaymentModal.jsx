@@ -8,6 +8,7 @@ import { useToast } from '../../toast/useToast'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
 import { formatDate, formatMoney } from '../../utils/format'
 import { PAYMENT_METHODS, toPiastres } from '../../utils/money'
+import Form from '../../components/form/Form'
 
 /**
  * An installment on a visit (FR-D.6), or the assistant collecting at the desk
@@ -42,7 +43,7 @@ export default function AddPaymentModal({ visit, onClose, title }) {
 
   return (
     <Modal open title={title ?? t('visits.addPaymentTitle', { date: formatDate(visit.visit_date) })} onClose={onClose}>
-      <form onSubmit={handleSubmit} noValidate className="space-y-3">
+      <Form onSubmit={handleSubmit} className="space-y-3">
         {formError && (
           <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
             {formError}
@@ -71,7 +72,7 @@ export default function AddPaymentModal({ visit, onClose, title }) {
             {add.isPending ? t('common.saving') : t('visits.savePayment')}
           </button>
         </div>
-      </form>
+      </Form>
     </Modal>
   )
 }

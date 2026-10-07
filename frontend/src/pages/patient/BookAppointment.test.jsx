@@ -7,6 +7,7 @@ import * as authApi from '../../api/auth'
 import { tokenStorage } from '../../api/client'
 import * as slotsApi from '../../api/slots'
 import { expectPath, renderAppAt } from '../../test/renderApp'
+import { expectNoA11yViolationsInBothLanguages, tabTo } from '../../test/a11y'
 
 const slot = (date, time, end) => ({ start_at: `${date}T${time}:00+03:00`, end_at: `${date}T${end}:00+03:00` })
 
@@ -117,5 +118,40 @@ describe('BookAppointment', () => {
     fireEvent.change(screen.getByLabelText('Date'), { target: { value: '2026-10-09' } })
 
     expect(await screen.findByText('No free slots on this day.')).toBeInTheDocument()
+  })
+})
+
+// NFR-U.1 (T11-12): axe on the loaded page in both languages.
+describe('accessibility', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-10-05T05:00:00Z'))
+  })
+
+  afterEach(() => vi.useRealTimers())
+
+  it('has no serious or critical axe issues, in Arabic and in English', async () => {
+    fakeSlots()
+    await expectNoA11yViolationsInBothLanguages(renderBook)
+  })
+
+  it('books an appointment with the keyboard only', async () => {
+    const user = userEvent.setup()
+    fakeSlots()
+    const book = vi.spyOn(appointmentsApi, 'bookAppointment').mockResolvedValue({ id: 9 })
+    renderBook()
+
+    await tabTo(user, await screen.findByRole('button', { name: '17:00' }))
+    await user.keyboard('{Enter}')
+
+    const dialog = screen.getByRole('dialog', { name: 'Confirm your appointment' })
+    expect(dialog).toContainElement(document.activeElement)
+    await tabTo(user, within(dialog).getByRole('button', { name: 'Book this time' }))
+    await user.keyboard('{Enter}')
+
+    expect(book).toHaveBeenCalledWith('2026-10-05T17:00:00+03:00')
+    await expectPath('/patient/appointments')
   })
 })

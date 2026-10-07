@@ -10,7 +10,7 @@ import { DRUG_CATEGORIES } from '../../../utils/drugCategories'
 import DrugFormModal from './DrugFormModal'
 
 const smallButton = 'rounded-md px-2 py-1 text-xs font-semibold hover:bg-slate-100'
-const control = 'rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-200'
+const control = 'rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-600'
 
 /**
  * Settings → Drugs (FR-J.6): search the catalogue, filter by section, show
@@ -118,7 +118,7 @@ export default function DrugsTab() {
             type="checkbox"
             checked={includeHidden}
             onChange={(event) => setIncludeHidden(event.target.checked)}
-            className="h-4 w-4 rounded border-slate-300 text-sky-700 focus:ring-sky-200"
+            className="h-4 w-4 rounded border-slate-300 text-sky-700 focus:ring-sky-600"
           />
           {t('drugsAdmin.showHidden')}
         </label>

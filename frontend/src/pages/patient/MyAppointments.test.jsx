@@ -6,6 +6,7 @@ import * as authApi from '../../api/auth'
 import { tokenStorage } from '../../api/client'
 import * as slotsApi from '../../api/slots'
 import { expectPath, renderAppAt } from '../../test/renderApp'
+import { expectNoA11yViolationsInBothLanguages } from '../../test/a11y'
 
 const appt = (id, date, time, end, status, canCancel = false) => ({
   id,
@@ -123,5 +124,25 @@ describe('MyAppointments', () => {
 
     expect(await screen.findByText('You have no upcoming appointments.')).toBeInTheDocument()
     expect(screen.getByText('No past appointments.')).toBeInTheDocument()
+  })
+})
+
+// NFR-U.1 (T11-12): axe on the loaded page in both languages.
+describe('accessibility', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-10-05T05:00:00Z'))
+  })
+
+  afterEach(() => vi.useRealTimers())
+
+  it('has no serious or critical axe issues, in Arabic and in English', async () => {
+    fakeServer({
+      upcoming: [appt(3, '2026-10-06', '17:00', '17:45', 'booked', true)],
+      past: [appt(2, '2026-09-20', '18:30', '19:15', 'completed'), appt(1, '2026-09-10', '17:00', '17:45', 'no_show')],
+    })
+    await expectNoA11yViolationsInBothLanguages(renderMine)
   })
 })

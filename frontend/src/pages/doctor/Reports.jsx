@@ -21,7 +21,7 @@ function rangeOf(period, today, params) {
 }
 
 const dateInput =
-  'rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-200'
+  'rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-600'
 
 /**
  * Reports: a period filter kept in the URL (?period=day|week|custom, this

@@ -18,7 +18,8 @@ function MatchedName({ name, query }) {
 /**
  * Drug typeahead (§7.3 DrugSearch, FR-J.2): asks /doctor/drugs/search 250 ms
  * after the last keystroke from 2 characters, ↑ ↓ move, Enter picks, Esc
- * closes. When nothing matches it offers to use the typed name as written.
+ * closes. Enter never submits the surrounding form. When nothing matches it
+ * offers to use the typed name as written.
  *
  * - `onSelect(drug)` — a catalogue drug was picked (a search result).
  * - `onFreeText(name)` — the doctor chose to use the typed name as written.
@@ -36,7 +37,6 @@ export default function DrugSearch({
   onHighlight,
   onInputChange,
   inputRef,
-  autoFocus = false,
   invalid = false,
   describedBy,
 }) {
@@ -101,10 +101,9 @@ export default function DrugSearch({
         move(-1)
         break
       case 'Enter':
-        if (active) {
-          event.preventDefault()
-          pick(active)
-        }
+        // Picks the highlighted line; on a closed list it must not submit the whole form.
+        event.preventDefault()
+        if (active) pick(active)
         break
       case 'Escape':
         if (showList) {
@@ -130,7 +129,6 @@ export default function DrugSearch({
         aria-invalid={invalid || undefined}
         aria-describedby={describedBy}
         autoComplete="off"
-        autoFocus={autoFocus}
         dir="auto"
         placeholder={placeholder ?? t('drugSearch.placeholder')}
         value={text}
@@ -142,7 +140,7 @@ export default function DrugSearch({
         onKeyDown={onKeyDown}
         onBlur={() => setOpen(false)}
         className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 ${
-          invalid ? 'border-red-400 focus:ring-red-200' : 'border-slate-300 focus:ring-blue-200'
+          invalid ? 'border-red-400 focus:ring-red-600' : 'border-slate-300 focus:ring-sky-600'
         }`}
       />
 
@@ -161,10 +159,13 @@ export default function DrugSearch({
               id={optionId(i)}
               role="option"
               aria-selected={i === index}
-              // Keep the focus in the input; a blur would close the list before the click lands.
-              onMouseDown={(event) => event.preventDefault()}
+              // Picked on press, keeping the focus in the input (a blur would close the
+              // list first). Keyboard users pick from the input: ↑ ↓ and Enter.
+              onMouseDown={(event) => {
+                event.preventDefault()
+                pick(option)
+              }}
               onMouseEnter={() => setHighlight({ query, index: i })}
-              onClick={() => pick(option)}
               className={`cursor-pointer px-3 py-2 text-sm ${i === index ? 'bg-blue-50' : ''}`}
             >
               {option.freeText ? (

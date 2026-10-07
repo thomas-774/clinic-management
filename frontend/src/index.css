@@ -6,6 +6,17 @@
 }
 
 /*
+ * NFR-U.1: everything reached with the keyboard shows a ring (WCAG 2.4.7).
+ * Text inputs draw their own ring on focus (focus:ring-2 … -600).
+ */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-sky-700);
+    outline-offset: 2px;
+  }
+}
+
+/*
  * Prescription print page (§7.3 Printing): A5 by default, A4 when the
  * settings say so. The rx-paper-* class picks the named page; the print
  * page puts it on <html> too, so the whole document is on that one page.

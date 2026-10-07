@@ -7,6 +7,7 @@ import { tokenStorage } from '../../api/client'
 import * as doctorPatientsApi from '../../api/doctorPatients'
 import * as slotsApi from '../../api/slots'
 import { expectPath, renderAppAt } from '../../test/renderApp'
+import { expectNoA11yViolationsInBothLanguages } from '../../test/a11y'
 
 const LIST = {
   data: [{ id: 2, name: 'Mona Ali', phone: '01011112222', last_visit_date: '2026-10-05' }],
@@ -156,5 +157,23 @@ describe('Assistant: patients', () => {
     await userEvent.click(within(dialog).getByRole('button', { name: 'Book' }))
 
     expect(book).toHaveBeenCalledWith({ patient_id: 2, start_at: '2099-01-01T17:00:00+02:00' })
+  })
+})
+
+// NFR-U.1 (T11-12): axe on the loaded page in both languages.
+describe('accessibility', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+  })
+
+  it('list: has no serious or critical axe issues, in Arabic and in English', async () => {
+    vi.spyOn(assistantApi, 'listPatients').mockResolvedValue(LIST)
+    await expectNoA11yViolationsInBothLanguages(() => renderAsAssistant('/assistant/patients'))
+  })
+
+  it('patient page: has no serious or critical axe issues, in Arabic and in English', async () => {
+    vi.spyOn(assistantApi, 'getPatient').mockResolvedValue(PATIENT)
+    await expectNoA11yViolationsInBothLanguages(() => renderAsAssistant(`/assistant/patients/${PATIENT.id}`))
   })
 })

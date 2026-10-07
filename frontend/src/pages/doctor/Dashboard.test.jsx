@@ -8,6 +8,7 @@ import { tokenStorage } from '../../api/client'
 import * as reportsApi from '../../api/reports'
 import * as patientsApi from '../../api/doctorPatients'
 import { expectPath, renderAppAt } from '../../test/renderApp'
+import { expectNoA11yViolationsInBothLanguages } from '../../test/a11y'
 
 const MONA = { id: 1, name: 'Mona Ali', phone: '01011112222' }
 const AHMED = { id: 2, name: 'Ahmed Hassan', phone: '01233334444' }
@@ -186,3 +187,21 @@ async function findGroup(name) {
   await within(section).findByText(/EGP/)
   return section
 }
+
+// NFR-U.1 (T11-12): axe on the loaded page in both languages.
+describe('accessibility', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-10-05T14:20:00Z'))
+    vi.spyOn(appointmentsApi, 'getSchedule').mockResolvedValue([])
+  })
+
+  afterEach(() => vi.useRealTimers())
+
+  it('has no serious or critical axe issues, in Arabic and in English', async () => {
+    fakeReports()
+    await expectNoA11yViolationsInBothLanguages(renderDashboard)
+  })
+})

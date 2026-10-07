@@ -12,7 +12,7 @@ import { formatDate, formatTime } from '../../../utils/format'
 
 const AUDIT_ACTIONS = ['viewed', 'created', 'updated', 'deleted', 'exported', 'printed']
 
-const control = 'rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-200'
+const control = 'rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-600'
 
 /**
  * The patient filter: a search box with matching patients, or the chosen

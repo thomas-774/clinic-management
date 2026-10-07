@@ -8,6 +8,7 @@ import * as patientsApi from '../../api/doctorPatients'
 import * as drugsApi from '../../api/drugs'
 import * as prescriptionsApi from '../../api/prescriptions'
 import { expectPath, renderAppAt } from '../../test/renderApp'
+import { expectNoA11yViolationsInBothLanguages } from '../../test/a11y'
 
 const AUGMENTIN = { id: 11, trade_name: 'Augmentin 1 g', form: 'tablets', pack: '14 tabs', category: 'antibiotic', short_use: 'مضاد حيوي' }
 const FLAGYL = { id: 21, trade_name: 'Flagyl 500 mg', form: 'tablets', pack: '20 tabs', category: 'antibiotic', short_use: 'مضاد للميكروبات اللاهوائية' }
@@ -316,5 +317,22 @@ describe('PrescriptionForm', () => {
     })
     expect(prescriptionsApi.getPrescription).toHaveBeenCalledWith('55')
     expect(patientsApi.getPatient).toHaveBeenCalledWith(7)
+  })
+})
+
+// NFR-U.1 (T11-12): axe on the loaded page in both languages.
+describe('accessibility', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-10-05T14:20:00Z'))
+  })
+
+  afterEach(() => vi.useRealTimers())
+
+  it('has no serious or critical axe issues, in Arabic and in English', async () => {
+    fakeServer()
+    await expectNoA11yViolationsInBothLanguages(() => renderForm())
   })
 })

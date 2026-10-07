@@ -6,6 +6,7 @@ import * as authApi from '../../api/auth'
 import { tokenStorage } from '../../api/client'
 import * as api from '../../api/settings'
 import { renderAppAt } from '../../test/renderApp'
+import { errorToasts, expectNoA11yViolationsInBothLanguages } from '../../test/a11y'
 
 /** Sat–Thu 17:00–21:00, Friday off — like the seeder. */
 function seededWeek() {
@@ -137,7 +138,7 @@ describe('Settings: hours and duration', () => {
 
     expect(await within(day('Tuesday')).findByText('The end time field must be a date after start time.')).toBeInTheDocument()
     expect(within(day('Tuesday')).getByLabelText('Tuesday range 1 end')).toHaveAttribute('aria-invalid', 'true')
-    expect(screen.getByRole('alert')).toHaveTextContent('Please fix the highlighted fields.')
+    expect(errorToasts()).toHaveTextContent('Please fix the highlighted fields.')
   })
 })
 
@@ -182,5 +183,18 @@ describe('Settings: live slot preview', () => {
     fireEvent.change(screen.getByLabelText('Tuesday range 2 end'), { target: { value: '13:00' } })
 
     expect(chips('Tuesday')).toEqual(['10:00', '11:00', '12:00', '17:00', '18:00', '19:00', '20:00'])
+  })
+})
+
+// NFR-U.1 (T11-12): axe on the loaded page in both languages.
+describe('accessibility', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+  })
+
+  it('has no serious or critical axe issues, in Arabic and in English', async () => {
+    fakeServer()
+    await expectNoA11yViolationsInBothLanguages(renderSettings)
   })
 })

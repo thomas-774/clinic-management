@@ -1,9 +1,12 @@
 import { useEffect, useId, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
 /**
  * Accessible dialog: closes on Escape or the backdrop, moves focus inside on
- * open and back to where it was on close.
+ * open, keeps Tab and Shift+Tab inside while open (NFR-U.1), and puts focus
+ * back where it was on close.
  */
 export default function Modal({ open, title, onClose, children, size = 'md' }) {
   const { t } = useTranslation()
@@ -21,7 +24,28 @@ export default function Modal({ open, title, onClose, children, size = 'md' }) {
     const first = panelRef.current?.querySelector('input, select, textarea, button:not([data-close])')
     ;(first ?? panelRef.current)?.focus()
 
-    const onKey = (event) => event.key === 'Escape' && onCloseRef.current()
+    const onKey = (event) => {
+      if (event.key === 'Escape') {
+        onCloseRef.current()
+        return
+      }
+      if (event.key !== 'Tab' || !panelRef.current) return
+      // Focus trap: from the last element Tab wraps to the first, and back.
+      const items = [...panelRef.current.querySelectorAll(FOCUSABLE)]
+      if (items.length === 0) {
+        event.preventDefault()
+        return
+      }
+      const [firstItem, lastItem] = [items[0], items[items.length - 1]]
+      const inside = panelRef.current.contains(document.activeElement)
+      if (event.shiftKey && (document.activeElement === firstItem || !inside)) {
+        event.preventDefault()
+        lastItem.focus()
+      } else if (!event.shiftKey && (document.activeElement === lastItem || !inside)) {
+        event.preventDefault()
+        firstItem.focus()
+      }
+    }
     document.addEventListener('keydown', onKey)
     return () => {
       document.removeEventListener('keydown', onKey)
@@ -32,14 +56,18 @@ export default function Modal({ open, title, onClose, children, size = 'md' }) {
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 p-0 sm:items-center sm:p-4" onMouseDown={onClose}>
+    // The backdrop is for the mouse only; keyboard users close with Escape or the × button.
+    <div
+      role="presentation"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 p-0 sm:items-center sm:p-4"
+      onMouseDown={(event) => event.target === event.currentTarget && onClose()}
+    >
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        onMouseDown={(event) => event.stopPropagation()}
         className={`max-h-[92vh] w-full overflow-y-auto rounded-t-2xl bg-white p-5 shadow-xl sm:rounded-2xl sm:p-6 ${
           size === 'lg' ? 'sm:max-w-2xl' : 'sm:max-w-lg'
         }`}

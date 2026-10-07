@@ -6,6 +6,7 @@ import { tokenStorage } from '../../api/client'
 import * as patientsApi from '../../api/doctorPatients'
 import * as reportsApi from '../../api/reports'
 import { expectPath, renderAppAt } from '../../test/renderApp'
+import { expectNoA11yViolationsInBothLanguages } from '../../test/a11y'
 
 // paid_at, patient, visit (and its date), visit total, paid, remaining (what the visit still owes now)
 const PAYMENTS = [
@@ -184,5 +185,23 @@ describe('Reports: payments table', () => {
     expect(await screen.findByText('Page 2 of 2')).toBeInTheDocument()
     expect(api).toHaveBeenLastCalledWith({ from: '2026-10-03', to: '2026-10-09', page: 2 })
     expect(within(totalsRow()).getAllByRole('cell')[3]).toHaveTextContent('EGP 1,500.00') // still the whole week
+  })
+})
+
+// NFR-U.1 (T11-12): axe on the loaded page in both languages.
+describe('accessibility', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-10-05T14:20:00Z'))
+    vi.spyOn(reportsApi, 'getDailyRevenue').mockResolvedValue([])
+  })
+
+  afterEach(() => vi.useRealTimers())
+
+  it('has no serious or critical axe issues, in Arabic and in English', async () => {
+    fakePayments()
+    await expectNoA11yViolationsInBothLanguages(() => renderReports())
   })
 })

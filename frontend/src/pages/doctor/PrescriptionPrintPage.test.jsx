@@ -7,6 +7,7 @@ import * as drugsApi from '../../api/drugs'
 import * as prescriptionsApi from '../../api/prescriptions'
 import i18next from '../../i18n'
 import { expectPath, renderAppAt } from '../../test/renderApp'
+import { expectNoA11yViolationsInBothLanguages } from '../../test/a11y'
 
 const PRESCRIPTION = {
   id: 55,
@@ -147,5 +148,17 @@ describe('PrescriptionPrintPage', () => {
     expect(sheet).toHaveTextContent('التوقيع')
     expect(within(sheet).getByText('Flagyl 500 mg')).toHaveAttribute('dir', 'auto')
     expect(within(sheet).getByText('Rinse twice daily')).toHaveAttribute('dir', 'auto')
+  })
+})
+
+// NFR-U.1 (T11-12): axe on the loaded page in both languages.
+describe('accessibility', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+  })
+
+  it('has no serious or critical axe issues, in Arabic and in English', async () => {
+    await expectNoA11yViolationsInBothLanguages(() => renderPrint())
   })
 })

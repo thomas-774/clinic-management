@@ -6,6 +6,7 @@ import * as authApi from '../../api/auth'
 import { tokenStorage } from '../../api/client'
 import * as patientApi from '../../api/patient'
 import { renderAppAt } from '../../test/renderApp'
+import { expectNoA11yViolationsInBothLanguages } from '../../test/a11y'
 
 const profile = {
   id: 1,
@@ -177,5 +178,18 @@ describe('PatientHome', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Something went wrong while loading.')
     expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument()
+  })
+})
+
+// NFR-U.1 (T11-12): axe on the loaded page in both languages.
+describe('accessibility', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+  })
+
+  it('has no serious or critical axe issues, in Arabic and in English', async () => {
+    vi.spyOn(patientApi, 'getProfile').mockResolvedValue(profile)
+    await expectNoA11yViolationsInBothLanguages(renderHome)
   })
 })

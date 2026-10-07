@@ -9,6 +9,7 @@ import { useAddBlockedTime, useBlockedTimes, useDeleteBlockedTime } from '../../
 import { useToast } from '../../../toast/useToast'
 import { errorMessage, fieldErrors } from '../../../utils/apiErrors'
 import { formatDate, todayInClinic } from '../../../utils/format'
+import Form from '../../../components/form/Form'
 
 const emptyForm = () => ({ date: todayInClinic(), whole_day: true, start_time: '', end_time: '', reason: '' })
 
@@ -40,7 +41,7 @@ function AddBlockForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-3 rounded-xl bg-slate-50 p-4">
+    <Form onSubmit={handleSubmit} className="space-y-3 rounded-xl bg-slate-50 p-4">
       <p className="text-sm font-semibold text-slate-800">{t('blocked.addTitle')}</p>
       <div className="grid gap-3 sm:grid-cols-2">
         <TextField label={t('blocked.date')} type="date" min={todayInClinic()} value={form.date} onChange={set('date')} error={errors.date} required />
@@ -60,7 +61,7 @@ function AddBlockForm() {
       <button type="submit" disabled={add.isPending} className="rounded-lg bg-sky-700 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-800 disabled:opacity-60">
         {add.isPending ? t('common.saving') : t('blocked.add')}
       </button>
-    </form>
+    </Form>
   )
 }
 

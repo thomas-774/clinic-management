@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import Card from '../../../components/Card'
 import { WEEK_ORDER } from '../../../utils/schedule'
+import Form from '../../../components/form/Form'
 
 /** A sensible new range: after the day's last range, else the usual evening shift. */
 function nextRange(ranges) {
@@ -26,8 +27,8 @@ export default function WeeklyHoursForm({ week, onChange, errors, onSave, saving
 
   return (
     <Card title={t('settings.weeklyHours')}>
-      <form
-        noValidate
+      <Form
+       
         onSubmit={(event) => {
           event.preventDefault()
           onSave()
@@ -99,7 +100,7 @@ export default function WeeklyHoursForm({ week, onChange, errors, onSave, saving
         <button type="submit" disabled={saving} className="mt-3 rounded-lg bg-sky-700 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-800 disabled:opacity-60">
           {saving ? t('common.saving') : t('settings.saveHours')}
         </button>
-      </form>
+      </Form>
     </Card>
   )
 }

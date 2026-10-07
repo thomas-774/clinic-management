@@ -110,7 +110,7 @@ function Tabs({ current, onChange }) {
   }
 
   return (
-    <div role="tablist" aria-label={t('pages.settings')} onKeyDown={onKeyDown} className="flex gap-1 overflow-x-auto overflow-y-hidden border-b border-slate-200">
+    <div role="tablist" aria-label={t('pages.settings')} className="flex gap-1 overflow-x-auto overflow-y-hidden border-b border-slate-200">
       {TABS.map((tab) => (
         <button
           key={tab}
@@ -124,6 +124,7 @@ function Tabs({ current, onChange }) {
           aria-controls={`settings-panel-${tab}`}
           tabIndex={current === tab ? 0 : -1}
           onClick={() => onChange(tab)}
+          onKeyDown={onKeyDown}
           className={`-mb-px whitespace-nowrap border-b-2 px-4 py-2 text-sm font-semibold ${
             current === tab ? 'border-sky-700 text-sky-800' : 'border-transparent text-slate-500 hover:text-slate-800'
           }`}

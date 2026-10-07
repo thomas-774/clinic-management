@@ -6,6 +6,7 @@ import TextAreaField from '../../components/form/TextAreaField'
 import TextField from '../../components/form/TextField'
 import { useStaffApi } from '../../staff/staffApi'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
+import Form from '../../components/form/Form'
 
 const EMPTY = { name: '', phone: '', address: '', email: '', date_of_birth: '', gender: '', current_illness: '' }
 
@@ -77,7 +78,7 @@ export default function NewPatientModal({ open, onClose }) {
       {create.data ? (
         <CreatedStep patient={create.data} onClose={close} />
       ) : (
-        <form onSubmit={handleSubmit} noValidate className="space-y-3">
+        <Form onSubmit={handleSubmit} className="space-y-3">
           {formError && (
             <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
               {formError}
@@ -114,7 +115,7 @@ export default function NewPatientModal({ open, onClose }) {
               {create.isPending ? t('common.saving') : t('newPatient.submit')}
             </button>
           </div>
-        </form>
+        </Form>
       )}
     </Modal>
   )

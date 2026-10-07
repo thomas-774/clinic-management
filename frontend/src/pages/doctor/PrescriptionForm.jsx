@@ -14,6 +14,7 @@ import { useToast } from '../../toast/useToast'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
 import { ageOn } from '../../utils/dates'
 import { formatDate, todayInClinic } from '../../utils/format'
+import Form from '../../components/form/Form'
 
 /** RX-1: a prescription has 1 to 15 lines. */
 export const MAX_LINES = 15
@@ -259,8 +260,8 @@ function PrescriptionEditor({ patient, prescription, visitId }) {
   const reminders = (patient.history ?? []).filter((entry) => REMINDER_TYPES.includes(entry.type))
 
   return (
-    <form
-      noValidate
+    <Form
+     
       onSubmit={(event) => {
         event.preventDefault()
         submit(false)
@@ -366,20 +367,18 @@ function PrescriptionEditor({ patient, prescription, visitId }) {
                             </button>
                           </div>
                         ) : (
-                          // Enter on a closed list must not submit the whole form.
-                          <div onKeyDown={(event) => event.key === 'Enter' && event.preventDefault()}>
-                            <DrugSearch
-                              label={t('prescriptionForm.drugFor', { number })}
-                              initialQuery={line.draft}
-                              inputRef={inputRef(line.key, 'search')}
-                              onInputChange={(text) => update(line.key, { draft: text })}
-                              onSelect={(drug) => pickDrug(line.key, drug)}
-                              onFreeText={(name) => takeAsWritten(line.key, name)}
-                              onHighlight={(drug) => setHighlight({ key: line.key, drug })}
-                              invalid={Boolean(error) && !chosenName}
-                              describedBy={error ? errorId : undefined}
-                            />
-                          </div>
+                          // Enter in DrugSearch never submits the whole form.
+                          <DrugSearch
+                            label={t('prescriptionForm.drugFor', { number })}
+                            initialQuery={line.draft}
+                            inputRef={inputRef(line.key, 'search')}
+                            onInputChange={(text) => update(line.key, { draft: text })}
+                            onSelect={(drug) => pickDrug(line.key, drug)}
+                            onFreeText={(name) => takeAsWritten(line.key, name)}
+                            onHighlight={(drug) => setHighlight({ key: line.key, drug })}
+                            invalid={Boolean(error) && !chosenName}
+                            describedBy={error ? errorId : undefined}
+                          />
                         )}
                         <input
                           ref={inputRef(line.key, 'instructions')}
@@ -393,7 +392,7 @@ function PrescriptionEditor({ patient, prescription, visitId }) {
                           onChange={(event) => update(line.key, { instructions: event.target.value })}
                           onKeyDown={(event) => onInstructionsKeyDown(event, line)}
                           className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 ${
-                            error && chosenName ? 'border-red-400 focus:ring-red-200' : 'border-slate-300 focus:ring-sky-200'
+                            error && chosenName ? 'border-red-400 focus:ring-red-600' : 'border-slate-300 focus:ring-sky-600'
                           }`}
                         />
                         {error && (
@@ -493,6 +492,6 @@ function PrescriptionEditor({ patient, prescription, visitId }) {
           {t('prescriptionForm.saveAndPrint')}
         </button>
       </div>
-    </form>
+    </Form>
   )
 }

@@ -7,6 +7,7 @@ import * as authApi from '../../api/auth'
 import { tokenStorage } from '../../api/client'
 import * as visitsApi from '../../api/visits'
 import { renderAppAt } from '../../test/renderApp'
+import { expectNoA11yViolationsInBothLanguages } from '../../test/a11y'
 
 const MONA = { id: 1, name: 'Mona Ali', phone: '01011112222' }
 const AHMED = { id: 2, name: 'Ahmed Hassan', phone: '01233334444' }
@@ -126,3 +127,20 @@ describe('Assistant: Today', () => {
   })
 })
 
+// NFR-U.1 (T11-12): axe on the loaded page in both languages.
+describe('accessibility', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-10-05T14:20:00Z'))
+  })
+
+  afterEach(() => vi.useRealTimers())
+
+  it('has no serious or critical axe issues, in Arabic and in English', async () => {
+    vi.spyOn(assistantApi, 'getSchedule').mockResolvedValue([appt(1, '17:00', MONA, 'checked_in'), appt(2, '18:00', AHMED)])
+    vi.spyOn(assistantApi, 'getUnpaidVisits').mockResolvedValue([])
+    await expectNoA11yViolationsInBothLanguages(renderToday)
+  })
+})

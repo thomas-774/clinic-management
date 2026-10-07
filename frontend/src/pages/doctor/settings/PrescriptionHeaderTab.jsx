@@ -8,6 +8,7 @@ import { useUpdateSettings } from '../../../hooks/useSettings'
 import { useToast } from '../../../toast/useToast'
 import { errorMessage, fieldErrors } from '../../../utils/apiErrors'
 import { todayInClinic } from '../../../utils/format'
+import Form from '../../../components/form/Form'
 
 const TEXT_FIELDS = ['clinic_name', 'doctor_title', 'clinic_address', 'clinic_phone', 'prescription_footer']
 const PAPERS = ['A5', 'A4']
@@ -67,7 +68,7 @@ export default function PrescriptionHeaderTab({ settings }) {
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-start">
       <Card title={t('rxSettings.title')}>
-        <form onSubmit={handleSubmit} noValidate className="space-y-3">
+        <Form onSubmit={handleSubmit} className="space-y-3">
           <p className="text-sm text-slate-500">{t('rxSettings.intro')}</p>
           {formError && (
             <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
@@ -91,7 +92,7 @@ export default function PrescriptionHeaderTab({ settings }) {
                     value={paper}
                     checked={form.prescription_paper === paper}
                     onChange={set('prescription_paper')}
-                    className="h-4 w-4 border-slate-300 text-sky-700 focus:ring-sky-200"
+                    className="h-4 w-4 border-slate-300 text-sky-700 focus:ring-sky-600"
                   />
                   {t(`rxSettings.paper${paper}`)}
                 </label>
@@ -109,7 +110,7 @@ export default function PrescriptionHeaderTab({ settings }) {
               {save.isPending ? t('common.saving') : t('common.save')}
             </button>
           </div>
-        </form>
+        </Form>
       </Card>
 
       <section aria-label={t('rxSettings.preview')} className="min-w-0">

@@ -13,6 +13,7 @@ import { useToast } from '../../toast/useToast'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
 import { formatDate, formatMoney, formatTime, todayInClinic } from '../../utils/format'
 import { PAYMENT_METHODS, fromPiastres, toPiastres } from '../../utils/money'
+import Form from '../../components/form/Form'
 
 /**
  * Who the visit is for: the appointment handed over by the schedule (or found
@@ -136,7 +137,7 @@ export default function VisitForm() {
   }
 
   return (
-    <form onSubmit={submit} noValidate className="space-y-4">
+    <Form onSubmit={submit} className="space-y-4">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">{t('pages.visitForm')}</h1>
         <p className="mt-1 text-slate-700">
@@ -240,6 +241,6 @@ export default function VisitForm() {
           {create.isPending || exportFile.isPending ? t('common.saving') : t('visitForm.save', { context: fileChoice === 'none' ? undefined : fileChoice })}
         </button>
       </div>
-    </form>
+    </Form>
   )
 }

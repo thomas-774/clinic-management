@@ -43,7 +43,8 @@
     "reports": "التقارير",
     "today": "اليوم في الاستقبال",
     "newPrescription": "روشتة جديدة",
-    "editPrescription": "تعديل الروشتة"
+    "editPrescription": "تعديل الروشتة",
+    "printPrescription": "طباعة الروشتة"
   },
   "auth": {
     "login": {
@@ -709,5 +710,8 @@
     "sampleDose1": "قرص كل 12 ساعة بعد الأكل لمدة 5 أيام",
     "sampleDose2": "قرص عند اللزوم، بحد أقصى 4 أقراص يوميًا",
     "sampleNotes": "أكل طري لمدة يومين."
+  },
+  "a11y": {
+    "skipToContent": "انتقل إلى المحتوى"
   }
 }

@@ -7,6 +7,7 @@ import * as patientsApi from '../../api/doctorPatients'
 import * as visitsApi from '../../api/visits'
 import { renderAppAt } from '../../test/renderApp'
 import { fromPiastres, toPiastres } from '../../utils/money'
+import { errorToasts } from '../../test/a11y'
 
 /** In-memory visits: the server recomputes paid / remaining / status like PaymentService. */
 function fakeServer() {
@@ -272,7 +273,7 @@ describe('PatientDetails: visit file buttons', () => {
     await screen.findByRole('list', { name: 'Visits' })
     await userEvent.click(within(visitItem('1 Oct 2026')).getByRole('button', { name: 'Download visit of 1 Oct 2026 as Word' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('This action is unauthorized.')
+    await vi.waitFor(() => expect(errorToasts()).toHaveTextContent('This action is unauthorized.'))
     expect(saved).toEqual([])
   })
 })

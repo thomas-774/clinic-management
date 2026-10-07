@@ -9,7 +9,7 @@ export default function CheckboxField({ label, hint, className = '', ...inputPro
         id={id}
         type="checkbox"
         aria-describedby={hint ? `${id}-hint` : undefined}
-        className="mt-1 h-4 w-4 rounded border-slate-300 text-sky-700 focus:ring-sky-200"
+        className="mt-1 h-4 w-4 rounded border-slate-300 text-sky-700 focus:ring-sky-600"
         {...inputProps}
       />
       <div>

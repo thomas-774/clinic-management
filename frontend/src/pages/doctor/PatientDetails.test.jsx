@@ -6,6 +6,7 @@ import * as authApi from '../../api/auth'
 import { tokenStorage } from '../../api/client'
 import * as api from '../../api/doctorPatients'
 import { expectPath, renderAppAt } from '../../test/renderApp'
+import { expectNoA11yViolationsInBothLanguages } from '../../test/a11y'
 
 function makePatient(history) {
   return {
@@ -180,5 +181,18 @@ describe('PatientDetails', () => {
     renderDetails()
 
     expect(await screen.findByText('This patient does not exist.')).toBeInTheDocument()
+  })
+})
+
+// NFR-U.1 (T11-12): axe on the loaded page in both languages.
+describe('accessibility', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+  })
+
+  it('has no serious or critical axe issues, in Arabic and in English', async () => {
+    fakeServer()
+    await expectNoA11yViolationsInBothLanguages(renderDetails)
   })
 })

@@ -9,6 +9,7 @@ import * as patientsApi from '../../api/doctorPatients'
 import * as slotsApi from '../../api/slots'
 import * as visitsApi from '../../api/visits'
 import { expectPath, renderAppAt } from '../../test/renderApp'
+import { expectNoA11yViolationsInBothLanguages } from '../../test/a11y'
 
 const MONA = { id: 1, name: 'Mona Ali', phone: '01011112222' }
 const AHMED = { id: 2, name: 'Ahmed Hassan', phone: '01233334444' }
@@ -361,5 +362,22 @@ describe('Schedule: auto-refresh', () => {
     expect(server.getSchedule).toHaveBeenCalledTimes(1)
     await vi.advanceTimersByTimeAsync(1_000)
     await vi.waitFor(() => expect(server.getSchedule).toHaveBeenCalledTimes(2))
+  })
+})
+
+// NFR-U.1 (T11-12): axe on the loaded page in both languages.
+describe('accessibility', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-10-05T05:00:00Z'))
+  })
+
+  afterEach(() => vi.useRealTimers())
+
+  it('has no serious or critical axe issues, in Arabic and in English', async () => {
+    fakeServer([appt(2, '2026-10-05', '18:30', '19:15', AHMED, 'checked_in'), appt(1, '2026-10-05', '17:00', '17:45', MONA)])
+    await expectNoA11yViolationsInBothLanguages(() => renderSchedule())
   })
 })

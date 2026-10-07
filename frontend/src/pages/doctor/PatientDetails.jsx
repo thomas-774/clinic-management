@@ -94,6 +94,7 @@ export default function PatientDetails() {
           </button>
         }
         title={<span className="text-2xl font-bold">{patient.name}</span>}
+        headingLevel={1}
       >
         <p className={`mb-3 inline-block rounded-lg px-3 py-1 text-sm font-semibold ${owes ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
           {t('patientDetails.outstanding')}: <span data-testid="outstanding">{formatMoney(patient.outstanding_balance)}</span>

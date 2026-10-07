@@ -4,6 +4,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import LogoutButton from './LogoutButton'
+import SkipLink from './SkipLink'
 
 /**
  * Staff areas (doctor, assistant): sidebar on wide screens; on phones it
@@ -16,6 +17,7 @@ export default function SidebarLayout({ id, links }) {
 
   return (
     <div className="min-h-screen bg-slate-50 md:flex">
+      <SkipLink />
       <header className="flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-3 md:hidden">
         <span className="text-lg font-bold text-sky-700">{t('common.appName')}</span>
         <button
@@ -60,7 +62,7 @@ export default function SidebarLayout({ id, links }) {
         </div>
       </aside>
 
-      <main className="min-w-0 flex-1 px-4 py-6 md:px-8">
+      <main id="main" tabIndex={-1} className="min-w-0 flex-1 px-4 py-6 focus:outline-none md:px-8">
         <Outlet />
       </main>
     </div>

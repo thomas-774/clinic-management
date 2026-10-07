@@ -8,6 +8,7 @@ import { tokenStorage } from '../../api/client'
 import * as patientsApi from '../../api/doctorPatients'
 import * as visitsApi from '../../api/visits'
 import { expectPath, renderAppAt } from '../../test/renderApp'
+import { expectNoA11yViolationsInBothLanguages, tabTo } from '../../test/a11y'
 
 const MONA = { id: 7, name: 'Mona Ali', phone: '01011112222' }
 const APPOINTMENT = {
@@ -195,5 +196,58 @@ describe('VisitForm', () => {
     renderForm('/doctor/visits/new')
 
     expect(await screen.findByText('Open a visit from the schedule or from a patient’s page.')).toBeInTheDocument()
+  })
+})
+
+// NFR-U.1 (T11-12): axe on the loaded page in both languages.
+describe('accessibility', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-10-05T14:20:00Z'))
+  })
+
+  afterEach(() => vi.useRealTimers())
+
+  it('has no serious or critical axe issues, in Arabic and in English', async () => {
+    fakeServer()
+    await expectNoA11yViolationsInBothLanguages(() => renderForm('/doctor/visits/new?appointment=40'))
+  })
+
+  it('records a visit with the keyboard only', async () => {
+    const user = userEvent.setup()
+    const create = fakeServer()
+    renderForm('/doctor/visits/new?appointment=40')
+
+    await tabTo(user, await screen.findByLabelText('Work done today'))
+    await user.keyboard('Cleaning')
+    await tabTo(user, screen.getByLabelText('Total cost'))
+    await user.keyboard('500')
+    await tabTo(user, screen.getByLabelText('Amount paid now'))
+    await user.keyboard('200')
+    await tabTo(user, screen.getByRole('button', { name: 'Save visit' }))
+    await user.keyboard('{Enter}')
+
+    expect(create).toHaveBeenCalledWith(expect.objectContaining({ work_done: 'Cleaning', total_amount: '500', paid_now: '200' }))
+    await expectPath('/doctor/patients/7')
+  })
+
+  it('puts the focus on the first field the server rejected', async () => {
+    const user = userEvent.setup()
+    fakeServer().mockRejectedValue(
+      new AxiosError('x', 'ERR', undefined, undefined, {
+        status: 422,
+        data: { message: 'Invalid', errors: { total_amount: ['The total cost field must be at least 0.'] } },
+      }),
+    )
+    renderForm('/doctor/visits/new?appointment=40')
+
+    await user.type(await screen.findByLabelText('Work done today'), 'x')
+    await user.type(screen.getByLabelText('Total cost'), '1')
+    await user.click(screen.getByRole('button', { name: 'Save visit' }))
+
+    await vi.waitFor(() => expect(screen.getByLabelText('Total cost')).toHaveFocus())
+    expect(screen.getByLabelText('Total cost')).toHaveAccessibleDescription('The total cost field must be at least 0.')
   })
 })

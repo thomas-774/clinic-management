@@ -6,6 +6,7 @@ import PasswordField from '../../components/form/PasswordField'
 import TextField from '../../components/form/TextField'
 import AuthLayout from '../../layouts/AuthLayout'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
+import Form from '../../components/form/Form'
 
 const EMPTY_FORM = { name: '', phone: '', email: '', password: '', password_confirmation: '', address: '' }
 
@@ -49,7 +50,7 @@ export default function Register() {
         </>
       }
     >
-      <form onSubmit={handleSubmit} noValidate className="space-y-4">
+      <Form onSubmit={handleSubmit} className="space-y-4">
         {formError && (
           <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
             {formError}
@@ -112,7 +113,7 @@ export default function Register() {
         >
           {submitting ? t('auth.register.submitting') : t('auth.register.submit')}
         </button>
-      </form>
+      </Form>
     </AuthLayout>
   )
 }

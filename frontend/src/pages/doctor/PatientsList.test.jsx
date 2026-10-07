@@ -6,6 +6,7 @@ import * as authApi from '../../api/auth'
 import { tokenStorage } from '../../api/client'
 import * as api from '../../api/doctorPatients'
 import { expectPath, renderAppAt } from '../../test/renderApp'
+import { expectNoA11yViolationsInBothLanguages } from '../../test/a11y'
 
 const PATIENTS = [
   { id: 1, name: 'Ahmed Hassan', phone: '01233334444', last_visit_date: null },
@@ -153,5 +154,18 @@ describe('PatientsList', () => {
     await userEvent.keyboard('{Escape}')
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+})
+
+// NFR-U.1 (T11-12): axe on the loaded page in both languages.
+describe('accessibility', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.restoreAllMocks()
+  })
+
+  it('has no serious or critical axe issues, in Arabic and in English', async () => {
+    fakeList()
+    await expectNoA11yViolationsInBothLanguages(() => renderAsDoctor())
   })
 })

@@ -9,6 +9,7 @@ import { useSaveHistoryEntry } from '../../hooks/usePatient'
 import { errorMessage, fieldErrors } from '../../utils/apiErrors'
 import { todayInClinic } from '../../utils/format'
 import { HISTORY_TYPES } from '../../utils/historyTypes'
+import Form from '../../components/form/Form'
 
 /** Add (entry = null) or edit a history entry. Rendered only while open. */
 export default function HistoryEntryModal({ patientId, entry, onClose }) {
@@ -34,7 +35,7 @@ export default function HistoryEntryModal({ patientId, entry, onClose }) {
 
   return (
     <Modal open title={entry ? t('historyForm.editTitle') : t('historyForm.addTitle')} onClose={onClose}>
-      <form onSubmit={handleSubmit} noValidate className="space-y-3">
+      <Form onSubmit={handleSubmit} className="space-y-3">
         {formError && (
           <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
             {formError}
@@ -66,7 +67,7 @@ export default function HistoryEntryModal({ patientId, entry, onClose }) {
             {save.isPending ? t('common.saving') : t('common.save')}
           </button>
         </div>
-      </form>
+      </Form>
     </Modal>
   )
 }

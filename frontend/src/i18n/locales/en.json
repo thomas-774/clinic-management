@@ -43,7 +43,8 @@
     "reports": "Reports",
     "today": "Today at the desk",
     "newPrescription": "New prescription",
-    "editPrescription": "Edit prescription"
+    "editPrescription": "Edit prescription",
+    "printPrescription": "Print prescription"
   },
   "auth": {
     "login": {
@@ -709,5 +710,8 @@
     "sampleDose1": "1 tablet every 12 hours after meals for 5 days",
     "sampleDose2": "1 tablet when needed, at most 4 a day",
     "sampleNotes": "Soft food for 2 days."
+  },
+  "a11y": {
+    "skipToContent": "Skip to content"
   }
 }

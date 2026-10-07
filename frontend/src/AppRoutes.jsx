@@ -5,6 +5,7 @@ import GuestRoute from './auth/GuestRoute'
 import ProtectedRoute from './auth/ProtectedRoute'
 import RoleRoute from './auth/RoleRoute'
 import FullPageLoader from './components/FullPageLoader'
+import RouteChange from './components/RouteChange'
 import AssistantLayout from './layouts/AssistantLayout'
 import DoctorLayout from './layouts/DoctorLayout'
 import PatientLayout from './layouts/PatientLayout'
@@ -46,53 +47,56 @@ export default function AppRoutes() {
   }, [role])
 
   return (
-    <Suspense fallback={<FullPageLoader />}>
-      <Routes>
-        <Route path="/" element={<HomeRedirect />} />
-        <Route path="/status" element={<Status />} />
+    <>
+      <RouteChange />
+      <Suspense fallback={<FullPageLoader />}>
+        <Routes>
+          <Route path="/" element={<HomeRedirect />} />
+          <Route path="/status" element={<Status />} />
 
-        <Route element={<GuestRoute />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        </Route>
+          <Route element={<GuestRoute />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Route>
 
-        <Route element={<ProtectedRoute />}>
-          <Route path="/patient" element={<RoleRoute role="patient" />}>
-            <Route element={<PatientLayout />}>
-              <Route index element={<PatientHome />} />
-              <Route path="book" element={<BookAppointment />} />
-              <Route path="appointments" element={<MyAppointments />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/patient" element={<RoleRoute role="patient" />}>
+              <Route element={<PatientLayout />}>
+                <Route index element={<PatientHome />} />
+                <Route path="book" element={<BookAppointment />} />
+                <Route path="appointments" element={<MyAppointments />} />
+              </Route>
+            </Route>
+
+            <Route path="/doctor" element={<RoleRoute role="doctor" />}>
+              <Route element={<DoctorLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="schedule" element={<Schedule />} />
+                <Route path="patients" element={<PatientsList />} />
+                <Route path="patients/:id" element={<PatientDetails />} />
+                <Route path="visits/new" element={<VisitForm />} />
+                <Route path="patients/:id/prescriptions/new" element={<PrescriptionForm />} />
+                <Route path="prescriptions/:id/edit" element={<PrescriptionForm editing />} />
+                <Route path="settings" element={<Settings />} />
+                <Route path="reports" element={<Reports />} />
+              </Route>
+              {/* Print-only page: no sidebar or menus (RX-4). */}
+              <Route path="prescriptions/:id/print" element={<PrescriptionPrintPage />} />
+            </Route>
+
+            <Route path="/assistant" element={<RoleRoute role="assistant" />}>
+              <Route element={<AssistantLayout />}>
+                <Route index element={<AssistantToday />} />
+                <Route path="patients" element={<PatientsList />} />
+                <Route path="patients/:id" element={<AssistantPatientPage />} />
+                <Route path="schedule" element={<Schedule />} />
+              </Route>
             </Route>
           </Route>
 
-          <Route path="/doctor" element={<RoleRoute role="doctor" />}>
-            <Route element={<DoctorLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="schedule" element={<Schedule />} />
-              <Route path="patients" element={<PatientsList />} />
-              <Route path="patients/:id" element={<PatientDetails />} />
-              <Route path="visits/new" element={<VisitForm />} />
-              <Route path="patients/:id/prescriptions/new" element={<PrescriptionForm />} />
-              <Route path="prescriptions/:id/edit" element={<PrescriptionForm editing />} />
-              <Route path="settings" element={<Settings />} />
-              <Route path="reports" element={<Reports />} />
-            </Route>
-            {/* Print-only page: no sidebar or menus (RX-4). */}
-            <Route path="prescriptions/:id/print" element={<PrescriptionPrintPage />} />
-          </Route>
-
-          <Route path="/assistant" element={<RoleRoute role="assistant" />}>
-            <Route element={<AssistantLayout />}>
-              <Route index element={<AssistantToday />} />
-              <Route path="patients" element={<PatientsList />} />
-              <Route path="patients/:id" element={<AssistantPatientPage />} />
-              <Route path="schedule" element={<Schedule />} />
-            </Route>
-          </Route>
-        </Route>
-
-        <Route path="*" element={<HomeRedirect />} />
-      </Routes>
-    </Suspense>
+          <Route path="*" element={<HomeRedirect />} />
+        </Routes>
+      </Suspense>
+    </>
   )
 }
