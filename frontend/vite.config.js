@@ -33,6 +33,8 @@ function securityHeaders(apiUrl) {
 export default defineConfig(({ mode }) => ({
   plugins: [react(), tailwindcss()],
   server: { port: 5173, strictPort: true },
+  // dist/.vite/manifest.json: which chunks each page needs, read by scripts/check-bundle-size.js (NFR-P.4).
+  build: { manifest: true },
   preview: { port: 4173, strictPort: true, headers: securityHeaders(loadEnv(mode, process.cwd()).VITE_API_URL) },
   test: {
     environment: 'jsdom',
